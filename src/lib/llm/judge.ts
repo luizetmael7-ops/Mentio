@@ -24,7 +24,9 @@ export type Extraction = z.infer<typeof ExtractionSchema>;
 
 const SYSTEM = `Tu es un extracteur de données pour un outil de suivi de visibilité de marques dans les réponses des IA.
 On te donne la réponse d'un assistant IA à une question d'intention d'achat (beauté, cosmétique, compléments alimentaires…).
-Extrais TOUTES les marques commerciales mentionnées (marques de produits/entreprises, pas les ingrédients, pas les types de produits, pas les distributeurs génériques comme "pharmacie").
+Extrais TOUTES les marques commerciales mentionnées : uniquement des marques de produits ou entreprises qui VENDENT quelque chose dans la catégorie.
+EXCLUS : institutions et autorités de santé (NHS, NIH, académies de dermatologie…), médias et sites d'avis, distributeurs génériques (pharmacie, Sephora en tant que magasin), ingrédients, types de produits.
+Si une marque apparaît sous plusieurs formes (nom complet + acronyme), ne la compte qu'UNE fois sous son nom le plus courant.
 Pour chacune : son nom normalisé, sa position d'apparition (1 = première citée), et le sentiment exprimé à son égard.
 Ne déduis rien qui ne soit pas dans le texte. Si aucune marque n'est citée, renvoie une liste vide.`;
 
