@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "seed:prompts": "tsx scripts/seed-prompts.ts",
+    "db:push": "supabase db push --linked",
+    "inngest:dev": "inngest-cli dev"
   },
   "dependencies": {
     "@google/genai": "^2.11.0",
