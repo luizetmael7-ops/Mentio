@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { supabaseServer } from "@/lib/supabase/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { PLAN_LIMITS, type Plan } from "@/lib/plans";
+import { captureServer } from "@/lib/posthog-server";
 
 /**
  * Crée l'organisation (si première visite), la marque, ses concurrents,
@@ -84,6 +85,12 @@ export async function completeOnboarding(formData: FormData) {
   if (prompts && prompts.length > 0) {
     await admin.from("brand_prompts").insert(prompts.map((p) => ({ brand_id: brand.id, prompt_id: p.id })));
   }
+
+  await captureServer("onboarding_completed", user.id, {
+    brand_name: brandName,
+    competitors: competitors.length,
+    plan,
+  });
 
   redirect("/dashboard");
 }

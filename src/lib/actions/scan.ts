@@ -5,6 +5,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { inngest } from "@/inngest/client";
+import { captureServer } from "@/lib/posthog-server";
 
 const MAX_SCANS_PER_DAY_PER_IP = 3;
 
@@ -59,6 +60,7 @@ export async function startScan(formData: FormData) {
     name: "mentio/public-scan.run",
     data: { scanId: scan.id, brandName: normalize(brandName), displayName: brandName },
   });
+  await captureServer("scan_started", ipHash, { brand_name: brandName, category });
 
   redirect(`/scan/${scan.id}`);
 }

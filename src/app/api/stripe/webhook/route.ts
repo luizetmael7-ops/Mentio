@@ -3,6 +3,7 @@ import type Stripe from "stripe";
 import { stripe, planFromPrice } from "@/lib/stripe";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import type { Plan } from "@/lib/plans";
+import { captureServer } from "@/lib/posthog-server";
 
 /**
  * Webhook Stripe → source de vérité du plan de l'organisation.
@@ -46,6 +47,7 @@ export async function POST(request: NextRequest) {
       { onConflict: "org_id" }
     );
     await admin.from("organizations").update({ plan }).eq("id", orgId);
+    await captureServer("plan_activated", orgId, { plan, status: subscription.status });
   }
 
   switch (event.type) {

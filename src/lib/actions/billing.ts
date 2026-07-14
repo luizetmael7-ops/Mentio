@@ -5,6 +5,7 @@ import { supabaseServer } from "@/lib/supabase/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { stripe, getPriceId, type BillingInterval } from "@/lib/stripe";
 import type { Plan } from "@/lib/plans";
+import { captureServer } from "@/lib/posthog-server";
 
 async function requireOrg() {
   const supabase = await supabaseServer();
@@ -58,6 +59,7 @@ export async function startCheckout(formData: FormData) {
     subscription_data: { metadata: { org_id: org.id, plan } },
   });
 
+  await captureServer("checkout_started", email, { plan, interval });
   redirect(session.url!);
 }
 

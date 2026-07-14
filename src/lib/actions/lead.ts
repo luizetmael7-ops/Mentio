@@ -3,6 +3,7 @@
 import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { supabaseAdmin } from "@/lib/supabase/admin";
+import { captureServer } from "@/lib/posthog-server";
 
 /** Gate email du lead magnet : enregistre le lead et déverrouille le rapport complet. */
 export async function submitLead(formData: FormData) {
@@ -27,6 +28,11 @@ export async function submitLead(formData: FormData) {
     scan_id: scan.id,
   });
   if (error && !error.message.includes("duplicate")) throw new Error(error.message);
+
+  await captureServer("lead_captured", email, {
+    brand_name: scan.brand_name,
+    teaser_score: teaser?.score ?? null,
+  });
 
   const cookieStore = await cookies();
   cookieStore.set(`mentio_unlocked_${scanId}`, "1", {
