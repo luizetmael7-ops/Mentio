@@ -12,6 +12,7 @@
     "inngest:dev": "inngest-cli dev"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.111.0",
     "@google/genai": "^2.11.0",
     "@react-email/components": "^1.0.12",
     "@supabase/ssr": "^0.12.0",
