@@ -5,7 +5,7 @@
  */
 import { inngest } from "../client";
 import { supabaseAdmin } from "@/lib/supabase/admin";
-import { activeProviders, getProvider } from "@/lib/llm";
+import { activeProviders, getProvider, askWithTimeout } from "@/lib/llm";
 import { PLAN_LIMITS, isRunDue, type Plan } from "@/lib/plans";
 
 export const dailyRunner = inngest.createFunction(
@@ -103,7 +103,7 @@ export const promptRunner = inngest.createFunction(
       return { skipped: true, reason: `provider ${model} non configuré` };
     }
 
-    const answer = await step.run("ask-llm", () => provider.ask(promptText));
+    const answer = await step.run("ask-llm", () => askWithTimeout(provider, promptText, 60_000));
 
     const promptRunId = await step.run("save-run", async () => {
       const { data, error } = await supabase

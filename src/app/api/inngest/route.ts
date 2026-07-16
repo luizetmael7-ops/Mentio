@@ -1,4 +1,7 @@
 import { serve } from "inngest/next";
+
+// Les steps LLM peuvent durer >10 s : on donne le maximum du plan Vercel Hobby
+export const maxDuration = 300;
 import { inngest } from "@/inngest/client";
 import { dailyRunner, brandRunner, promptRunner } from "@/inngest/functions/runner";
 import { runJudge } from "@/inngest/functions/judge";

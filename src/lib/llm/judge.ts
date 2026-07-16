@@ -36,6 +36,17 @@ function client(): OpenAI {
   return _client;
 }
 
+// Institutions, autorités et médias que le juge LLM laisse parfois passer malgré la
+// consigne — filtre déterministe en dernier rempart (comparaison sur nom normalisé).
+const NON_BRANDS = new Set(
+  [
+    "nhs", "nih", "aad", "american academy of dermatology", "mayo clinic", "cleveland clinic",
+    "anses", "ansm", "efsa", "ewg", "pubmed", "cochrane", "inserm", "oms", "who", "fda",
+    "vidal", "doctissimo", "60 millions de consommateurs", "que choisir", "ufc que choisir",
+    "nih office of dietary supplements", "harvard health", "webmd", "healthline", "wikipedia",
+  ].map((n) => normalizeBrandName(n))
+);
+
 export async function judgeAnswer(rawAnswer: string): Promise<{ extraction: Extraction; costUsd: number }> {
   const completion = await client().chat.completions.parse({
     model: JUDGE_MODEL,
@@ -48,6 +59,7 @@ export async function judgeAnswer(rawAnswer: string): Promise<{ extraction: Extr
 
   const extraction = completion.choices[0]?.message.parsed;
   if (!extraction) throw new Error("Juge : extraction JSON vide ou refusée");
+  extraction.brands = extraction.brands.filter((b) => !NON_BRANDS.has(normalizeBrandName(b.name)));
 
   const usage = completion.usage;
   const costUsd = Number(

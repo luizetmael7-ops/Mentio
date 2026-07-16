@@ -1,12 +1,12 @@
 /**
  * Lead magnet (brief §6) — scan public live : ~10 prompts × modèles actifs (max 2),
  * juge chaque réponse, calcule un teaser (score + choc concurrent) écrit dans
- * `public_scans.teaser`. Choix v0 : tous les appels dans un seul step parallèle
- * (rapidité du scan > granularité des retries ; un échec rejoue le lot, ~0,25 $).
+ * `public_scans.teaser`. Les appels sont découpés en lots de 5 : chaque lot est un
+ * step court (< timeout serverless) et mémoïsé — un retry ne rejoue que le lot raté.
  */
 import { inngest } from "../client";
 import { supabaseAdmin } from "@/lib/supabase/admin";
-import { activeProviders } from "@/lib/llm";
+import { activeProviders, askWithTimeout } from "@/lib/llm";
 import { judgeAnswer, sameBrand } from "@/lib/llm/judge";
 
 const SCAN_PROMPTS = 10;
@@ -45,27 +45,58 @@ export const publicScan = inngest.createFunction(
     const providers = activeProviders().slice(0, SCAN_MODELS);
     if (providers.length === 0) throw new Error("Aucun provider LLM configuré");
 
-    const details = await step.run("run-and-judge", async () => {
-      const jobs = prompts.flatMap((prompt) =>
-        providers.map(async (provider): Promise<ScanDetail | null> => {
-          try {
-            const answer = await provider.ask(prompt.text);
-            const { extraction } = await judgeAnswer(answer.text);
-            const target = extraction.brands.find((b) => sameBrand(b.name, brandName));
-            return {
-              prompt: prompt.text,
-              model: provider.key,
-              cited: Boolean(target),
-              position: target?.position ?? null,
-              topBrands: extraction.brands.slice(0, 5).map((b) => b.name),
-            };
-          } catch {
-            return null; // un appel raté ne doit pas invalider le scan entier
-          }
-        })
-      );
-      return (await Promise.all(jobs)).filter((d): d is ScanDetail => d !== null);
-    });
+    const jobs = prompts.flatMap((prompt) =>
+      providers.map((provider) => ({ promptText: prompt.text, model: provider.key }))
+    );
+    const BATCH = 5;
+    const details: ScanDetail[] = [];
+    // Un modèle qui n'a produit que des échecs (clé sans crédit, API en panne…)
+    // est évincé des lots suivants pour ne pas ralentir tout le scan.
+    const stats = new Map<string, { oks: number; fails: number }>();
+    const deadModels = new Set<string>();
+
+    for (let start = 0; start < jobs.length; start += BATCH) {
+      const batch = jobs.slice(start, start + BATCH).filter((j) => !deadModels.has(j.model));
+      if (batch.length === 0) continue;
+
+      const results = await step.run(`run-and-judge-${start / BATCH}`, async () => {
+        return Promise.all(
+          batch.map(async (job): Promise<{ model: string; detail: ScanDetail | null }> => {
+            const provider = activeProviders().find((p) => p.key === job.model);
+            if (!provider) return { model: job.model, detail: null };
+            try {
+              const answer = await askWithTimeout(provider, job.promptText);
+              const { extraction } = await judgeAnswer(answer.text);
+              const target = extraction.brands.find((b) => sameBrand(b.name, brandName));
+              return {
+                model: job.model,
+                detail: {
+                  prompt: job.promptText,
+                  model: job.model,
+                  cited: Boolean(target),
+                  position: target?.position ?? null,
+                  topBrands: extraction.brands.slice(0, 5).map((b) => b.name),
+                },
+              };
+            } catch {
+              return { model: job.model, detail: null }; // un appel raté ne doit pas invalider le scan
+            }
+          })
+        );
+      });
+
+      for (const r of results) {
+        const s = stats.get(r.model) ?? { oks: 0, fails: 0 };
+        if (r.detail) {
+          s.oks += 1;
+          details.push(r.detail);
+        } else {
+          s.fails += 1;
+        }
+        stats.set(r.model, s);
+        if (s.oks === 0 && s.fails >= 2) deadModels.add(r.model);
+      }
+    }
 
     const teaser = await step.run("compute-and-save", async () => {
       const runCount = details.length;
