@@ -19,6 +19,8 @@ export interface PlanLimits {
   modelCadence: Partial<Record<ModelKey, Cadence>>;
   /** Description marketing de la cadence (landing, billing) */
   cadenceLabel: string;
+  /** Arguments marketing affichés sur la landing (suffixer "(bientôt)" si pas encore livré) */
+  features: string[];
 }
 
 export const PLAN_LIMITS: Record<Plan, PlanLimits> = {
@@ -30,6 +32,7 @@ export const PLAN_LIMITS: Record<Plan, PlanLimits> = {
     competitors: 2,
     modelCadence: { chatgpt: "weekly" },
     cadenceLabel: "Hebdo · ChatGPT",
+    features: ["Score de visibilité IA", "Dashboard complet", "Sans carte bancaire"],
   },
   starter: {
     label: "Starter",
@@ -39,6 +42,7 @@ export const PLAN_LIMITS: Record<Plan, PlanLimits> = {
     competitors: 5,
     modelCadence: { chatgpt: "weekly", gemini: "weekly", claude: "weekly", perplexity: "weekly" },
     cadenceLabel: "Hebdo · 4 modèles",
+    features: ["Position & sentiment par modèle", "Sources citées par les IA", "Digest email hebdo"],
   },
   growth: {
     label: "Growth",
@@ -48,15 +52,27 @@ export const PLAN_LIMITS: Record<Plan, PlanLimits> = {
     competitors: 5,
     modelCadence: { chatgpt: "daily", gemini: "daily", claude: "weekly", perplexity: "weekly" },
     cadenceLabel: "ChatGPT + Gemini quotidien · Claude + Perplexity hebdo",
+    features: [
+      "Historique longitudinal illimité",
+      "Alertes de chute de score (bientôt)",
+      "Sources intelligence : où te faire citer (bientôt)",
+    ],
   },
   agency: {
     label: "Agency",
-    priceMonthlyEur: 699,
+    priceMonthlyEur: 799,
     brands: 10,
     promptsPerBrand: 50,
-    competitors: 5,
+    competitors: 10,
     modelCadence: { chatgpt: "daily", gemini: "daily", claude: "weekly", perplexity: "weekly" },
     cadenceLabel: "ChatGPT + Gemini quotidien · Claude + Perplexity hebdo",
+    features: [
+      "Rapports marque blanche à partager (bientôt)",
+      "Accès API (bientôt)",
+      "Prompts sur-mesure de ta verticale",
+      "Onboarding dédié + support prioritaire",
+      "Vue portefeuille multi-marques (bientôt)",
+    ],
   },
 };
 
