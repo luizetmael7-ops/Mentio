@@ -53,7 +53,7 @@ export default async function BillingPage() {
               </CardHeader>
               <CardContent className="grid gap-2 text-sm text-muted-foreground">
                 <span>{limits.brands} marque{limits.brands > 1 ? "s" : ""} · {limits.promptsPerBrand} prompts</span>
-                <span>{limits.models} modèles · {limits.cadence === "daily" ? "quotidien" : "hebdo"}</span>
+                <span>{Object.keys(limits.modelCadence).length} modèle{Object.keys(limits.modelCadence).length > 1 ? "s" : ""} · {limits.cadenceLabel}</span>
                 {plan !== currentPlan && (
                   <form action={startCheckout}>
                     <input type="hidden" name="plan" value={plan} />

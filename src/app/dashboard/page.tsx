@@ -97,8 +97,8 @@ export default async function DashboardPage() {
         <div>
           <h1 className="text-2xl font-semibold">{brand.name}</h1>
           <p className="text-sm text-muted-foreground">
-            Plan <Badge variant="secondary">{limits.label}</Badge> · {limits.promptsPerBrand} prompts ·{" "}
-            {limits.cadence === "daily" ? "quotidien" : "hebdomadaire"}
+            Plan <Badge variant="secondary">{limits.label}</Badge> · {limits.promptsPerBrand} prompts/marque ·{" "}
+            {limits.cadenceLabel}
           </p>
         </div>
         <div className="flex gap-2">

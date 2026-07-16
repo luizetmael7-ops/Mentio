@@ -28,7 +28,7 @@ async function main() {
 
     const product = await stripe.products.create({
       name: `Mentio ${limits.label}`,
-      description: `${limits.brands} marque(s) · ${limits.promptsPerBrand} prompts · ${limits.models} modèles · ${limits.cadence === "daily" ? "quotidien" : "hebdo"}`,
+      description: `${limits.brands} marque(s) · ${limits.promptsPerBrand} prompts/marque · ${limits.cadenceLabel}`,
       metadata: { plan },
     });
 

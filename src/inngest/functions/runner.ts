@@ -6,7 +6,7 @@
 import { inngest } from "../client";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { activeProviders, getProvider, askWithTimeout } from "@/lib/llm";
-import { PLAN_LIMITS, isRunDue, type Plan } from "@/lib/plans";
+import { PLAN_LIMITS, isRunDue, modelsDue, planModels, type Plan } from "@/lib/plans";
 
 export const dailyRunner = inngest.createFunction(
   { id: "daily-runner", triggers: [{ cron: "TZ=Europe/Paris 0 6 * * *" }] },
@@ -66,8 +66,11 @@ export const brandRunner = inngest.createFunction(
         .filter((p) => p.is_active);
     });
 
-    // Modèles du plan : les N premiers providers configurés (ordre produit)
-    const models = activeProviders().slice(0, limits.models).map((p) => p.key);
+    // Modèles à jouer : cadence par modèle du plan (run manuel = tous les modèles du plan),
+    // restreints aux providers réellement configurés
+    const wanted = event.data.force ? planModels(plan) : modelsDue(plan, new Date());
+    const configured = new Set(activeProviders().map((p) => p.key));
+    const models = wanted.filter((m) => configured.has(m));
 
     const events = prompts.flatMap((prompt) =>
       models.map((model) => ({

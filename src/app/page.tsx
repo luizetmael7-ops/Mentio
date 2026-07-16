@@ -97,9 +97,9 @@ export default async function LandingPage({
               </CardHeader>
               <CardContent className="grid gap-2 text-sm text-muted-foreground">
                 <span>{plan.brands} marque{plan.brands > 1 ? "s" : ""}</span>
-                <span>{plan.promptsPerBrand} prompts suivis</span>
-                <span>{plan.models} modèle{plan.models > 1 ? "s" : ""} d&apos;IA</span>
-                <span>Analyse {plan.cadence === "daily" ? "quotidienne" : "hebdomadaire"}</span>
+                <span>{plan.promptsPerBrand} prompts suivis{plan.brands > 1 ? " par marque" : ""}</span>
+                <span>{Object.keys(plan.modelCadence).length} modèle{Object.keys(plan.modelCadence).length > 1 ? "s" : ""} d&apos;IA</span>
+                <span>{plan.cadenceLabel}</span>
                 <span>{plan.competitors} concurrents</span>
                 <Button asChild variant={key === "growth" ? "default" : "outline"} className="mt-2">
                   <Link href="/signup">Commencer</Link>

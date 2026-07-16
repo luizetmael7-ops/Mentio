@@ -16,6 +16,7 @@ export async function triggerBrandRun(brandId: string) {
   const { data: brand, error } = await supabase.from("brands").select("id").eq("id", brandId).single();
   if (error || !brand) throw new Error("Marque introuvable");
 
-  await inngest.send({ name: "mentio/brand.run", data: { brandId } });
+  // force: run manuel → joue tous les modèles du plan, indépendamment de la cadence du jour
+  await inngest.send({ name: "mentio/brand.run", data: { brandId, force: true } });
   revalidatePath("/dashboard");
 }

@@ -38,7 +38,7 @@ export default async function OnboardingPage() {
               <Input id="domain" name="domain" placeholder="typology.com" />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="competitors">Concurrents (un par ligne, 3 max en Free)</Label>
+              <Label htmlFor="competitors">Concurrents (un par ligne, selon ton plan)</Label>
               <textarea
                 id="competitors"
                 name="competitors"
