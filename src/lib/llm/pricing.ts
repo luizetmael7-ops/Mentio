@@ -5,6 +5,7 @@ const PER_MILLION: Record<string, { input: number; output: number }> = {
   "gpt-5.4-mini": { input: 0.25, output: 2.0 },
   "gpt-5-mini": { input: 0.25, output: 2.0 },
   "gemini-2.5-flash": { input: 0.3, output: 2.5 },
+  "gemini-flash-latest": { input: 0.3, output: 2.5 },
   "claude-haiku-4-5": { input: 1.0, output: 5.0 },
   sonar: { input: 1.0, output: 1.0 },
 };

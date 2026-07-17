@@ -1,0 +1,3354 @@
+{
+ "date": "2026-07-17",
+ "runs": 100,
+ "models": [
+  "chatgpt",
+  "gemini"
+ ],
+ "totalCostUsd": 2.6,
+ "topBrands": [
+  {
+   "name": "La Roche-Posay",
+   "total": 19,
+   "top1": 9,
+   "avgPosition": 2.3,
+   "byModel": {
+    "chatgpt": 5,
+    "gemini": 14
+   }
+  },
+  {
+   "name": "Typology",
+   "total": 13,
+   "top1": 1,
+   "avgPosition": 3.8,
+   "byModel": {
+    "gemini": 11,
+    "chatgpt": 2
+   }
+  },
+  {
+   "name": "Avène",
+   "total": 12,
+   "top1": 1,
+   "avgPosition": 3,
+   "byModel": {
+    "chatgpt": 4,
+    "gemini": 8
+   }
+  },
+  {
+   "name": "Nutri&Co",
+   "total": 11,
+   "top1": 6,
+   "avgPosition": 2.2,
+   "byModel": {
+    "gemini": 10,
+    "chatgpt": 1
+   }
+  },
+  {
+   "name": "Novoma",
+   "total": 10,
+   "top1": 1,
+   "avgPosition": 3,
+   "byModel": {
+    "gemini": 9,
+    "chatgpt": 1
+   }
+  },
+  {
+   "name": "Bioderma",
+   "total": 9,
+   "top1": 0,
+   "avgPosition": 3.3,
+   "byModel": {
+    "chatgpt": 3,
+    "gemini": 6
+   }
+  },
+  {
+   "name": "CeraVe",
+   "total": 9,
+   "top1": 3,
+   "avgPosition": 2.4,
+   "byModel": {
+    "gemini": 5,
+    "chatgpt": 4
+   }
+  },
+  {
+   "name": "The Ordinary",
+   "total": 8,
+   "top1": 2,
+   "avgPosition": 2.6,
+   "byModel": {
+    "chatgpt": 3,
+    "gemini": 5
+   }
+  },
+  {
+   "name": "Dynveo",
+   "total": 7,
+   "top1": 2,
+   "avgPosition": 3.4,
+   "byModel": {
+    "gemini": 7
+   }
+  },
+  {
+   "name": "Caudalie",
+   "total": 6,
+   "top1": 2,
+   "avgPosition": 3.2,
+   "byModel": {
+    "chatgpt": 2,
+    "gemini": 4
+   }
+  },
+  {
+   "name": "Nutripure",
+   "total": 6,
+   "top1": 1,
+   "avgPosition": 3.2,
+   "byModel": {
+    "gemini": 6
+   }
+  },
+  {
+   "name": "Vichy",
+   "total": 5,
+   "top1": 1,
+   "avgPosition": 4.6,
+   "byModel": {
+    "chatgpt": 2,
+    "gemini": 3
+   }
+  },
+  {
+   "name": "Aroma-Zone",
+   "total": 5,
+   "top1": 1,
+   "avgPosition": 3.8,
+   "byModel": {
+    "gemini": 5
+   }
+  },
+  {
+   "name": "SVR",
+   "total": 5,
+   "top1": 0,
+   "avgPosition": 4.4,
+   "byModel": {
+    "gemini": 4,
+    "chatgpt": 1
+   }
+  },
+  {
+   "name": "Granions",
+   "total": 4,
+   "top1": 0,
+   "avgPosition": 3.8,
+   "byModel": {
+    "gemini": 3,
+    "chatgpt": 1
+   }
+  },
+  {
+   "name": "Nuxe",
+   "total": 3,
+   "top1": 0,
+   "avgPosition": 3.7,
+   "byModel": {
+    "gemini": 2,
+    "chatgpt": 1
+   }
+  },
+  {
+   "name": "Patyka",
+   "total": 3,
+   "top1": 0,
+   "avgPosition": 8,
+   "byModel": {
+    "gemini": 3
+   }
+  },
+  {
+   "name": "Avril",
+   "total": 3,
+   "top1": 1,
+   "avgPosition": 4.7,
+   "byModel": {
+    "gemini": 3
+   }
+  },
+  {
+   "name": "Melvita",
+   "total": 3,
+   "top1": 0,
+   "avgPosition": 8,
+   "byModel": {
+    "gemini": 3
+   }
+  },
+  {
+   "name": "Pai Skincare",
+   "total": 3,
+   "top1": 0,
+   "avgPosition": 7,
+   "byModel": {
+    "gemini": 2,
+    "chatgpt": 1
+   }
+  },
+  {
+   "name": "Lashilé Beauty",
+   "total": 3,
+   "top1": 0,
+   "avgPosition": 3,
+   "byModel": {
+    "gemini": 3
+   }
+  },
+  {
+   "name": "Luxéol",
+   "total": 3,
+   "top1": 2,
+   "avgPosition": 2.3,
+   "byModel": {
+    "gemini": 2,
+    "chatgpt": 1
+   }
+  },
+  {
+   "name": "Nutergia",
+   "total": 3,
+   "top1": 1,
+   "avgPosition": 3.3,
+   "byModel": {
+    "chatgpt": 1,
+    "gemini": 2
+   }
+  },
+  {
+   "name": "Arkopharma",
+   "total": 3,
+   "top1": 0,
+   "avgPosition": 5.3,
+   "byModel": {
+    "chatgpt": 1,
+    "gemini": 2
+   }
+  },
+  {
+   "name": "NHCO",
+   "total": 3,
+   "top1": 0,
+   "avgPosition": 4.7,
+   "byModel": {
+    "chatgpt": 1,
+    "gemini": 2
+   }
+  },
+  {
+   "name": "Aime",
+   "total": 3,
+   "top1": 2,
+   "avgPosition": 2.3,
+   "byModel": {
+    "gemini": 2,
+    "chatgpt": 1
+   }
+  },
+  {
+   "name": "Klorane",
+   "total": 3,
+   "top1": 0,
+   "avgPosition": 6.3,
+   "byModel": {
+    "gemini": 3
+   }
+  },
+  {
+   "name": "Eucerin",
+   "total": 3,
+   "top1": 1,
+   "avgPosition": 4,
+   "byModel": {
+    "chatgpt": 2,
+    "gemini": 1
+   }
+  },
+  {
+   "name": "La Rosée",
+   "total": 2,
+   "top1": 1,
+   "avgPosition": 2.5,
+   "byModel": {
+    "gemini": 2
+   }
+  },
+  {
+   "name": "Mádara",
+   "total": 2,
+   "top1": 0,
+   "avgPosition": 3,
+   "byModel": {
+    "gemini": 2
+   }
+  }
+ ],
+ "topSources": [
+  {
+   "domain": "darwin-nutrition.fr",
+   "count": 12
+  },
+  {
+   "domain": "lesangesontlapeaudouce.com",
+   "count": 10
+  },
+  {
+   "domain": "edp-nutrition.fr",
+   "count": 9
+  },
+  {
+   "domain": "youtube.com",
+   "count": 8
+  },
+  {
+   "domain": "staging.aad.org",
+   "count": 8
+  },
+  {
+   "domain": "aroma-zone.com",
+   "count": 7
+  },
+  {
+   "domain": "mayoclinic.org",
+   "count": 6
+  },
+  {
+   "domain": "pmc.ncbi.nlm.nih.gov",
+   "count": 6
+  },
+  {
+   "domain": "easypara.fr",
+   "count": 6
+  },
+  {
+   "domain": "aad.org",
+   "count": 5
+  },
+  {
+   "domain": "novoma.com",
+   "count": 5
+  },
+  {
+   "domain": "granions.fr",
+   "count": 5
+  },
+  {
+   "domain": "docmorris.fr",
+   "count": 5
+  },
+  {
+   "domain": "pubmed.ncbi.nlm.nih.gov",
+   "count": 4
+  },
+  {
+   "domain": "testsdeproduits.fr",
+   "count": 3
+  },
+  {
+   "domain": "yuka.io",
+   "count": 3
+  },
+  {
+   "domain": "nuxe.com",
+   "count": 3
+  },
+  {
+   "domain": "avril-beaute.fr",
+   "count": 3
+  },
+  {
+   "domain": "raquels.fr",
+   "count": 3
+  },
+  {
+   "domain": "ods.od.nih.gov",
+   "count": 3
+  }
+ ],
+ "raw": [
+  {
+   "prompt": "Quelle est la meilleure crème solaire visage clean ?",
+   "model": "chatgpt",
+   "brands": [],
+   "sources": [
+    "aad.org"
+   ],
+   "costUsd": 0.013477
+  },
+  {
+   "prompt": "Quelle est la meilleure crème solaire visage clean ?",
+   "model": "gemini",
+   "brands": [
+    {
+     "name": "La Rosée",
+     "position": 1,
+     "sentiment": "positive"
+    },
+    {
+     "name": "MIDI12",
+     "position": 2,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Odacité",
+     "position": 3,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Mádara",
+     "position": 4,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Laboratoires de Biarritz",
+     "position": 5,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Comme Avant",
+     "position": 6,
+     "sentiment": "positive"
+    }
+   ],
+   "sources": [
+    "melodylannoy.fr",
+    "lagreensession.com",
+    "midi12.fr",
+    "testsdeproduits.fr",
+    "thegoodlist.fr",
+    "elle.be",
+    "moncornerb.com",
+    "ohmycream.com",
+    "mademoiselle-biloba.fr",
+    "culturev.fr",
+    "globe-trotting.com",
+    "biogirl.fr",
+    "larosee-cosmetiques.com",
+    "yuka.io"
+   ],
+   "costUsd": 0.039044999999999996
+  },
+  {
+   "prompt": "Quelles sont les meilleures marques françaises de soins de la peau ?",
+   "model": "chatgpt",
+   "brands": [
+    {
+     "name": "La Roche-Posay",
+     "position": 1,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Vichy",
+     "position": 2,
+     "sentiment": "positive"
+    },
+    {
+     "name": "NUXE",
+     "position": 3,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Bioderma",
+     "position": 4,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Avène",
+     "position": 5,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Caudalie",
+     "position": 6,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Lierac",
+     "position": 7,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Embryolisse",
+     "position": 8,
+     "sentiment": "positive"
+    }
+   ],
+   "sources": [
+    "laroche-posay.fr",
+    "vichy.fr",
+    "nuxe.com"
+   ],
+   "costUsd": 0.01355
+  },
+  {
+   "prompt": "Quelles sont les meilleures marques françaises de soins de la peau ?",
+   "model": "gemini",
+   "brands": [
+    {
+     "name": "La Roche-Posay",
+     "position": 1,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Avène",
+     "position": 2,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Bioderma",
+     "position": 3,
+     "sentiment": "positive"
+    },
+    {
+     "name": "A-Derma",
+     "position": 4,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Typology",
+     "position": 5,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Caudalie",
+     "position": 6,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Nuxe",
+     "position": 7,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Patyka",
+     "position": 8,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Avril",
+     "position": 9,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Melvita",
+     "position": 10,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Oolution",
+     "position": 11,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Clarins",
+     "position": 12,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Guerlain",
+     "position": 13,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Biologique Recherche",
+     "position": 14,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Sothys",
+     "position": 15,
+     "sentiment": "positive"
+    }
+   ],
+   "sources": [
+    "zapptax.com",
+    "airselli.com",
+    "escentual.com",
+    "obonparis.com",
+    "green-spa.com",
+    "onparlebeaute.fr",
+    "everydayparisian.com",
+    "avril-beaute.fr",
+    "belleaunaturel.fr"
+   ],
+   "costUsd": 0.040011
+  },
+  {
+   "prompt": "Quel est le meilleur sérum à la vitamine C ?",
+   "model": "chatgpt",
+   "brands": [],
+   "sources": [
+    "mayoclinic.org",
+    "pmc.ncbi.nlm.nih.gov",
+    "dailymed.nlm.nih.gov"
+   ],
+   "costUsd": 0.014045
+  },
+  {
+   "prompt": "Quel est le meilleur sérum à la vitamine C ?",
+   "model": "gemini",
+   "brands": [
+    {
+     "name": "SkinCeuticals",
+     "position": 1,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Paula’s Choice",
+     "position": 2,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Geek & Gorgeous",
+     "position": 3,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Typology",
+     "position": 4,
+     "sentiment": "positive"
+    },
+    {
+     "name": "La Roche-Posay",
+     "position": 5,
+     "sentiment": "positive"
+    }
+   ],
+   "sources": [
+    "holiae.com",
+    "joybuy.nl",
+    "drdelarive.ch",
+    "raquels.fr",
+    "beautydecoded.com",
+    "skinceuticals.fr",
+    "dermstore.com",
+    "cosmopolitan.com",
+    "goodhousekeeping.com",
+    "harpersbazaar.com"
+   ],
+   "costUsd": 0.03918
+  },
+  {
+   "prompt": "Quelle est la meilleure crème anti-âge rapport qualité-prix ?",
+   "model": "chatgpt",
+   "brands": [],
+   "sources": [
+    "mayoclinic.org",
+    "mayoclinic.org",
+    "mcpress.mayoclinic.org"
+   ],
+   "costUsd": 0.013739000000000001
+  },
+  {
+   "prompt": "Quelle est la meilleure crème anti-âge rapport qualité-prix ?",
+   "model": "gemini",
+   "brands": [
+    {
+     "name": "Cien",
+     "position": 1,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Lidl",
+     "position": 2,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Olay",
+     "position": 3,
+     "sentiment": "positive"
+    },
+    {
+     "name": "La Roche-Posay",
+     "position": 4,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Typology",
+     "position": 5,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Nocibé",
+     "position": 6,
+     "sentiment": "positive"
+    }
+   ],
+   "sources": [
+    "senioractu.com",
+    "ma-grande-taille.com",
+    "croq-kilos.com",
+    "douceuretbienfait.com",
+    "aitours.fr",
+    "lilimargo.com",
+    "les-anti-age.com",
+    "lesangesontlapeaudouce.com",
+    "testsdeproduits.fr"
+   ],
+   "costUsd": 0.038509
+  },
+  {
+   "prompt": "Quelles sont les meilleures marques de cosmétiques bio ?",
+   "model": "chatgpt",
+   "brands": [
+    {
+     "name": "KORA Organics",
+     "position": 1,
+     "sentiment": "neutral"
+    },
+    {
+     "name": "Luna Organic Cosmetics",
+     "position": 2,
+     "sentiment": "neutral"
+    },
+    {
+     "name": "Viking Beauty Secrets",
+     "position": 3,
+     "sentiment": "neutral"
+    },
+    {
+     "name": "ILIA Beauty",
+     "position": 4,
+     "sentiment": "neutral"
+    },
+    {
+     "name": "Lawless",
+     "position": 5,
+     "sentiment": "neutral"
+    },
+    {
+     "name": "Honey Girl Organics",
+     "position": 6,
+     "sentiment": "neutral"
+    },
+    {
+     "name": "Back to Earth Skin",
+     "position": 7,
+     "sentiment": "neutral"
+    }
+   ],
+   "sources": [
+    "cosmos-standard.org",
+    "cosmos-standard.org"
+   ],
+   "costUsd": 0.013508
+  },
+  {
+   "prompt": "Quelles sont les meilleures marques de cosmétiques bio ?",
+   "model": "gemini",
+   "brands": [
+    {
+     "name": "Avril",
+     "position": 1,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Lavera",
+     "position": 2,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Logona",
+     "position": 3,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Weleda",
+     "position": 4,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Dr. Hauschka",
+     "position": 5,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Melvita",
+     "position": 6,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Oden",
+     "position": 7,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Coquelicot & Co",
+     "position": 8,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Lamazuna",
+     "position": 9,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Endro",
+     "position": 10,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Pai Skincare",
+     "position": 11,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Patyka",
+     "position": 12,
+     "sentiment": "positive"
+    },
+    {
+     "name": "LE PURE",
+     "position": 13,
+     "sentiment": "positive"
+    }
+   ],
+   "sources": [
+    "raquels.fr",
+    "avril-beaute.fr",
+    "selection-bio.fr",
+    "basic-cosmetics.bio",
+    "lekaba.fr",
+    "belleaunaturel.fr",
+    "lepure.com",
+    "beautyjulia.com",
+    "bioferta.com",
+    "best-of-bio.fr"
+   ],
+   "costUsd": 0.039175
+  },
+  {
+   "prompt": "Quel est le meilleur complément alimentaire pour la pousse des cheveux ?",
+   "model": "chatgpt",
+   "brands": [
+    {
+     "name": "Biotine",
+     "position": 1,
+     "sentiment": "neutral"
+    }
+   ],
+   "sources": [
+    "ods.od.nih.gov",
+    "mayoclinic.org",
+    "mayoclinic.org"
+   ],
+   "costUsd": 0.013625
+  },
+  {
+   "prompt": "Quel est le meilleur complément alimentaire pour la pousse des cheveux ?",
+   "model": "gemini",
+   "brands": [
+    {
+     "name": "Nutri&Co",
+     "position": 1,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Novoma",
+     "position": 2,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Ducray",
+     "position": 3,
+     "sentiment": "neutral"
+    },
+    {
+     "name": "Forcapil",
+     "position": 4,
+     "sentiment": "positive"
+    }
+   ],
+   "sources": [
+    "lesangesontlapeaudouce.com",
+    "biocyte.com",
+    "novoma.com",
+    "pharmaciedusimplon.fr",
+    "dailylab.com",
+    "myriamkparis.com",
+    "edp-nutrition.fr",
+    "darwin-nutrition.fr",
+    "aroma-zone.com",
+    "valebio.com"
+   ],
+   "costUsd": 0.039012
+  },
+  {
+   "prompt": "Quelles sont les meilleures gummies pour les cheveux ?",
+   "model": "chatgpt",
+   "brands": [
+    {
+     "name": "ConsumerLab",
+     "position": 2,
+     "sentiment": "neutral"
+    }
+   ],
+   "sources": [
+    "ods.od.nih.gov",
+    "consumerlab.com",
+    "ods.od.nih.gov"
+   ],
+   "costUsd": 0.013791
+  },
+  {
+   "prompt": "Quelles sont les meilleures gummies pour les cheveux ?",
+   "model": "gemini",
+   "brands": [
+    {
+     "name": "Mium Lab",
+     "position": 1,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Lashilé Beauty",
+     "position": 2,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Hairlust",
+     "position": 3,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Madame la Présidente",
+     "position": 4,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Luxéol",
+     "position": 5,
+     "sentiment": "positive"
+    }
+   ],
+   "sources": [
+    "easypara.fr",
+    "touteslesbox.fr",
+    "mykaracare.com",
+    "delicure.co",
+    "cbdbicyclette.fr",
+    "miumlab.com",
+    "madamelapresidente.fr",
+    "atida.fr",
+    "actuelbeaute.fr",
+    "le-meilleur-complement.fr"
+   ],
+   "costUsd": 0.039189
+  },
+  {
+   "prompt": "Quel est le meilleur collagène marin ?",
+   "model": "chatgpt",
+   "brands": [
+    {
+     "name": "NSF",
+     "position": 1,
+     "sentiment": "neutral"
+    }
+   ],
+   "sources": [
+    "pubmed.ncbi.nlm.nih.gov",
+    "pubmed.ncbi.nlm.nih.gov",
+    "pmc.ncbi.nlm.nih.gov",
+    "nsf.org",
+    "nsf.org",
+    "pubmed.ncbi.nlm.nih.gov"
+   ],
+   "costUsd": 0.01407
+  },
+  {
+   "prompt": "Quel est le meilleur collagène marin ?",
+   "model": "gemini",
+   "brands": [
+    {
+     "name": "Nutri&Co",
+     "position": 1,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Nutripure",
+     "position": 2,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Granions",
+     "position": 3,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Humble+",
+     "position": 4,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Novoma",
+     "position": 5,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Colpropur",
+     "position": 6,
+     "sentiment": "positive"
+    }
+   ],
+   "sources": [
+    "les-calories.com",
+    "youtube.com",
+    "edp-nutrition.fr",
+    "lesangesontlapeaudouce.com",
+    "naturellement-bio.com",
+    "fitnessboutique.fr",
+    "darwin-nutrition.fr",
+    "novoma.com"
+   ],
+   "costUsd": 0.039484
+  },
+  {
+   "prompt": "Quelle est la meilleure marque française de compléments alimentaires ?",
+   "model": "chatgpt",
+   "brands": [
+    {
+     "name": "Nutergia",
+     "position": 1,
+     "sentiment": "neutral"
+    },
+    {
+     "name": "Arkopharma",
+     "position": 2,
+     "sentiment": "neutral"
+    },
+    {
+     "name": "Pileje",
+     "position": 3,
+     "sentiment": "neutral"
+    },
+    {
+     "name": "Densmore",
+     "position": 4,
+     "sentiment": "neutral"
+    },
+    {
+     "name": "Granions",
+     "position": 5,
+     "sentiment": "neutral"
+    },
+    {
+     "name": "NHCO",
+     "position": 6,
+     "sentiment": "neutral"
+    }
+   ],
+   "sources": [
+    "quechoisir.org"
+   ],
+   "costUsd": 0.013552
+  },
+  {
+   "prompt": "Quelle est la meilleure marque française de compléments alimentaires ?",
+   "model": "gemini",
+   "brands": [
+    {
+     "name": "Dynveo",
+     "position": 1,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Nutri&Co",
+     "position": 2,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Nutripure",
+     "position": 3,
+     "sentiment": "positive"
+    },
+    {
+     "name": "PiLeJe",
+     "position": 4,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Nutergia",
+     "position": 5,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Arkopharma",
+     "position": 6,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Novoma",
+     "position": 7,
+     "sentiment": "positive"
+    }
+   ],
+   "sources": [
+    "eifs.fr",
+    "lamiastoria.fr",
+    "edp-nutrition.fr",
+    "pharmaciebarniol.fr",
+    "parapromos.com"
+   ],
+   "costUsd": 0.038883
+  },
+  {
+   "prompt": "Quel est le meilleur magnésium contre la fatigue ?",
+   "model": "chatgpt",
+   "brands": [],
+   "sources": [],
+   "costUsd": 0.01208
+  },
+  {
+   "prompt": "Quel est le meilleur magnésium contre la fatigue ?",
+   "model": "gemini",
+   "brands": [],
+   "sources": [
+    "dynveo.fr",
+    "sova-care.com",
+    "nutripure.fr",
+    "terravita.fr",
+    "granions.fr",
+    "nutergia.com",
+    "dailylab.com",
+    "copmed.fr",
+    "laboratoire-inolab.com"
+   ],
+   "costUsd": 0.038634
+  },
+  {
+   "prompt": "Quelles sont les meilleures vitamines pour lutter contre la fatigue ?",
+   "model": "chatgpt",
+   "brands": [],
+   "sources": [],
+   "costUsd": 0.011933000000000001
+  },
+  {
+   "prompt": "Quelles sont les meilleures vitamines pour lutter contre la fatigue ?",
+   "model": "gemini",
+   "brands": [],
+   "sources": [
+    "biogena-one.com",
+    "nutrimuscle.com",
+    "youtube.com",
+    "ndlprohealth.com",
+    "aroma-zone.com",
+    "nat-form.com",
+    "naturalia.fr",
+    "boots.com",
+    "harvard.edu",
+    "metagenics.co.uk",
+    "pharmaciebayen.fr"
+   ],
+   "costUsd": 0.038708
+  },
+  {
+   "prompt": "Quel est le meilleur probiotique pour la digestion ?",
+   "model": "chatgpt",
+   "brands": [
+    {
+     "name": "Bifidobacterium longum 35624",
+     "position": 1,
+     "sentiment": "neutral"
+    },
+    {
+     "name": "Lactobacillus rhamnosus GG",
+     "position": 2,
+     "sentiment": "neutral"
+    },
+    {
+     "name": "Lactiplantibacillus plantarum 299v",
+     "position": 3,
+     "sentiment": "neutral"
+    },
+    {
+     "name": "Saccharomyces cerevisiae CNCM I-3856",
+     "position": 4,
+     "sentiment": "neutral"
+    },
+    {
+     "name": "Bacillus coagulans Unique IS2",
+     "position": 5,
+     "sentiment": "neutral"
+    },
+    {
+     "name": "Saccharomyces boulardii",
+     "position": 6,
+     "sentiment": "neutral"
+    }
+   ],
+   "sources": [
+    "pmc.ncbi.nlm.nih.gov",
+    "pmc.ncbi.nlm.nih.gov",
+    "pmc.ncbi.nlm.nih.gov",
+    "pmc.ncbi.nlm.nih.gov"
+   ],
+   "costUsd": 0.014132
+  },
+  {
+   "prompt": "Quel est le meilleur probiotique pour la digestion ?",
+   "model": "gemini",
+   "brands": [
+    {
+     "name": "Symbiosys",
+     "position": 1,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Alflorex",
+     "position": 2,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Lactibiane",
+     "position": 3,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Nutergia",
+     "position": 4,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Nutri&Co",
+     "position": 5,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Dynveo",
+     "position": 6,
+     "sentiment": "positive"
+    }
+   ],
+   "sources": [
+    "cdhf.ca",
+    "granions.fr",
+    "atida.fr",
+    "nih.gov",
+    "metagenics.co.uk",
+    "massivebio.com",
+    "webmd.com",
+    "supernutrition.fr",
+    "forbes.com",
+    "dynveo.fr",
+    "revmed.ch",
+    "darwin-nutrition.fr",
+    "nutripure.fr",
+    "anses.fr"
+   ],
+   "costUsd": 0.039563
+  },
+  {
+   "prompt": "Quelle est la meilleure huile visage anti-âge ?",
+   "model": "chatgpt",
+   "brands": [],
+   "sources": [],
+   "costUsd": 0.012313
+  },
+  {
+   "prompt": "Quelle est la meilleure huile visage anti-âge ?",
+   "model": "gemini",
+   "brands": [
+    {
+     "name": "Figue de Barbarie",
+     "position": 1,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Rose Musquée",
+     "position": 2,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Argan",
+     "position": 3,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Onagre",
+     "position": 4,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Bourrache",
+     "position": 5,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Jojoba",
+     "position": 6,
+     "sentiment": "neutral"
+    }
+   ],
+   "sources": [
+    "herbes-et-traditions.fr",
+    "comptoirdeshuiles.com",
+    "lilixir.com",
+    "les-anti-age.com",
+    "onatera.com",
+    "humasana.com",
+    "comme-avant.bio",
+    "laboratoire-lia.com"
+   ],
+   "costUsd": 0.038821
+  },
+  {
+   "prompt": "Quel est le meilleur soin anti-imperfections ?",
+   "model": "chatgpt",
+   "brands": [],
+   "sources": [
+    "staging.aad.org",
+    "staging.aad.org",
+    "staging.aad.org"
+   ],
+   "costUsd": 0.013576999999999999
+  },
+  {
+   "prompt": "Quel est le meilleur soin anti-imperfections ?",
+   "model": "gemini",
+   "brands": [
+    {
+     "name": "La Roche-Posay",
+     "position": 1,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Avène",
+     "position": 2,
+     "sentiment": "positive"
+    },
+    {
+     "name": "CeraVe",
+     "position": 3,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Bioderma",
+     "position": 4,
+     "sentiment": "positive"
+    }
+   ],
+   "sources": [
+    "jevaismieuxmerci.com",
+    "lilimargo.com",
+    "boticinal.com",
+    "docmorris.fr",
+    "bonsplansmania.fr",
+    "chatelaine.com",
+    "pharmacie-cap3000.com",
+    "mes-cosmetiques-bio.com"
+   ],
+   "costUsd": 0.038733
+  },
+  {
+   "prompt": "Quelles sont les meilleures marques de skincare clean ?",
+   "model": "chatgpt",
+   "brands": [
+    {
+     "name": "Sephora",
+     "position": 1,
+     "sentiment": "neutral"
+    },
+    {
+     "name": "Drunk Elephant",
+     "position": 2,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Farmacy",
+     "position": 3,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Fresh",
+     "position": 4,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Pai Skincare",
+     "position": 5,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Nécessaire",
+     "position": 6,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Shani Darden Skin Care",
+     "position": 7,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Tata Harper",
+     "position": 8,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Biossance",
+     "position": 9,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Skinfix",
+     "position": 10,
+     "sentiment": "positive"
+    },
+    {
+     "name": "First Aid Beauty",
+     "position": 11,
+     "sentiment": "positive"
+    }
+   ],
+   "sources": [
+    "sephora.com",
+    "sephora.co.uk"
+   ],
+   "costUsd": 0.014368
+  },
+  {
+   "prompt": "Quelles sont les meilleures marques de skincare clean ?",
+   "model": "gemini",
+   "brands": [
+    {
+     "name": "Novexpert",
+     "position": 1,
+     "sentiment": "positive"
+    },
+    {
+     "name": "REN Clean Skincare",
+     "position": 2,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Caudalie",
+     "position": 3,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Patyka",
+     "position": 4,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Pai Skincare",
+     "position": 5,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Tata Harper",
+     "position": 6,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Oden",
+     "position": 7,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Oh My Cream Skincare",
+     "position": 8,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Typology",
+     "position": 9,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Demain Beauty",
+     "position": 10,
+     "sentiment": "positive"
+    },
+    {
+     "name": "La Canopée",
+     "position": 11,
+     "sentiment": "positive"
+    }
+   ],
+   "sources": [
+    "timesceo.com",
+    "demainbeauty.com",
+    "blue-skincare.com",
+    "blogdestendances.fr",
+    "beautyjulia.com",
+    "francevisiting.com",
+    "lookfantastic.fr",
+    "myfrenchcountryhomemagazine.com",
+    "trustt.io",
+    "marieclaire.be",
+    "pharmamarket.fr",
+    "leonia-cosmetiques.com"
+   ],
+   "costUsd": 0.039251999999999995
+  },
+  {
+   "prompt": "Quel est le meilleur autobronzant naturel ?",
+   "model": "chatgpt",
+   "brands": [],
+   "sources": [
+    "newsnetwork.mayoclinic.org",
+    "mayoclinic.org",
+    "staging.aad.org"
+   ],
+   "costUsd": 0.013168
+  },
+  {
+   "prompt": "Quel est le meilleur autobronzant naturel ?",
+   "model": "gemini",
+   "brands": [
+    {
+     "name": "Laboratoires de Biarritz",
+     "position": 1,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Mádara",
+     "position": 2,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Evolve Organic Beauty",
+     "position": 3,
+     "sentiment": "positive"
+    },
+    {
+     "name": "La Rosée",
+     "position": 4,
+     "sentiment": "neutral"
+    },
+    {
+     "name": "Aroma-Zone",
+     "position": 5,
+     "sentiment": "positive"
+    }
+   ],
+   "sources": [
+    "moncornerb.com",
+    "docmorris.fr",
+    "mademoiselle-bio.com",
+    "mondebio.com",
+    "chatelaine.com",
+    "pharmaciedesdrakkars.com",
+    "ndsplus.fr",
+    "larosee-cosmetiques.com",
+    "aroma-zone.com",
+    "easypara.fr",
+    "incibeauty.com"
+   ],
+   "costUsd": 0.039057
+  },
+  {
+   "prompt": "Quelle est la meilleure protéine en poudre pour femme ?",
+   "model": "chatgpt",
+   "brands": [
+    {
+     "name": "ConsumerLab",
+     "position": 2,
+     "sentiment": "neutral"
+    }
+   ],
+   "sources": [
+    "healthline.com",
+    "consumerlab.com"
+   ],
+   "costUsd": 0.013481
+  },
+  {
+   "prompt": "Quelle est la meilleure protéine en poudre pour femme ?",
+   "model": "gemini",
+   "brands": [
+    {
+     "name": "Nutripure",
+     "position": 1,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Dymatize",
+     "position": 2,
+     "sentiment": "positive"
+    },
+    {
+     "name": "BiotechUSA",
+     "position": 3,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Weider",
+     "position": 4,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Alpha Foods",
+     "position": 5,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Orgain",
+     "position": 6,
+     "sentiment": "positive"
+    }
+   ],
+   "sources": [
+    "usevedic.com",
+    "youtube.com",
+    "biofair-nutrition.fr",
+    "darwin-nutrition.fr",
+    "biogena.com",
+    "womenshealthmag.com",
+    "dietitianhannah.com",
+    "womensbest.com"
+   ],
+   "costUsd": 0.038618
+  },
+  {
+   "prompt": "Quels sont les meilleurs compléments alimentaires pour une belle peau ?",
+   "model": "chatgpt",
+   "brands": [],
+   "sources": [],
+   "costUsd": 0.012559
+  },
+  {
+   "prompt": "Quels sont les meilleurs compléments alimentaires pour une belle peau ?",
+   "model": "gemini",
+   "brands": [
+    {
+     "name": "Nutri&Co",
+     "position": 1,
+     "sentiment": "neutral"
+    },
+    {
+     "name": "Novoma",
+     "position": 2,
+     "sentiment": "neutral"
+    },
+    {
+     "name": "Dynveo",
+     "position": 3,
+     "sentiment": "neutral"
+    },
+    {
+     "name": "Aroma-Zone",
+     "position": 4,
+     "sentiment": "neutral"
+    },
+    {
+     "name": "Aime",
+     "position": 5,
+     "sentiment": "neutral"
+    }
+   ],
+   "sources": [
+    "lesangesontlapeaudouce.com",
+    "supersmart.com",
+    "swilab.ch",
+    "aroma-zone.com",
+    "laborantin.fr",
+    "combeau.co",
+    "lasante.net",
+    "juvamine.com",
+    "nuoobox.com",
+    "fleurancenature.fr",
+    "darwin-nutrition.fr"
+   ],
+   "costUsd": 0.039516
+  },
+  {
+   "prompt": "Quelle est la meilleure crème hydratante pour peau sensible ?",
+   "model": "chatgpt",
+   "brands": [
+    {
+     "name": "Vanicream",
+     "position": 1,
+     "sentiment": "neutral"
+    },
+    {
+     "name": "CeraVe",
+     "position": 2,
+     "sentiment": "neutral"
+    },
+    {
+     "name": "La Roche-Posay",
+     "position": 3,
+     "sentiment": "neutral"
+    }
+   ],
+   "sources": [
+    "aad.org"
+   ],
+   "costUsd": 0.013631
+  },
+  {
+   "prompt": "Quelle est la meilleure crème hydratante pour peau sensible ?",
+   "model": "gemini",
+   "brands": [
+    {
+     "name": "La Roche-Posay",
+     "position": 1,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Avène",
+     "position": 2,
+     "sentiment": "positive"
+    },
+    {
+     "name": "CeraVe",
+     "position": 3,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Bioderma",
+     "position": 4,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Typology",
+     "position": 5,
+     "sentiment": "positive"
+    }
+   ],
+   "sources": [
+    "journaldemontreal.com",
+    "celestaskincare.com",
+    "lesangesontlapeaudouce.com",
+    "raquels.fr",
+    "douceuretbienfait.com",
+    "macaronrose.fr",
+    "docmorris.fr"
+   ],
+   "costUsd": 0.038625
+  },
+  {
+   "prompt": "Quel est le meilleur shampoing anti-chute de cheveux ?",
+   "model": "chatgpt",
+   "brands": [],
+   "sources": [
+    "staging.aad.org",
+    "staging.aad.org",
+    "staging.aad.org"
+   ],
+   "costUsd": 0.013585
+  },
+  {
+   "prompt": "Quel est le meilleur shampoing anti-chute de cheveux ?",
+   "model": "gemini",
+   "brands": [
+    {
+     "name": "Vichy",
+     "position": 1,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Kérastase",
+     "position": 2,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Klorane",
+     "position": 3,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Cystiphane",
+     "position": 4,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Bailleul",
+     "position": 5,
+     "sentiment": "positive"
+    }
+   ],
+   "sources": [
+    "aesthe.com",
+    "elyara.fr",
+    "cosmetics-insiders.com",
+    "vichy.fr",
+    "conseilscheveux.fr",
+    "meilleurs.fr",
+    "easypara.fr",
+    "beautyplaza.com",
+    "joybuy.nl",
+    "quintonic.fr",
+    "perfumesclub.be"
+   ],
+   "costUsd": 0.038717
+  },
+  {
+   "prompt": "Quelle marque de compléments alimentaires me conseilles-tu pour mieux dormir ?",
+   "model": "chatgpt",
+   "brands": [],
+   "sources": [],
+   "costUsd": 0.012006999999999999
+  },
+  {
+   "prompt": "Quelle marque de compléments alimentaires me conseilles-tu pour mieux dormir ?",
+   "model": "gemini",
+   "brands": [
+    {
+     "name": "Dynveo",
+     "position": 1,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Novoma",
+     "position": 2,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Nutri&Co",
+     "position": 3,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Nutrixeal",
+     "position": 4,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Nutripure",
+     "position": 5,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Novanuit",
+     "position": 6,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Sanofi",
+     "position": 7,
+     "sentiment": "neutral"
+    },
+    {
+     "name": "Arkopharma",
+     "position": 8,
+     "sentiment": "positive"
+    }
+   ],
+   "sources": [
+    "edp-nutrition.fr",
+    "darwin-nutrition.fr",
+    "nutrixeal.fr",
+    "docmorris.fr",
+    "easypara.fr",
+    "euro-pharmas.com",
+    "biocles.fr",
+    "onatera.com"
+   ],
+   "costUsd": 0.038831
+  },
+  {
+   "prompt": "Je cherche une routine skincare simple et efficace, quelles marques recommandes-tu ?",
+   "model": "chatgpt",
+   "brands": [
+    {
+     "name": "CeraVe",
+     "position": 1,
+     "sentiment": "positive"
+    },
+    {
+     "name": "La Roche-Posay",
+     "position": 2,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Bioderma",
+     "position": 3,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Avène",
+     "position": 4,
+     "sentiment": "positive"
+    },
+    {
+     "name": "The Ordinary",
+     "position": 5,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Paula’s Choice",
+     "position": 6,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Eucerin",
+     "position": 7,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Vanicream",
+     "position": 8,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Vichy",
+     "position": 9,
+     "sentiment": "positive"
+    }
+   ],
+   "sources": [],
+   "costUsd": 0.012492
+  },
+  {
+   "prompt": "Je cherche une routine skincare simple et efficace, quelles marques recommandes-tu ?",
+   "model": "gemini",
+   "brands": [
+    {
+     "name": "CeraVe",
+     "position": 1,
+     "sentiment": "positive"
+    },
+    {
+     "name": "La Roche-Posay",
+     "position": 2,
+     "sentiment": "positive"
+    },
+    {
+     "name": "SVR",
+     "position": 3,
+     "sentiment": "positive"
+    },
+    {
+     "name": "The Ordinary",
+     "position": 4,
+     "sentiment": "positive"
+    },
+    {
+     "name": "The Inkey List",
+     "position": 5,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Geek & Gorgeous",
+     "position": 6,
+     "sentiment": "positive"
+    },
+    {
+     "name": "COSRX",
+     "position": 7,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Beauty of Joseon",
+     "position": 8,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Skin1004",
+     "position": 9,
+     "sentiment": "positive"
+    }
+   ],
+   "sources": [],
+   "costUsd": 0.039009
+  },
+  {
+   "prompt": "Quelle crème solaire recommandes-tu pour une peau acnéique ?",
+   "model": "chatgpt",
+   "brands": [],
+   "sources": [],
+   "costUsd": 0.011982
+  },
+  {
+   "prompt": "Quelle crème solaire recommandes-tu pour une peau acnéique ?",
+   "model": "gemini",
+   "brands": [
+    {
+     "name": "La Roche-Posay",
+     "position": 1,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Avène",
+     "position": 2,
+     "sentiment": "positive"
+    },
+    {
+     "name": "SVR",
+     "position": 3,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Bioderma",
+     "position": 4,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Skin1004",
+     "position": 5,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Beauty of Joseon",
+     "position": 6,
+     "sentiment": "positive"
+    }
+   ],
+   "sources": [
+    "yuka.io",
+    "littlewonderland.eu",
+    "skinsort.com",
+    "whowhatwear.com",
+    "parispharmacy.com",
+    "lesangesontlapeaudouce.com",
+    "reddit.com",
+    "theparisialite.com",
+    "youtube.com",
+    "journaldemontreal.com"
+   ],
+   "costUsd": 0.03879
+  },
+  {
+   "prompt": "Peux-tu me recommander une marque de cosmétiques vegan française ?",
+   "model": "chatgpt",
+   "brands": [
+    {
+     "name": "Pulpe de Vie",
+     "position": 1,
+     "sentiment": "positive"
+    }
+   ],
+   "sources": [],
+   "costUsd": 0.011541999999999998
+  },
+  {
+   "prompt": "Peux-tu me recommander une marque de cosmétiques vegan française ?",
+   "model": "gemini",
+   "brands": [
+    {
+     "name": "La Canopée",
+     "position": 1,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Typology",
+     "position": 2,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Lamazuna",
+     "position": 3,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Avril",
+     "position": 4,
+     "sentiment": "positive"
+    }
+   ],
+   "sources": [
+    "jeanlepine.com",
+    "avril-beaute.fr"
+   ],
+   "costUsd": 0.037619
+  },
+  {
+   "prompt": "Quel complément alimentaire recommandes-tu contre le stress ?",
+   "model": "chatgpt",
+   "brands": [],
+   "sources": [],
+   "costUsd": 0.012024
+  },
+  {
+   "prompt": "Quel complément alimentaire recommandes-tu contre le stress ?",
+   "model": "gemini",
+   "brands": [],
+   "sources": [
+    "universpharmacie.fr",
+    "dplantes.com",
+    "vidal.fr",
+    "valebio.com",
+    "pileje.fr",
+    "pierre-jerome.com",
+    "toutelanutrition.com",
+    "jevaismieuxmerci.com",
+    "goldmanlaboratories.com",
+    "theraserena.com",
+    "anses.fr"
+   ],
+   "costUsd": 0.038187
+  },
+  {
+   "prompt": "Quelle marque recommandes-tu pour des soins anti-taches pigmentaires ?",
+   "model": "chatgpt",
+   "brands": [
+    {
+     "name": "La Roche-Posay",
+     "position": 1,
+     "sentiment": "neutral"
+    },
+    {
+     "name": "Bioderma",
+     "position": 2,
+     "sentiment": "neutral"
+    },
+    {
+     "name": "Avène",
+     "position": 3,
+     "sentiment": "neutral"
+    },
+    {
+     "name": "Eucerin",
+     "position": 4,
+     "sentiment": "neutral"
+    },
+    {
+     "name": "SVR",
+     "position": 5,
+     "sentiment": "neutral"
+    },
+    {
+     "name": "CeraVe",
+     "position": 6,
+     "sentiment": "neutral"
+    }
+   ],
+   "sources": [
+    "staging.aad.org"
+   ],
+   "costUsd": 0.013314
+  },
+  {
+   "prompt": "Quelle marque recommandes-tu pour des soins anti-taches pigmentaires ?",
+   "model": "gemini",
+   "brands": [
+    {
+     "name": "Eucerin",
+     "position": 1,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Caudalie",
+     "position": 2,
+     "sentiment": "positive"
+    },
+    {
+     "name": "La Roche-Posay",
+     "position": 3,
+     "sentiment": "positive"
+    },
+    {
+     "name": "SkinCeuticals",
+     "position": 4,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Garnier",
+     "position": 5,
+     "sentiment": "positive"
+    }
+   ],
+   "sources": [
+    "lesangesontlapeaudouce.com",
+    "cosmetics-insiders.com",
+    "youtube.com",
+    "newpharma.fr",
+    "boticinal.com",
+    "caudalie.com",
+    "dermalogica.fr",
+    "parapharmadirect.com"
+   ],
+   "costUsd": 0.039144
+  },
+  {
+   "prompt": "Je veux renforcer mes ongles et mes cheveux, quels produits me conseilles-tu ?",
+   "model": "chatgpt",
+   "brands": [],
+   "sources": [],
+   "costUsd": 0.012369999999999999
+  },
+  {
+   "prompt": "Je veux renforcer mes ongles et mes cheveux, quels produits me conseilles-tu ?",
+   "model": "gemini",
+   "brands": [
+    {
+     "name": "Forcapil",
+     "position": 1,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Novophan",
+     "position": 2,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Lashilé Beauty",
+     "position": 3,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Mavala",
+     "position": 4,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Écrinal",
+     "position": 5,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Hérôme",
+     "position": 6,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Weleda",
+     "position": 7,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Vichy",
+     "position": 8,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Klorane",
+     "position": 9,
+     "sentiment": "positive"
+    }
+   ],
+   "sources": [],
+   "costUsd": 0.038632
+  },
+  {
+   "prompt": "Quel sérum à l'acide hyaluronique me conseilles-tu ?",
+   "model": "chatgpt",
+   "brands": [
+    {
+     "name": "CeraVe",
+     "position": 1,
+     "sentiment": "positive"
+    },
+    {
+     "name": "The Ordinary",
+     "position": 2,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Suganda",
+     "position": 3,
+     "sentiment": "positive"
+    }
+   ],
+   "sources": [
+    "incidecoder.com",
+    "incidecoder.com",
+    "incidecoder.com"
+   ],
+   "costUsd": 0.013518
+  },
+  {
+   "prompt": "Quel sérum à l'acide hyaluronique me conseilles-tu ?",
+   "model": "gemini",
+   "brands": [
+    {
+     "name": "Aroma-Zone",
+     "position": 1,
+     "sentiment": "positive"
+    },
+    {
+     "name": "The Ordinary",
+     "position": 2,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Vichy",
+     "position": 3,
+     "sentiment": "positive"
+    },
+    {
+     "name": "La Roche-Posay",
+     "position": 4,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Typology",
+     "position": 5,
+     "sentiment": "positive"
+    },
+    {
+     "name": "SVR",
+     "position": 6,
+     "sentiment": "positive"
+    }
+   ],
+   "sources": [
+    "testsdeproduits.fr",
+    "pariderm.com",
+    "aroma-zone.com",
+    "meilleurs.fr",
+    "frenchfiller-beauty.com",
+    "mademoiselle-biloba.fr",
+    "youtube.com",
+    "beautydiag.com"
+   ],
+   "costUsd": 0.038677
+  },
+  {
+   "prompt": "Quelle marque de maquillage clean me recommandes-tu ?",
+   "model": "chatgpt",
+   "brands": [
+    {
+     "name": "Ilia Beauty",
+     "position": 1,
+     "sentiment": "positive"
+    },
+    {
+     "name": "RMS Beauty",
+     "position": 2,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Saie",
+     "position": 3,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Kosas",
+     "position": 4,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Tower 28",
+     "position": 5,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Axiology",
+     "position": 6,
+     "sentiment": "positive"
+    }
+   ],
+   "sources": [],
+   "costUsd": 0.012036
+  },
+  {
+   "prompt": "Quelle marque de maquillage clean me recommandes-tu ?",
+   "model": "gemini",
+   "brands": [
+    {
+     "name": "ILIA Beauty",
+     "position": 1,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Typology",
+     "position": 2,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Eclo",
+     "position": 3,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Zao Make-Up",
+     "position": 4,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Violette_FR",
+     "position": 5,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Avril Beauté",
+     "position": 6,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Lily Lolo",
+     "position": 7,
+     "sentiment": "neutral"
+    },
+    {
+     "name": "RMS Beauty",
+     "position": 8,
+     "sentiment": "neutral"
+    }
+   ],
+   "sources": [
+    "numero.com",
+    "ecocentric.fr",
+    "culturev.fr",
+    "green-spa.com",
+    "labonnevague.com",
+    "hekka-cosmetics.com",
+    "ohmycream.com",
+    "thegoodlist.fr"
+   ],
+   "costUsd": 0.038521
+  },
+  {
+   "prompt": "Que recommandes-tu comme complément de fer pour une femme ?",
+   "model": "chatgpt",
+   "brands": [],
+   "sources": [],
+   "costUsd": 0.012236
+  },
+  {
+   "prompt": "Que recommandes-tu comme complément de fer pour une femme ?",
+   "model": "gemini",
+   "brands": [
+    {
+     "name": "Novoma",
+     "position": 1,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Nutripure",
+     "position": 2,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Dynveo",
+     "position": 3,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Nutri&Co",
+     "position": 4,
+     "sentiment": "positive"
+    },
+    {
+     "name": "NHCO",
+     "position": 5,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Aroma-Zone",
+     "position": 6,
+     "sentiment": "positive"
+    }
+   ],
+   "sources": [
+    "laboratoirehollis.fr",
+    "aroma-zone.com",
+    "onatera.com",
+    "dynveo.fr",
+    "compagnie-des-sens.fr",
+    "edp-nutrition.fr",
+    "natetlab.com",
+    "nhco-nutrition.com",
+    "pharmacie-citypharma.fr",
+    "nutripure.fr",
+    "nutrimea.com"
+   ],
+   "costUsd": 0.038537
+  },
+  {
+   "prompt": "Quelle routine anti-âge recommandes-tu à partir de 40 ans ?",
+   "model": "chatgpt",
+   "brands": [],
+   "sources": [],
+   "costUsd": 0.012357
+  },
+  {
+   "prompt": "Quelle routine anti-âge recommandes-tu à partir de 40 ans ?",
+   "model": "gemini",
+   "brands": [],
+   "sources": [],
+   "costUsd": 0.039099
+  },
+  {
+   "prompt": "Peux-tu me conseiller des soins pour peau sensible et réactive ?",
+   "model": "chatgpt",
+   "brands": [],
+   "sources": [],
+   "costUsd": 0.012299000000000001
+  },
+  {
+   "prompt": "Peux-tu me conseiller des soins pour peau sensible et réactive ?",
+   "model": "gemini",
+   "brands": [
+    {
+     "name": "Avène",
+     "position": 1,
+     "sentiment": "positive"
+    },
+    {
+     "name": "La Roche-Posay",
+     "position": 2,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Uriage",
+     "position": 3,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Bioderma",
+     "position": 4,
+     "sentiment": "positive"
+    },
+    {
+     "name": "SVR",
+     "position": 5,
+     "sentiment": "positive"
+    }
+   ],
+   "sources": [],
+   "costUsd": 0.039164
+  },
+  {
+   "prompt": "Quels compléments conseilles-tu pour booster l'immunité en hiver ?",
+   "model": "chatgpt",
+   "brands": [],
+   "sources": [],
+   "costUsd": 0.012106
+  },
+  {
+   "prompt": "Quels compléments conseilles-tu pour booster l'immunité en hiver ?",
+   "model": "gemini",
+   "brands": [],
+   "sources": [],
+   "costUsd": 0.038464
+  },
+  {
+   "prompt": "Quelle marque d'huile de CBD pour dormir me recommandes-tu ?",
+   "model": "chatgpt",
+   "brands": [
+    {
+     "name": "Aspen Green",
+     "position": 1,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Cornbread Hemp",
+     "position": 2,
+     "sentiment": "positive"
+    }
+   ],
+   "sources": [
+    "healthline.com",
+    "healthline.com"
+   ],
+   "costUsd": 0.013386
+  },
+  {
+   "prompt": "Quelle marque d'huile de CBD pour dormir me recommandes-tu ?",
+   "model": "gemini",
+   "brands": [
+    {
+     "name": "Mama Kana",
+     "position": 1,
+     "sentiment": "positive"
+    },
+    {
+     "name": "La Ferme du CBD",
+     "position": 2,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Novaloa",
+     "position": 3,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Le Petit Botaniste",
+     "position": 4,
+     "sentiment": "positive"
+    }
+   ],
+   "sources": [
+    "darwin-nutrition.fr",
+    "planposey.fr",
+    "flowerspowercbdshop.fr",
+    "cbd.fr",
+    "lecbd-discount.fr",
+    "lepetitbotaniste.com"
+   ],
+   "costUsd": 0.038523999999999996
+  },
+  {
+   "prompt": "Où acheter du collagène de bonne qualité en France ?",
+   "model": "chatgpt",
+   "brands": [
+    {
+     "name": "RappelConso",
+     "position": 1,
+     "sentiment": "neutral"
+    }
+   ],
+   "sources": [
+    "economie.gouv.fr",
+    "nievre.gouv.fr"
+   ],
+   "costUsd": 0.013563
+  },
+  {
+   "prompt": "Où acheter du collagène de bonne qualité en France ?",
+   "model": "gemini",
+   "brands": [
+    {
+     "name": "Biocyte",
+     "position": 1,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Granions",
+     "position": 2,
+     "sentiment": "positive"
+    },
+    {
+     "name": "NHCO",
+     "position": 3,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Nutri&Co",
+     "position": 4,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Novoma",
+     "position": 5,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Nutripure",
+     "position": 6,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Dynveo",
+     "position": 7,
+     "sentiment": "positive"
+    }
+   ],
+   "sources": [
+    "darwin-nutrition.fr",
+    "lesangesontlapeaudouce.com",
+    "fitnessboutique.fr",
+    "pharmaciedesdrakkars.com",
+    "granions.fr",
+    "nhco-nutrition.com",
+    "edp-nutrition.fr",
+    "novoma.com",
+    "valebio.com"
+   ],
+   "costUsd": 0.039003
+  },
+  {
+   "prompt": "Typology ou The Ordinary : quelle marque de skincare choisir ?",
+   "model": "chatgpt",
+   "brands": [
+    {
+     "name": "The Ordinary",
+     "position": 1,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Typology",
+     "position": 2,
+     "sentiment": "positive"
+    }
+   ],
+   "sources": [
+    "theordinary.com"
+   ],
+   "costUsd": 0.013108999999999999
+  },
+  {
+   "prompt": "Typology ou The Ordinary : quelle marque de skincare choisir ?",
+   "model": "gemini",
+   "brands": [
+    {
+     "name": "Typology",
+     "position": 1,
+     "sentiment": "positive"
+    },
+    {
+     "name": "The Ordinary",
+     "position": 2,
+     "sentiment": "positive"
+    }
+   ],
+   "sources": [
+    "lesavisdemilie.fr",
+    "actuelbeaute.fr",
+    "shoppingdescopines.fr",
+    "kleo-beaute.com",
+    "reddit.com",
+    "thebeautytheory.fr"
+   ],
+   "costUsd": 0.039225
+  },
+  {
+   "prompt": "Respire ou Nuxe : quelle marque de déodorant naturel est la meilleure ?",
+   "model": "chatgpt",
+   "brands": [
+    {
+     "name": "Respire",
+     "position": 1,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Nuxe",
+     "position": 2,
+     "sentiment": "positive"
+    }
+   ],
+   "sources": [
+    "respire.co",
+    "nuxe.com"
+   ],
+   "costUsd": 0.01329
+  },
+  {
+   "prompt": "Respire ou Nuxe : quelle marque de déodorant naturel est la meilleure ?",
+   "model": "gemini",
+   "brands": [
+    {
+     "name": "Respire",
+     "position": 1,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Nuxe",
+     "position": 2,
+     "sentiment": "positive"
+    }
+   ],
+   "sources": [
+    "lesavisdemilie.fr",
+    "yuka.io",
+    "touteslesbox.fr",
+    "soisbelleetparle.fr",
+    "unefilleordinaire.net",
+    "bien-danssapeau.com",
+    "info.fr",
+    "pharmacie-randanne.com",
+    "nuxe.com",
+    "docmorris.fr",
+    "easypara.fr",
+    "needsandmoods.com",
+    "noovomoi.ca",
+    "sephora.fr"
+   ],
+   "costUsd": 0.038507
+  },
+  {
+   "prompt": "Nutri&Co ou Novoma : quelle marque de compléments choisir ?",
+   "model": "chatgpt",
+   "brands": [
+    {
+     "name": "Nutri&Co",
+     "position": 1,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Novoma",
+     "position": 2,
+     "sentiment": "positive"
+    }
+   ],
+   "sources": [
+    "nutriandco.com",
+    "novoma.com"
+   ],
+   "costUsd": 0.013744000000000001
+  },
+  {
+   "prompt": "Nutri&Co ou Novoma : quelle marque de compléments choisir ?",
+   "model": "gemini",
+   "brands": [
+    {
+     "name": "Nutri&Co",
+     "position": 1,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Novoma",
+     "position": 2,
+     "sentiment": "positive"
+    }
+   ],
+   "sources": [
+    "eifs.fr",
+    "edp-nutrition.fr",
+    "sports-nerd.com",
+    "nabfit.fr",
+    "guidecomplements.fr",
+    "lesavisdemilie.fr",
+    "commeuncamion.com",
+    "darwin-nutrition.fr"
+   ],
+   "costUsd": 0.039737
+  },
+  {
+   "prompt": "Aime ou D+ For Care : quelles gummies beauté choisir ?",
+   "model": "chatgpt",
+   "brands": [
+    {
+     "name": "Aime",
+     "position": 1,
+     "sentiment": "positive"
+    },
+    {
+     "name": "D+ For Care",
+     "position": 2,
+     "sentiment": "positive"
+    }
+   ],
+   "sources": [
+    "aime.co",
+    "beaute.dplusforcare.com",
+    "aime.co"
+   ],
+   "costUsd": 0.014932
+  },
+  {
+   "prompt": "Aime ou D+ For Care : quelles gummies beauté choisir ?",
+   "model": "gemini",
+   "brands": [
+    {
+     "name": "Aime",
+     "position": 1,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Day+",
+     "position": 2,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Mium Lab",
+     "position": 3,
+     "sentiment": "neutral"
+    },
+    {
+     "name": "Lashilé Beauty",
+     "position": 4,
+     "sentiment": "neutral"
+    }
+   ],
+   "sources": [
+    "edp-nutrition.fr",
+    "darwin-nutrition.fr",
+    "levif.be",
+    "marieclaire.be",
+    "digitalnativegroup.com",
+    "needsandmoods.com",
+    "jadorebio.com",
+    "voyageenbeaute.com",
+    "aime.co",
+    "trustpilot.com",
+    "paulettestore.com",
+    "labellevie.com",
+    "dplusforcare.com",
+    "amenovia.com",
+    "elodieinparis.com",
+    "ethiquementbelle.fr",
+    "youtube.com",
+    "studiomode.fr"
+   ],
+   "costUsd": 0.03905
+  },
+  {
+   "prompt": "La Roche-Posay ou Avène pour une peau sensible ?",
+   "model": "chatgpt",
+   "brands": [
+    {
+     "name": "La Roche-Posay",
+     "position": 1,
+     "sentiment": "neutral"
+    },
+    {
+     "name": "Avène",
+     "position": 2,
+     "sentiment": "neutral"
+    }
+   ],
+   "sources": [],
+   "costUsd": 0.012095
+  },
+  {
+   "prompt": "La Roche-Posay ou Avène pour une peau sensible ?",
+   "model": "gemini",
+   "brands": [
+    {
+     "name": "La Roche-Posay",
+     "position": 1,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Avène",
+     "position": 2,
+     "sentiment": "positive"
+    }
+   ],
+   "sources": [
+    "la-revue-sante.fr",
+    "epic-label.fr",
+    "3ppharma.fr",
+    "pocketbeautyedit.com",
+    "grokipedia.com",
+    "tiktok.com",
+    "zrwcosmetic.com"
+   ],
+   "costUsd": 0.03992
+  },
+  {
+   "prompt": "Caudalie ou Typology : quels soins visage choisir ?",
+   "model": "chatgpt",
+   "brands": [
+    {
+     "name": "Caudalie",
+     "position": 1,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Typology",
+     "position": 2,
+     "sentiment": "positive"
+    }
+   ],
+   "sources": [],
+   "costUsd": 0.012386
+  },
+  {
+   "prompt": "Caudalie ou Typology : quels soins visage choisir ?",
+   "model": "gemini",
+   "brands": [
+    {
+     "name": "Caudalie",
+     "position": 1,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Typology",
+     "position": 2,
+     "sentiment": "positive"
+    }
+   ],
+   "sources": [
+    "lesangesontlapeaudouce.com",
+    "absoleme.com",
+    "institut-alexiss.fr",
+    "clindoeil.ca",
+    "youtube.com",
+    "kleo-beaute.com",
+    "skinsort.com",
+    "reddit.com"
+   ],
+   "costUsd": 0.039495999999999996
+  },
+  {
+   "prompt": "Luxéol ou Hairburst : quel complément capillaire est le plus efficace ?",
+   "model": "chatgpt",
+   "brands": [
+    {
+     "name": "Luxéol",
+     "position": 1,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Hairburst",
+     "position": 2,
+     "sentiment": "positive"
+    }
+   ],
+   "sources": [
+    "luxeol.com",
+    "hairburst.com"
+   ],
+   "costUsd": 0.014891
+  },
+  {
+   "prompt": "Luxéol ou Hairburst : quel complément capillaire est le plus efficace ?",
+   "model": "gemini",
+   "brands": [
+    {
+     "name": "Luxéol",
+     "position": 1,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Hairburst",
+     "position": 2,
+     "sentiment": "positive"
+    }
+   ],
+   "sources": [
+    "les-calories.com",
+    "notino.fr",
+    "pharmacie-cap3000.com",
+    "boticinal.com",
+    "jevaismieuxmerci.com",
+    "easypara.fr",
+    "darwin-nutrition.fr",
+    "caretobeauty.com",
+    "lookfantastic.fr",
+    "lessensdecapucine.com",
+    "luxeol.com",
+    "lelifestyledemarion.fr",
+    "goodhousekeeping.com",
+    "beautycoiffure.com",
+    "nutravalia.com",
+    "hairburst.com",
+    "touteslesbox.fr",
+    "lasante.net"
+   ],
+   "costUsd": 0.040262
+  },
+  {
+   "prompt": "Collagène en poudre ou en gélules : lequel choisir et quelle marque ?",
+   "model": "chatgpt",
+   "brands": [],
+   "sources": [
+    "fda.gov",
+    "fda.gov",
+    "pubmed.ncbi.nlm.nih.gov"
+   ],
+   "costUsd": 0.013941
+  },
+  {
+   "prompt": "Collagène en poudre ou en gélules : lequel choisir et quelle marque ?",
+   "model": "gemini",
+   "brands": [
+    {
+     "name": "Nutri&Co",
+     "position": 1,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Novoma",
+     "position": 2,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Dynveo",
+     "position": 3,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Vital Proteins",
+     "position": 4,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Granions",
+     "position": 5,
+     "sentiment": "positive"
+    }
+   ],
+   "sources": [
+    "humbleplus.com",
+    "pharmaciedesdrakkars.com",
+    "likama.fr",
+    "nutritionpro.fr",
+    "granions.fr",
+    "goldmanlaboratories.com",
+    "novoma.com",
+    "nhco-nutrition.com",
+    "demainbeauty.com",
+    "fitnessboutique.fr",
+    "soutiain.fr",
+    "darwin-nutrition.fr",
+    "lesangesontlapeaudouce.com",
+    "edp-nutrition.fr"
+   ],
+   "costUsd": 0.039613
+  },
+  {
+   "prompt": "J'ai la peau grasse avec des imperfections, quels produits utiliser ?",
+   "model": "chatgpt",
+   "brands": [],
+   "sources": [],
+   "costUsd": 0.012283
+  },
+  {
+   "prompt": "J'ai la peau grasse avec des imperfections, quels produits utiliser ?",
+   "model": "gemini",
+   "brands": [
+    {
+     "name": "La Roche-Posay",
+     "position": 1,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Bioderma",
+     "position": 2,
+     "sentiment": "positive"
+    },
+    {
+     "name": "CeraVe",
+     "position": 3,
+     "sentiment": "positive"
+    },
+    {
+     "name": "The Ordinary",
+     "position": 4,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Typology",
+     "position": 5,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Avène",
+     "position": 6,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Paula's Choice",
+     "position": 7,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Some By Mi",
+     "position": 8,
+     "sentiment": "positive"
+    }
+   ],
+   "sources": [],
+   "costUsd": 0.039758999999999996
+  },
+  {
+   "prompt": "Comment lutter contre la chute de cheveux après une grossesse, quels produits ?",
+   "model": "chatgpt",
+   "brands": [],
+   "sources": [],
+   "costUsd": 0.012480999999999999
+  },
+  {
+   "prompt": "Comment lutter contre la chute de cheveux après une grossesse, quels produits ?",
+   "model": "gemini",
+   "brands": [
+    {
+     "name": "Daylily Paris",
+     "position": 1,
+     "sentiment": "positive"
+    },
+    {
+     "name": "In Haircare",
+     "position": 2,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Aroma-Zone",
+     "position": 3,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Omum",
+     "position": 4,
+     "sentiment": "positive"
+    },
+    {
+     "name": "René Furterer",
+     "position": 5,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Ducray",
+     "position": 6,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Klorane",
+     "position": 7,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Melvita",
+     "position": 8,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Cattier",
+     "position": 9,
+     "sentiment": "positive"
+    }
+   ],
+   "sources": [
+    "kerastase.fr",
+    "coifferie.com",
+    "dr-rauzy.fr",
+    "renefurterer.com",
+    "womumbox.com",
+    "aroma-zone.com",
+    "jeanmarcjoubert.com",
+    "ducray.com",
+    "cliniqueadeuxcheveux.com"
+   ],
+   "costUsd": 0.039341
+  },
+  {
+   "prompt": "Quels produits pour atténuer les cernes et les poches sous les yeux ?",
+   "model": "chatgpt",
+   "brands": [],
+   "sources": [
+    "dermnetnz.org",
+    "aad.org",
+    "aad.org",
+    "aad.org"
+   ],
+   "costUsd": 0.014043
+  },
+  {
+   "prompt": "Quels produits pour atténuer les cernes et les poches sous les yeux ?",
+   "model": "gemini",
+   "brands": [
+    {
+     "name": "The Ordinary",
+     "position": 1,
+     "sentiment": "positive"
+    },
+    {
+     "name": "CeraVe",
+     "position": 2,
+     "sentiment": "positive"
+    },
+    {
+     "name": "La Roche-Posay",
+     "position": 3,
+     "sentiment": "positive"
+    },
+    {
+     "name": "Kiehl's",
+     "position": 4,
+     "sentiment": "positive"
+    }
+   ],
+   "sources": [],
+   "costUsd": 0.038633
+  },
+  {
+   "prompt": "J'ai des ballonnements et une digestion difficile, quels probiotiques prendre ?",
+   "model": "chatgpt",
+   "brands": [],
+   "sources": [],
+   "costUsd": 0.012342
+  },
+  {
+   "prompt": "J'ai des ballonnements et une digestion difficile, quels probiotiques prendre ?",
+   "model": "gemini",
+   "brands": [],
+   "sources": [
+    "nhs.uk",
+    "pileje.fr",
+    "kosbiotic.com",
+    "massivebio.com",
+    "miumlab.com",
+    "metagenics.co.uk",
+    "vidal.fr",
+    "nutriandco.com",
+    "cdhf.ca",
+    "biophysicsessentialsofficial.com",
+    "granions.fr",
+    "ubiehealth.com",
+    "clevelandclinic.org"
+   ],
+   "costUsd": 0.038582
+  },
+  {
+   "prompt": "Je suis fatiguée en permanence, quels compléments alimentaires prendre ?",
+   "model": "chatgpt",
+   "brands": [],
+   "sources": [],
+   "costUsd": 0.012126000000000001
+  },
+  {
+   "prompt": "Je suis fatiguée en permanence, quels compléments alimentaires prendre ?",
+   "model": "gemini",
+   "brands": [],
+   "sources": [],
+   "costUsd": 0.038321
+  },
+  {
+   "prompt": "Quels soins utiliser contre l'eczéma sur le visage ?",
+   "model": "chatgpt",
+   "brands": [],
+   "sources": [],
+   "costUsd": 0.012168
+  },
+  {
+   "prompt": "Quels soins utiliser contre l'eczéma sur le visage ?",
+   "model": "gemini",
+   "brands": [
+    {
+     "name": "XeraCalm",
+     "position": 1,
+     "sentiment": "neutral"
+    },
+    {
+     "name": "Lipikar",
+     "position": 2,
+     "sentiment": "neutral"
+    },
+    {
+     "name": "Atoderm",
+     "position": 3,
+     "sentiment": "neutral"
+    },
+    {
+     "name": "Dexeryl",
+     "position": 4,
+     "sentiment": "neutral"
+    },
+    {
+     "name": "Avène",
+     "position": 5,
+     "sentiment": "neutral"
+    },
+    {
+     "name": "La Roche-Posay",
+     "position": 6,
+     "sentiment": "neutral"
+    },
+    {
+     "name": "Uriage",
+     "position": 7,
+     "sentiment": "neutral"
+    }
+   ],
+   "sources": [
+    "ameli.fr",
+    "associationeczema.fr",
+    "vidal.fr",
+    "chu-rouen.fr",
+    "reso-dermatologie.fr",
+    "dexeryl.com",
+    "centrethermalavene.com"
+   ],
+   "costUsd": 0.038901
+  },
+  {
+   "prompt": "Comment améliorer naturellement la qualité de mon sommeil, quels compléments ?",
+   "model": "chatgpt",
+   "brands": [],
+   "sources": [
+    "guysandstthomas.nhs.uk",
+    "nccih.nih.gov",
+    "nhs.uk"
+   ],
+   "costUsd": 0.013958
+  },
+  {
+   "prompt": "Comment améliorer naturellement la qualité de mon sommeil, quels compléments ?",
+   "model": "gemini",
+   "brands": [],
+   "sources": [],
+   "costUsd": 0.038801
+  }
+ ]
+}

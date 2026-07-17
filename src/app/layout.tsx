@@ -1,23 +1,31 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Archivo, Inter, Space_Mono } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import { AnalyticsProvider } from "./providers";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const archivo = Archivo({
+  variable: "--font-archivo",
+  subsets: ["latin"],
+  weight: ["500", "600", "700", "800", "900"],
+});
+
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const spaceMono = Space_Mono({
+  variable: "--font-space-mono",
   subsets: ["latin"],
+  weight: ["400", "700"],
 });
 
 export const metadata: Metadata = {
-  title: "Mentio — Votre marque est-elle citée par les IA ?",
+  metadataBase: new URL("https://mentio.fr"),
+  title: "Mentio — La perception, mesurée.",
   description:
-    "Mentio mesure et améliore la visibilité de votre marque dans les réponses de ChatGPT, Gemini et les autres IA. Le SEO de l'ère des moteurs de réponse.",
+    "Mentio mesure la présence de votre marque dans les réponses de ChatGPT, Gemini, Claude et Perplexity — face à vos concurrents, modèle par modèle, dans le temps.",
 };
 
 export default function RootLayout({
@@ -28,7 +36,7 @@ export default function RootLayout({
   return (
     <html
       lang="fr"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${archivo.variable} ${inter.variable} ${spaceMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         <AnalyticsProvider>{children}</AnalyticsProvider>

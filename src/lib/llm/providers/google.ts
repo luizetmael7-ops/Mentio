@@ -2,7 +2,8 @@ import { GoogleGenAI } from "@google/genai";
 import type { CitedSource, GroundedAnswer, LlmProvider } from "../types";
 import { domainOf, estimateCostUsd } from "../pricing";
 
-const RUNNER_MODEL = process.env.GOOGLE_RUNNER_MODEL ?? "gemini-2.5-flash";
+// Alias qui suit toujours le modèle flash courant servi au grand public
+const RUNNER_MODEL = process.env.GOOGLE_RUNNER_MODEL ?? "gemini-flash-latest";
 
 let _client: GoogleGenAI | null = null;
 function client(): GoogleGenAI {
@@ -22,7 +23,9 @@ export const googleProvider: LlmProvider = {
     const response = await client().models.generateContent({
       model: RUNNER_MODEL,
       contents: prompt,
-      config: { tools: [{ googleSearch: {} }] },
+      // thinkingBudget 0 : réponse directe type grand public — sans ça, le modèle
+      // « réfléchit » longuement et multiplie le coût par 10
+      config: { tools: [{ googleSearch: {} }], thinkingConfig: { thinkingBudget: 0 } },
     });
 
     const sources = new Map<string, CitedSource>();
