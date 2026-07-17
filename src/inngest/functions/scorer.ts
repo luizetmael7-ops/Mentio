@@ -8,6 +8,10 @@ import { inngest } from "../client";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { computeVisibilityScore, computeShareOfVoice, type RunMention } from "@/lib/scoring";
 import { sameBrand } from "@/lib/llm/judge";
+import { resend, EMAIL_FROM, deliverableTo } from "@/lib/resend";
+
+const ALERT_VISIBILITY_DROP = 15;
+const ALERT_SOV_DROP = 20;
 
 export const brandScorer = inngest.createFunction(
   {
@@ -77,7 +81,56 @@ export const brandScorer = inngest.createFunction(
         if (error) throw new Error(error.message);
       }
 
-      return { brand: brand.name, date, models: rows.map((r) => `${r.model}: vis ${r.visibility_score} / sov ${r.share_of_voice}`) };
+      return {
+        brand: brand.name,
+        orgId: (brand as unknown as { org_id?: string }).org_id,
+        date,
+        rows,
+        models: rows.map((r) => `${r.model}: vis ${r.visibility_score} / sov ${r.share_of_voice}`),
+      };
+    });
+
+    // Alerte v1 : chute de visibilité ou de share-of-voice vs le relevé précédent
+    await step.run("check-alerts", async () => {
+      if (result.rows.length === 0) return "rien à comparer";
+
+      const { data: previous } = await supabase
+        .from("scores")
+        .select("date, visibility_score, share_of_voice")
+        .eq("brand_id", brandId)
+        .lt("date", result.date)
+        .order("date", { ascending: false })
+        .limit(8);
+      if (!previous || previous.length === 0) return "pas d'historique";
+
+      const prevDate = previous[0].date;
+      const prevRows = previous.filter((p) => p.date === prevDate);
+      const avg = (values: number[]) => values.reduce((a, b) => a + b, 0) / values.length;
+      const prevVis = avg(prevRows.map((p) => Number(p.visibility_score)));
+      const prevSov = avg(prevRows.map((p) => Number(p.share_of_voice)));
+      const nowVis = avg(result.rows.map((r) => r.visibility_score));
+      const nowSov = avg(result.rows.map((r) => r.share_of_voice));
+
+      const visDrop = prevVis - nowVis;
+      const sovDrop = prevSov - nowSov;
+      if (visDrop < ALERT_VISIBILITY_DROP && sovDrop < ALERT_SOV_DROP) return "pas d'alerte";
+
+      const { data: brandRow } = await supabase.from("brands").select("org_id, name").eq("id", brandId).single();
+      const { data: users } = await supabase.from("users").select("email").eq("org_id", brandRow!.org_id);
+      if (!users || users.length === 0) return "aucun destinataire";
+
+      const reason =
+        visDrop >= ALERT_VISIBILITY_DROP
+          ? `ton score de visibilité est passé de ${Math.round(prevVis)} à ${Math.round(nowVis)}/100`
+          : `ton share of voice est passé de ${Math.round(prevSov)} % à ${Math.round(nowSov)} % — un concurrent gagne du terrain`;
+
+      await resend().emails.send({
+        from: EMAIL_FROM,
+        to: users.map((u) => deliverableTo(u.email)),
+        subject: `⚠️ ${brandRow!.name} : ${visDrop >= ALERT_VISIBILITY_DROP ? "chute de visibilité IA" : "un concurrent gagne du terrain"}`,
+        html: `<p>Alerte Mentio — depuis le relevé du ${prevDate}, ${reason}.</p><p><a href="${process.env.NEXT_PUBLIC_APP_URL ?? "https://mentio.fr"}/dashboard">Voir le détail sur ton dashboard →</a></p>`,
+      });
+      return `alerte envoyée (${reason})`;
     });
 
     return result;

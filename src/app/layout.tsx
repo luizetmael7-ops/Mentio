@@ -23,9 +23,9 @@ const spaceMono = Space_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://mentio.fr"),
-  title: "Mentio — La perception, mesurée.",
+  title: "Mentio — Perception, measured.",
   description:
-    "Mentio mesure la présence de votre marque dans les réponses de ChatGPT, Gemini, Claude et Perplexity — face à vos concurrents, modèle par modèle, dans le temps.",
+    "Mentio tracks your brand's presence inside ChatGPT, Gemini, Claude and Perplexity answers — against competitors, model by model, over time.",
 };
 
 export default function RootLayout({

@@ -30,8 +30,13 @@ export default async function DashboardPage() {
   const thirtyDaysAgo = new Date(Date.now() - 30 * 86400_000).toISOString().slice(0, 10);
   const sevenDaysAgo = new Date(Date.now() - 7 * 86400_000).toISOString();
 
-  const [{ data: scores }, { data: competitors }, { data: recentRuns }, { data: recentMentions }] =
-    await Promise.all([
+  const [
+    { data: scores },
+    { data: competitors },
+    { data: recentRuns },
+    { data: recentMentions },
+    { data: sourceRuns },
+  ] = await Promise.all([
       supabase
         .from("scores")
         .select("date, model, visibility_score, share_of_voice")
@@ -50,7 +55,21 @@ export default async function DashboardPage() {
         .select("name, is_target_brand, prompt_runs!inner(brand_id, run_at)")
         .eq("prompt_runs.brand_id", brand.id)
         .gte("prompt_runs.run_at", sevenDaysAgo),
+      supabase
+        .from("prompt_runs")
+        .select("cited_sources")
+        .eq("brand_id", brand.id)
+        .gte("run_at", sevenDaysAgo),
     ]);
+
+  // Sources intelligence : les domaines que les IA lisent sur tes prompts (7 jours)
+  const sourceCounts = new Map<string, number>();
+  for (const run of sourceRuns ?? []) {
+    for (const source of (run.cited_sources ?? []) as Array<{ domain?: string }>) {
+      if (source.domain) sourceCounts.set(source.domain, (sourceCounts.get(source.domain) ?? 0) + 1);
+    }
+  }
+  const topSources = [...sourceCounts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 8);
 
   // Séries du graphique : une colonne par modèle, une ligne par date
   const models = [...new Set((scores ?? []).map((s) => s.model))];
@@ -187,6 +206,35 @@ export default async function DashboardPage() {
                       {info.isCompetitor && <Badge variant="outline">concurrent</Badge>}
                     </span>
                     <span className="tabular-nums text-muted-foreground">{info.n} mention{info.n > 1 ? "s" : ""}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Sources intelligence (7 jours)</CardTitle>
+            <CardDescription>
+              Les domaines que les IA lisent pour répondre — fais-toi citer là pour remonter
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {topSources.length === 0 ? (
+              <p className="text-sm text-muted-foreground">Pas encore de sources relevées.</p>
+            ) : (
+              <ul className="grid gap-2">
+                {topSources.map(([domain, count]) => (
+                  <li key={domain} className="flex items-center justify-between text-sm">
+                    <a
+                      href={`https://${domain}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="truncate underline-offset-2 hover:underline"
+                    >
+                      {domain}
+                    </a>
+                    <span className="tabular-nums text-muted-foreground">{count}×</span>
                   </li>
                 ))}
               </ul>

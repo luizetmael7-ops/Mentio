@@ -6,26 +6,26 @@ import { BrandFooter } from "@/components/brand/footer";
 import { ReadingSwatch } from "@/components/brand/reading-swatch";
 
 export const metadata: Metadata = {
-  title: "Score de visibilité IA gratuit — Mentio",
+  title: "Free AI visibility score — Mentio",
   description:
-    "Découvre en 1 minute si ChatGPT, Gemini et les autres IA citent ta marque — et qui est cité à ta place.",
+    "Find out in 60 seconds whether ChatGPT, Gemini and the other AIs cite your brand — and who gets cited instead of you.",
 };
 
 export default function ScorePage() {
   return (
     <div className="flex min-h-screen flex-col bg-[var(--porcelain)] text-[var(--ink)]">
       <BrandNav />
-      <main className="mx-auto grid max-w-6xl flex-1 gap-12 px-5 pb-24 pt-32 lg:grid-cols-2 lg:items-center">
+      <main className="mx-auto grid w-full max-w-6xl flex-1 gap-14 px-5 pb-24 pt-32 lg:grid-cols-2 lg:items-center">
         <div>
-          <p className="eyebrow">Le score gratuit</p>
+          <p className="eyebrow">The free score</p>
           <h1 className="mt-3 font-display text-4xl font-black uppercase leading-[0.95] tracking-tight sm:text-6xl">
-            Ton relevé de
+            Your AI
             <br />
-            visibilité <span className="text-[var(--poppy)]">IA</span>
+            visibility <span className="text-[var(--poppy)]">reading</span>
           </h1>
           <p className="mt-5 max-w-md text-[var(--ink-soft)]">
-            On pose en direct 10 vraies questions d&apos;achat de ta catégorie aux IA. Tu reçois ton
-            score, la liste de qui est cité à ta place, et le détail question par question.
+            We ask the AIs 10 real purchase questions from your category, live. You get your score,
+            the list of who gets cited instead of you, and the full question-by-question breakdown.
           </p>
 
           <form
@@ -34,20 +34,20 @@ export default function ScorePage() {
           >
             <div>
               <label htmlFor="score-brand" className="eyebrow mb-1.5 block !text-[0.65rem]">
-                Ta marque
+                Your brand
               </label>
               <input
                 id="score-brand"
                 name="brandName"
                 required
                 minLength={2}
-                placeholder="Ex. Respire"
+                placeholder="e.g. Typology"
                 className="h-11 w-full rounded-xl border border-[var(--line)] bg-[var(--porcelain)]/50 px-4 outline-none"
               />
             </div>
             <div>
               <label htmlFor="score-category" className="eyebrow mb-1.5 block !text-[0.65rem]">
-                Catégorie
+                Category
               </label>
               <select
                 id="score-category"
@@ -55,20 +55,20 @@ export default function ScorePage() {
                 defaultValue="beaute_cosmetique"
                 className="h-11 w-full rounded-xl border border-[var(--line)] bg-[var(--porcelain)]/50 px-3 text-sm"
               >
-                <option value="beaute_cosmetique">Beauté / cosmétique</option>
-                <option value="complements">Compléments alimentaires</option>
+                <option value="beaute_cosmetique">Beauty &amp; skincare</option>
+                <option value="complements">Supplements &amp; wellness</option>
               </select>
             </div>
             <div>
               <label htmlFor="score-email" className="eyebrow mb-1.5 block !text-[0.65rem]">
-                Ton email (pour recevoir le rapport)
+                Your email (to receive the report)
               </label>
               <input
                 id="score-email"
                 name="email"
                 type="email"
                 required
-                placeholder="toi@tamarque.fr"
+                placeholder="you@yourbrand.com"
                 className="h-11 w-full rounded-xl border border-[var(--line)] bg-[var(--porcelain)]/50 px-4 outline-none"
               />
             </div>
@@ -76,16 +76,16 @@ export default function ScorePage() {
               type="submit"
               className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-[var(--poppy)] font-semibold text-white transition-transform hover:scale-[1.01]"
             >
-              Lancer mon relevé <ArrowRight aria-hidden className="size-4" />
+              Run my reading <ArrowRight aria-hidden className="size-4" />
             </button>
             <p className="text-center font-metric text-[0.65rem] text-[var(--ink-soft)]">
-              Gratuit · ~1 minute · rapport complet inclus
+              Free · ~60 seconds · full report included
             </p>
           </form>
         </div>
 
         <ReadingSwatch
-          title="Exemple de relevé"
+          title="Sample reading"
           readings={[
             { model: "ChatGPT", value: 8 },
             { model: "Gemini", value: 42 },

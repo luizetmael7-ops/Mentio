@@ -10,10 +10,10 @@ export interface Reading {
 }
 
 const SPECTRUM = [
-  { min: 85, color: "var(--spectrum-poppy)", label: "Citée en tête" },
-  { min: 65, color: "var(--spectrum-amber)", label: "Bien citée" },
-  { min: 45, color: "var(--spectrum-coral)", label: "Citée" },
-  { min: 20, color: "var(--spectrum-iris)", label: "Aperçue" },
+  { min: 85, color: "var(--spectrum-poppy)", label: "Top answer" },
+  { min: 65, color: "var(--spectrum-amber)", label: "Well cited" },
+  { min: 45, color: "var(--spectrum-coral)", label: "Cited" },
+  { min: 20, color: "var(--spectrum-iris)", label: "Glimpsed" },
   { min: 0, color: "var(--spectrum-ash)", label: "Invisible" },
 ];
 
@@ -23,7 +23,7 @@ export function spectrumOf(value: number) {
 
 export function ReadingSwatch({
   readings,
-  title = "Relevé du jour",
+  title = "Today's reading",
   animate = true,
 }: {
   readings: Reading[];
@@ -44,7 +44,7 @@ export function ReadingSwatch({
             >
               <div
                 role="img"
-                aria-label={`${reading.model} : ${reading.value} sur 100 — ${spectrum.label}`}
+                aria-label={`${reading.model} : ${reading.value} out of 100 — ${spectrum.label}`}
                 className="flex h-28 items-end justify-between rounded-xl p-3 sm:h-32"
                 style={{ backgroundColor: spectrum.color }}
               >
@@ -70,7 +70,7 @@ export function ReadingSwatch({
         />
         <div className="mt-1.5 flex justify-between font-metric text-[0.62rem] uppercase tracking-wider text-[var(--ink-soft)]">
           <span>Invisible</span>
-          <span>Citée en tête</span>
+          <span>Top answer</span>
         </div>
       </div>
     </figure>
