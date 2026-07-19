@@ -210,6 +210,27 @@
   transform-origin: bottom;
 }
 
+/* Marquee vertical des prompts (autopilot strip) */
+@keyframes marquee-up {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-50%);
+  }
+}
+.marquee-track {
+  animation: marquee-up 16s linear infinite;
+}
+.marquee-mask {
+  mask-image: linear-gradient(to bottom, transparent, black 18%, black 82%, transparent);
+}
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    animation: none;
+  }
+}
+
 /* Reveal discret au scroll */
 @keyframes rise-in {
   from {

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { BrandNav } from "@/components/brand/nav";
 import { BrandFooter } from "@/components/brand/footer";
-import { PricingTiers, WhiteGloveStrip } from "@/components/brand/pricing-tiers";
+import { PricingTiers, WhiteGloveStrip, UpgradeLadder } from "@/components/brand/pricing-tiers";
 import { Reveal } from "@/components/brand/reveal";
 
 export const metadata: Metadata = {
@@ -50,6 +50,7 @@ export default function PricingPage() {
             models — no magic, no hidden margin.
           </p>
           <div className="mt-14">
+            <UpgradeLadder />
             <PricingTiers />
             <WhiteGloveStrip />
           </div>

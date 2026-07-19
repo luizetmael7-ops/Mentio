@@ -29,7 +29,7 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
         const { data, error } = await supabase.auth.signUp({ email, password });
         if (error) throw error;
         if (!data.session) {
-          setInfo("Vérifie ta boîte mail : un lien de confirmation vient de t'être envoyé.");
+          setInfo("Check your inbox: a confirmation link is on its way.");
           return;
         }
       } else {
@@ -39,7 +39,7 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
       router.push(searchParams.get("next") ?? "/dashboard");
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Une erreur est survenue");
+      setError(err instanceof Error ? err.message : "Something went wrong");
     } finally {
       setLoading(false);
     }
@@ -48,11 +48,11 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
   return (
     <Card className="w-full max-w-sm">
       <CardHeader>
-        <CardTitle>{mode === "login" ? "Connexion" : "Créer un compte"}</CardTitle>
+        <CardTitle>{mode === "login" ? "Log in" : "Create your account"}</CardTitle>
         <CardDescription>
           {mode === "login"
-            ? "Accède au suivi de visibilité de ta marque."
-            : "Commence à mesurer ta visibilité dans les réponses des IA."}
+            ? "Access your brand's AI visibility tracking."
+            : "Start measuring your visibility inside AI answers."}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -62,7 +62,7 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
             <Input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="password">Mot de passe</Label>
+            <Label htmlFor="password">Password</Label>
             <Input
               id="password"
               type="password"
@@ -75,16 +75,16 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
           {error && <p className="text-sm text-destructive">{error}</p>}
           {info && <p className="text-sm text-muted-foreground">{info}</p>}
           <Button type="submit" disabled={loading}>
-            {loading ? "…" : mode === "login" ? "Se connecter" : "Créer mon compte"}
+            {loading ? "…" : mode === "login" ? "Log in" : "Create account"}
           </Button>
           <p className="text-sm text-muted-foreground text-center">
             {mode === "login" ? (
               <>
-                Pas de compte ? <Link className="underline" href="/signup">Inscription</Link>
+                No account? <Link className="underline" href="/signup">Sign up</Link>
               </>
             ) : (
               <>
-                Déjà inscrit ? <Link className="underline" href="/login">Connexion</Link>
+                Already registered? <Link className="underline" href="/login">Log in</Link>
               </>
             )}
           </p>

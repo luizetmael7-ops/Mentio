@@ -20,7 +20,7 @@ export async function completeOnboarding(formData: FormData) {
   const brandName = String(formData.get("brandName") ?? "").trim();
   const domain = String(formData.get("domain") ?? "").trim().toLowerCase().replace(/^https?:\/\//, "").replace(/\/.*$/, "");
   const competitorsRaw = String(formData.get("competitors") ?? "");
-  if (!brandName) throw new Error("Le nom de la marque est requis");
+  if (!brandName) throw new Error("Brand name is required");
 
   const admin = supabaseAdmin();
 
@@ -55,7 +55,7 @@ export async function completeOnboarding(formData: FormData) {
     .select("id", { count: "exact", head: true })
     .eq("org_id", orgId!);
   if ((brandCount ?? 0) >= limits.brands) {
-    throw new Error(`Ton plan ${limits.label} permet ${limits.brands} marque(s). Passe au plan supérieur pour en ajouter.`);
+    throw new Error(`Your ${limits.label} plan allows ${limits.brands} brand(s). Upgrade to add more.`);
   }
 
   const { data: brand, error: brandError } = await admin

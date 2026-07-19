@@ -32,26 +32,26 @@ export default function WeeklyDigest({
     visibilityDelta === null
       ? ""
       : visibilityDelta >= 0
-        ? ` (+${visibilityDelta} vs semaine dernière)`
-        : ` (${visibilityDelta} vs semaine dernière)`;
+        ? ` (+${visibilityDelta} vs last week)`
+        : ` (${visibilityDelta} vs last week)`;
 
   return (
-    <Html lang="fr">
+    <Html lang="en">
       <Head />
       <Preview>
-        {brandName} : visibilité IA {String(visibility ?? "—")}/100{deltaText}
+        {brandName}: AI visibility {String(visibility ?? "—")}/100{deltaText}
       </Preview>
       <Body style={{ fontFamily: "sans-serif", backgroundColor: "#fafafa", padding: "24px" }}>
         <Container style={{ backgroundColor: "#ffffff", borderRadius: 8, padding: 32, maxWidth: 520 }}>
-          <Heading as="h2">Ta semaine IA — {brandName}</Heading>
+          <Heading as="h2">Your AI week — {brandName}</Heading>
 
           <Section>
             <Text style={{ fontSize: 40, fontWeight: 700, margin: "8px 0" }}>
               {visibility ?? "—"}<span style={{ fontSize: 16, fontWeight: 400 }}> / 100{deltaText}</span>
             </Text>
             <Text style={{ color: "#555" }}>
-              Score de visibilité dans les réponses des IA
-              {shareOfVoice !== null ? ` · Share of voice : ${shareOfVoice} %` : ""}
+              Visibility score inside AI answers
+              {shareOfVoice !== null ? ` · Share of voice: ${shareOfVoice}%` : ""}
             </Text>
           </Section>
 
@@ -59,7 +59,7 @@ export default function WeeklyDigest({
             <>
               <Hr />
               <Section>
-                <Text style={{ fontWeight: 600 }}>Qui les IA citent sur tes questions :</Text>
+                <Text style={{ fontWeight: 600 }}>Who the AIs cite on your questions:</Text>
                 {topCompetitors.map((c) => (
                   <Text key={c.name} style={{ margin: "4px 0", color: "#333" }}>
                     • {c.name} — {c.count} mention{c.count > 1 ? "s" : ""}
@@ -71,10 +71,10 @@ export default function WeeklyDigest({
 
           <Hr />
           <Text>
-            <Link href={`${appUrl}/dashboard`}>Voir le détail sur ton dashboard →</Link>
+            <Link href={`${appUrl}/dashboard`}>See the details on your dashboard →</Link>
           </Text>
           <Text style={{ color: "#999", fontSize: 12 }}>
-            Mentio — le suivi de ta marque dans les réponses des IA.
+            Mentio — your brand, tracked inside AI answers.
           </Text>
         </Container>
       </Body>

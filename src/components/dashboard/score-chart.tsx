@@ -21,7 +21,7 @@ export function ScoreChart({ data, models, unit }: { data: ScorePoint[]; models:
   if (data.length === 0) {
     return (
       <div className="flex h-56 items-center justify-center text-sm text-muted-foreground">
-        Pas encore de données — lance une première analyse.
+        No data yet — run your first analysis.
       </div>
     );
   }

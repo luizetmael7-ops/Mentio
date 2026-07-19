@@ -21,24 +21,24 @@ export default async function OnboardingPage() {
     <main className="flex-1 flex items-center justify-center p-6">
       <Card className="w-full max-w-lg">
         <CardHeader>
-          <CardTitle>Configure ta marque</CardTitle>
+          <CardTitle>Set up your brand</CardTitle>
           <CardDescription>
-            Mentio suivra chaque semaine comment les IA parlent de ta marque face à tes concurrents,
-            sur des questions d&apos;achat réelles de ta catégorie.
+            Mentio will track how the AIs talk about your brand versus your competitors, on real
+            purchase questions from your category — automatically.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form action={completeOnboarding} className="grid gap-4">
             <div className="grid gap-2">
-              <Label htmlFor="brandName">Nom de la marque *</Label>
+              <Label htmlFor="brandName">Brand name *</Label>
               <Input id="brandName" name="brandName" required placeholder="Typology" />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="domain">Site web</Label>
+              <Label htmlFor="domain">Website</Label>
               <Input id="domain" name="domain" placeholder="typology.com" />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="competitors">Concurrents (un par ligne, selon ton plan)</Label>
+              <Label htmlFor="competitors">Competitors (one per line, up to your plan limit)</Label>
               <textarea
                 id="competitors"
                 name="competitors"
@@ -47,7 +47,7 @@ export default async function OnboardingPage() {
                 className="border-input rounded-md border bg-transparent px-3 py-2 text-sm shadow-xs outline-none focus-visible:ring-2 focus-visible:ring-ring"
               />
             </div>
-            <Button type="submit">Lancer le suivi</Button>
+            <Button type="submit">Start tracking</Button>
           </form>
         </CardContent>
       </Card>

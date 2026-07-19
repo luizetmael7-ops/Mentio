@@ -121,14 +121,14 @@ export const brandScorer = inngest.createFunction(
 
       const reason =
         visDrop >= ALERT_VISIBILITY_DROP
-          ? `ton score de visibilité est passé de ${Math.round(prevVis)} à ${Math.round(nowVis)}/100`
-          : `ton share of voice est passé de ${Math.round(prevSov)} % à ${Math.round(nowSov)} % — un concurrent gagne du terrain`;
+          ? `your visibility score went from ${Math.round(prevVis)} to ${Math.round(nowVis)}/100`
+          : `your share of voice went from ${Math.round(prevSov)}% to ${Math.round(nowSov)}% — a competitor is gaining ground`;
 
       await resend().emails.send({
         from: EMAIL_FROM,
         to: users.map((u) => deliverableTo(u.email)),
-        subject: `⚠️ ${brandRow!.name} : ${visDrop >= ALERT_VISIBILITY_DROP ? "chute de visibilité IA" : "un concurrent gagne du terrain"}`,
-        html: `<p>Alerte Mentio — depuis le relevé du ${prevDate}, ${reason}.</p><p><a href="${process.env.NEXT_PUBLIC_APP_URL ?? "https://mentio.fr"}/dashboard">Voir le détail sur ton dashboard →</a></p>`,
+        subject: `⚠️ ${brandRow!.name}: ${visDrop >= ALERT_VISIBILITY_DROP ? "AI visibility drop" : "a competitor is gaining ground"}`,
+        html: `<p>Mentio alert — since the ${prevDate} reading, ${reason}.</p><p><a href="${process.env.NEXT_PUBLIC_APP_URL ?? "https://mentio.fr"}/dashboard">See the details on your dashboard →</a></p>`,
       });
       return `alerte envoyée (${reason})`;
     });

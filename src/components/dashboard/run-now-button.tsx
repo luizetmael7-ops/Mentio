@@ -15,14 +15,14 @@ export function RunNowButton({ brandId }: { brandId: string }) {
         startTransition(async () => {
           try {
             await triggerBrandRun(brandId);
-            toast.success("Analyse lancée — les résultats arrivent dans quelques minutes.");
+            toast.success("Analysis started — results land in a few minutes.");
           } catch {
-            toast.error("Impossible de lancer l'analyse.");
+            toast.error("Could not start the analysis.");
           }
         })
       }
     >
-      {pending ? "Lancement…" : "Lancer une analyse"}
+      {pending ? "Starting…" : "Run analysis now"}
     </Button>
   );
 }

@@ -79,7 +79,7 @@ export const weeklyDigest = inngest.createFunction(
         const { error } = await resend().emails.send({
           from: EMAIL_FROM,
           to: users.map((u) => deliverableTo(u.email)),
-          subject: `${brand.name} : visibilité IA ${visibility}/100 cette semaine`,
+          subject: `${brand.name}: AI visibility ${visibility}/100 this week`,
           html,
         });
         if (error) throw new Error(error.message);

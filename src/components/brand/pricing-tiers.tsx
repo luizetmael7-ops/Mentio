@@ -1,6 +1,82 @@
 import Link from "next/link";
-import { Check, Sparkles } from "lucide-react";
+import { ArrowRight, Check, Sparkles } from "lucide-react";
 import { PLAN_LIMITS, type Plan } from "@/lib/plans";
+import { MODEL_META } from "@/lib/models-meta";
+import type { Cadence } from "@/lib/plans";
+
+/** La cadence par modèle, lisible d'un regard : Daily / Weekly / absent. */
+function CadenceGrid({ plan, dark }: { plan: (typeof PLAN_LIMITS)["free"]; dark?: boolean }) {
+  return (
+    <div className="mt-4 grid grid-cols-2 gap-1.5">
+      {Object.entries(MODEL_META).map(([key, meta]) => {
+        const cadence = plan.modelCadence[key as keyof typeof plan.modelCadence] as
+          | Cadence
+          | undefined;
+        return (
+          <div
+            key={key}
+            className={`flex items-center justify-between gap-2 rounded-lg px-2.5 py-1.5 text-[0.7rem] ${
+              cadence
+                ? dark
+                  ? "bg-white/10"
+                  : "bg-[var(--porcelain)]/80"
+                : dark
+                  ? "bg-white/[0.03] opacity-40"
+                  : "bg-transparent opacity-35"
+            }`}
+          >
+            <span className="flex items-center gap-1.5 font-medium">
+              <span
+                aria-hidden
+                className="size-1.5 rounded-full"
+                style={{ backgroundColor: cadence ? meta.color : "var(--spectrum-ash)" }}
+              />
+              {meta.label}
+            </span>
+            <span
+              className={`font-metric uppercase tracking-wide ${
+                cadence === "daily"
+                  ? "font-bold text-[var(--poppy)]"
+                  : cadence
+                    ? dark
+                      ? "text-white/60"
+                      : "text-[var(--ink-soft)]"
+                    : ""
+              }`}
+            >
+              {cadence === "daily" ? "Daily" : cadence === "weekly" ? "Weekly" : "—"}
+            </span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+/** L'échelle d'upgrade : LA différence clé entre chaque palier, en une ligne. */
+export function UpgradeLadder() {
+  const steps: Array<[string, string]> = [
+    ["Free", "1 AI · 5 questions · weekly"],
+    ["Starter", "all 4 AIs · 50 questions"],
+    ["Growth", "daily readings · 3 brands · alerts"],
+    ["Agency", "10 brands · white-glove · custom prompts"],
+  ];
+  return (
+    <div className="mb-10 flex flex-col items-stretch gap-2 sm:flex-row sm:items-center">
+      {steps.map(([name, diff], i) => (
+        <div key={name} className="flex flex-1 items-center gap-2">
+          <div className="flex-1 rounded-2xl border border-[var(--line)] bg-white px-4 py-3">
+            <p className="font-display text-sm font-extrabold uppercase tracking-wide">{name}</p>
+            <p className="mt-0.5 text-xs text-[var(--ink-soft)]">{diff}</p>
+          </div>
+          {i < steps.length - 1 && (
+            <ArrowRight aria-hidden className="hidden size-4 shrink-0 text-[var(--poppy)] sm:block" />
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
 
 /**
  * Pricing grid. Hierarchy: Agency = plum flagship, Growth = most popular,
@@ -76,9 +152,7 @@ export function PricingTiers() {
                   <dd className="font-metric">{plan.competitors}</dd>
                 </div>
               </dl>
-              <p className={`mt-3 text-xs ${isAgency ? "text-white/50" : "text-[var(--ink-soft)]"}`}>
-                {plan.cadenceLabel}
-              </p>
+              <CadenceGrid plan={plan} dark={isAgency} />
               <ul
                 className={`mt-5 flex-1 space-y-2.5 border-t pt-5 text-sm ${
                   isAgency ? "border-white/10 text-white/85" : "border-[var(--line)] text-[var(--ink-soft)]"

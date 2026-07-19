@@ -27,9 +27,9 @@ export default async function BillingPage() {
     <main className="flex-1 p-6 max-w-4xl mx-auto w-full grid gap-6">
       <header className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold">Abonnement</h1>
+          <h1 className="text-2xl font-semibold">Subscription</h1>
           <p className="text-sm text-muted-foreground">
-            Plan actuel : <Badge>{PLAN_LIMITS[currentPlan].label}</Badge>
+            Current plan: <Badge>{PLAN_LIMITS[currentPlan].label}</Badge>
           </p>
         </div>
         <Button variant="ghost" asChild>
@@ -45,21 +45,21 @@ export default async function BillingPage() {
               <CardHeader>
                 <CardTitle className="flex items-baseline justify-between">
                   {limits.label}
-                  {plan === currentPlan && <Badge>actuel</Badge>}
+                  {plan === currentPlan && <Badge>current</Badge>}
                 </CardTitle>
                 <CardDescription className="text-2xl font-semibold text-foreground">
                   {limits.priceMonthlyEur} €<span className="text-sm font-normal text-muted-foreground"> /mois</span>
                 </CardDescription>
               </CardHeader>
               <CardContent className="grid gap-2 text-sm text-muted-foreground">
-                <span>{limits.brands} marque{limits.brands > 1 ? "s" : ""} · {limits.promptsPerBrand} prompts</span>
-                <span>{Object.keys(limits.modelCadence).length} modèle{Object.keys(limits.modelCadence).length > 1 ? "s" : ""} · {limits.cadenceLabel}</span>
+                <span>{limits.brands} brand{limits.brands > 1 ? "s" : ""} · {limits.promptsPerBrand} prompts</span>
+                <span>{Object.keys(limits.modelCadence).length} model{Object.keys(limits.modelCadence).length > 1 ? "s" : ""} · {limits.cadenceLabel}</span>
                 {plan !== currentPlan && (
                   <form action={startCheckout}>
                     <input type="hidden" name="plan" value={plan} />
                     <input type="hidden" name="interval" value="monthly" />
                     <Button type="submit" className="w-full mt-2">
-                      Passer à {limits.label}
+                      Upgrade to {limits.label}
                     </Button>
                   </form>
                 )}
@@ -72,7 +72,7 @@ export default async function BillingPage() {
       {org.stripe_customer_id && (
         <form action={openBillingPortal}>
           <Button variant="outline" type="submit">
-            Gérer ma facturation (carte, factures, annulation)
+            Manage billing (card, invoices, cancellation)
           </Button>
         </form>
       )}

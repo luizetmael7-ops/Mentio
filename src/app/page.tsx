@@ -4,7 +4,8 @@ import { startScan } from "@/lib/actions/scan";
 import { BrandNav } from "@/components/brand/nav";
 import { BrandFooter } from "@/components/brand/footer";
 import { ReadingSwatch, spectrumOf } from "@/components/brand/reading-swatch";
-import { PricingTiers, WhiteGloveStrip } from "@/components/brand/pricing-tiers";
+import { PricingTiers, WhiteGloveStrip, UpgradeLadder } from "@/components/brand/pricing-tiers";
+import { AutopilotStrip } from "@/components/brand/autopilot-strip";
 import { Reveal } from "@/components/brand/reveal";
 
 /* The Mentio Index — refreshed from scripts/run-study.ts (content/etude-2026-07-data.json) */
@@ -186,39 +187,17 @@ export default async function LandingPage({
           </Reveal>
         </section>
 
-        {/* Method */}
+        {/* The mechanic, in one glance */}
         <section className="mx-auto max-w-6xl px-5 py-16">
           <Reveal>
-            <p className="eyebrow">Method</p>
-            <h2 className="mt-3 font-display text-3xl font-extrabold uppercase tracking-wide sm:text-4xl">
-              A spectrometer for your brand
+            <p className="eyebrow">How it works</p>
+            <h2 className="mt-3 max-w-3xl font-display text-3xl font-extrabold uppercase tracking-wide sm:text-4xl">
+              We ask the AIs so you don&apos;t have to<span className="text-[var(--poppy)]">.</span>
             </h2>
           </Reveal>
-          <div className="mt-10 grid gap-4 sm:grid-cols-3">
-            {[
-              ["01 — Interrogate", "Up to 50 real purchase-intent questions from your category, asked daily across the 4 major models, web search on."],
-              ["02 — Measure", "Cited or not, at what rank, with what sentiment, against which competitors, from which sources."],
-              ["03 — Climb", "Your reading evolves over time. You see the sources to win, and you get pinged the moment a competitor overtakes you."],
-            ].map(([label, text], index) => (
-              <Reveal key={label}>
-                <article className="h-full rounded-3xl border border-[var(--line)] bg-white p-7">
-                  <p className="font-metric text-sm font-bold text-[var(--poppy)]">{label}</p>
-                  <div
-                    aria-hidden
-                    className="mt-4 h-1 w-10 rounded-full"
-                    style={{
-                      backgroundColor: [
-                        "var(--spectrum-iris)",
-                        "var(--spectrum-amber)",
-                        "var(--spectrum-poppy)",
-                      ][index],
-                    }}
-                  />
-                  <p className="mt-4 text-sm leading-relaxed text-[var(--ink-soft)]">{text}</p>
-                </article>
-              </Reveal>
-            ))}
-          </div>
+          <Reveal className="mt-8">
+            <AutopilotStrip />
+          </Reveal>
         </section>
 
         {/* Beyond measuring — the solution */}
@@ -263,6 +242,7 @@ export default async function LandingPage({
             </p>
           </Reveal>
           <div className="mt-12">
+            <UpgradeLadder />
             <PricingTiers />
             <WhiteGloveStrip />
           </div>

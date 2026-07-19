@@ -116,7 +116,7 @@ export default async function DashboardPage() {
         <div>
           <h1 className="text-2xl font-semibold">{brand.name}</h1>
           <p className="text-sm text-muted-foreground">
-            Plan <Badge variant="secondary">{limits.label}</Badge> · {limits.promptsPerBrand} prompts/marque ·{" "}
+            Plan <Badge variant="secondary">{limits.label}</Badge> · {limits.promptsPerBrand} prompts/brand ·{" "}
             {limits.cadenceLabel}
           </p>
         </div>
@@ -131,7 +131,7 @@ export default async function DashboardPage() {
             }}
           >
             <Button variant="outline" type="submit">
-              Déconnexion
+              Log out
             </Button>
           </form>
         </div>
@@ -140,7 +140,7 @@ export default async function DashboardPage() {
       <div className="grid gap-4 sm:grid-cols-3">
         <Card>
           <CardHeader className="pb-2">
-            <CardDescription>Score de visibilité</CardDescription>
+            <CardDescription>Visibility score</CardDescription>
             <CardTitle className="text-4xl tabular-nums">
               {latestVisibility ?? "—"}
               <span className="text-base font-normal text-muted-foreground"> / 100</span>
@@ -149,7 +149,7 @@ export default async function DashboardPage() {
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardDescription>Share of voice vs concurrents</CardDescription>
+            <CardDescription>Share of voice vs competitors</CardDescription>
             <CardTitle className="text-4xl tabular-nums">
               {latestSov ?? "—"}
               <span className="text-base font-normal text-muted-foreground"> %</span>
@@ -158,7 +158,7 @@ export default async function DashboardPage() {
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardDescription>Coût LLM du jour (interne)</CardDescription>
+            <CardDescription>Today's LLM cost (internal)</CardDescription>
             <CardTitle className="text-4xl tabular-nums">
               {costToday > 0 ? `$${costToday.toFixed(2)}` : "—"}
             </CardTitle>
@@ -169,8 +169,8 @@ export default async function DashboardPage() {
       <div className="grid gap-4 lg:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Visibilité dans le temps</CardTitle>
-            <CardDescription>Score 0–100 par modèle d&apos;IA</CardDescription>
+            <CardTitle className="text-base">Visibility over time</CardTitle>
+            <CardDescription>Score 0–100 per AI model</CardDescription>
           </CardHeader>
           <CardContent>
             <ScoreChart data={chartData} models={models} />
@@ -179,7 +179,7 @@ export default async function DashboardPage() {
         <Card>
           <CardHeader>
             <CardTitle className="text-base">Share of voice</CardTitle>
-            <CardDescription>Ta part des mentions face à tes concurrents suivis (%)</CardDescription>
+            <CardDescription>Your share of mentions vs tracked competitors (%)</CardDescription>
           </CardHeader>
           <CardContent>
             <ScoreChart data={sovData} models={models} unit="%" />
@@ -190,20 +190,20 @@ export default async function DashboardPage() {
       <div className="grid gap-4 lg:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Qui les IA citent (7 jours)</CardTitle>
-            <CardDescription>Toutes marques confondues sur tes prompts</CardDescription>
+            <CardTitle className="text-base">Who the AIs cite (7 days)</CardTitle>
+            <CardDescription>All brands across your prompts</CardDescription>
           </CardHeader>
           <CardContent>
             {topCited.length === 0 ? (
-              <p className="text-sm text-muted-foreground">Aucune mention extraite pour l&apos;instant.</p>
+              <p className="text-sm text-muted-foreground">No mentions extracted yet.</p>
             ) : (
               <ul className="grid gap-2">
                 {topCited.map(([name, info]) => (
                   <li key={name} className="flex items-center justify-between text-sm">
                     <span className="flex items-center gap-2">
                       {name}
-                      {info.isTarget && <Badge>toi</Badge>}
-                      {info.isCompetitor && <Badge variant="outline">concurrent</Badge>}
+                      {info.isTarget && <Badge>you</Badge>}
+                      {info.isCompetitor && <Badge variant="outline">competitor</Badge>}
                     </span>
                     <span className="tabular-nums text-muted-foreground">{info.n} mention{info.n > 1 ? "s" : ""}</span>
                   </li>
@@ -214,14 +214,14 @@ export default async function DashboardPage() {
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Sources intelligence (7 jours)</CardTitle>
+            <CardTitle className="text-base">Sources intelligence (7 days)</CardTitle>
             <CardDescription>
-              Les domaines que les IA lisent pour répondre — fais-toi citer là pour remonter
+              The domains the AIs read to answer — get cited there to climb
             </CardDescription>
           </CardHeader>
           <CardContent>
             {topSources.length === 0 ? (
-              <p className="text-sm text-muted-foreground">Pas encore de sources relevées.</p>
+              <p className="text-sm text-muted-foreground">No sources recorded yet.</p>
             ) : (
               <ul className="grid gap-2">
                 {topSources.map(([domain, count]) => (
@@ -243,15 +243,15 @@ export default async function DashboardPage() {
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Dernières analyses</CardTitle>
+            <CardTitle className="text-base">Latest runs</CardTitle>
           </CardHeader>
           <CardContent>
             <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead>Prompt</TableHead>
-                  <TableHead>Modèle</TableHead>
-                  <TableHead>Statut</TableHead>
+                  <TableHead>Model</TableHead>
+                  <TableHead>Status</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
