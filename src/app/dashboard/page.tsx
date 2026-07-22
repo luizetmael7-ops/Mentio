@@ -10,19 +10,24 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
-export default async function DashboardPage() {
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ brand?: string }>;
+}) {
+  const { brand: brandParam } = await searchParams;
   const supabase = await supabaseServer();
   const {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const { data: brand } = await supabase
+  const { data: brands } = await supabase
     .from("brands")
     .select("id, name, domain, organizations!inner(plan)")
-    .limit(1)
-    .maybeSingle();
-  if (!brand) redirect("/onboarding");
+    .order("created_at");
+  if (!brands || brands.length === 0) redirect("/onboarding");
+  const brand = brands.find((b) => b.id === brandParam) ?? brands[0];
 
   const plan = ((brand.organizations as unknown as { plan: string }).plan ?? "free") as Plan;
   const limits = PLAN_LIMITS[plan];
@@ -36,6 +41,7 @@ export default async function DashboardPage() {
     { data: recentRuns },
     { data: recentMentions },
     { data: sourceRuns },
+    { data: judgedRuns },
   ] = await Promise.all([
       supabase
         .from("scores")
@@ -60,6 +66,13 @@ export default async function DashboardPage() {
         .select("cited_sources")
         .eq("brand_id", brand.id)
         .gte("run_at", sevenDaysAgo),
+      supabase
+        .from("prompt_runs")
+        .select("prompts!inner(text), mentions(is_target_brand)")
+        .eq("brand_id", brand.id)
+        .eq("status", "judged")
+        .gte("run_at", sevenDaysAgo)
+        .limit(120),
     ]);
 
   // Sources intelligence : les domaines que les IA lisent sur tes prompts (7 jours)
@@ -110,17 +123,73 @@ export default async function DashboardPage() {
     .filter((r) => r.run_at.slice(0, 10) === new Date().toISOString().slice(0, 10))
     .reduce((sum, r) => sum + Number(r.cost_usd ?? 0), 0);
 
+  // ── Plan d'action (règles déterministes — le début du module « Act ») ──
+  // Prompts où la marque est restée invisible sur TOUS les runs de la semaine
+  const promptVisibility = new Map<string, { seen: number; cited: number }>();
+  for (const run of judgedRuns ?? []) {
+    const text = (run.prompts as unknown as { text: string }).text;
+    const entry = promptVisibility.get(text) ?? { seen: 0, cited: 0 };
+    entry.seen += 1;
+    if ((run.mentions ?? []).some((m) => m.is_target_brand)) entry.cited += 1;
+    promptVisibility.set(text, entry);
+  }
+  const invisiblePrompts = [...promptVisibility.entries()]
+    .filter(([, v]) => v.seen >= 1 && v.cited === 0)
+    .map(([text]) => text);
+
+  const leader = topCited.find(([, info]) => !info.isTarget);
+  const actions: Array<{ title: string; detail: string }> = [];
+  if (topSources.length > 0 && (latestVisibility ?? 0) < 60) {
+    const targets = topSources.slice(0, 3).map(([domain]) => domain).join(", ");
+    actions.push({
+      title: `Get cited on ${topSources[0][0]}`,
+      detail: `The AIs read ${targets} ${topSources[0][1]}+ times this week to answer your questions. A mention, ranking or review there is the highest-leverage move you can make.`,
+    });
+  }
+  if (invisiblePrompts.length > 0) {
+    actions.push({
+      title: `Claim ${invisiblePrompts.length} question${invisiblePrompts.length > 1 ? "s" : ""} where you're invisible`,
+      detail: `Start with “${invisiblePrompts[0]}” — publish a genuinely useful comparison or FAQ page answering it, then get it referenced by the sources above.`,
+    });
+  }
+  if (leader && (latestSov ?? 0) < 50) {
+    actions.push({
+      title: `${leader[0]} is winning your conversation`,
+      detail: `${leader[1].n} mentions on your questions this week. Study where they're cited and target the same pages — that's their entire moat.`,
+    });
+  }
+  if (actions.length === 0) {
+    actions.push({
+      title: "Hold the line",
+      detail: "No urgent gap this week. Keep your sources fresh — the next reading will tell you if anything moves.",
+    });
+  }
+  const ACTION_COLORS = ["var(--spectrum-poppy)", "var(--spectrum-amber)", "var(--spectrum-iris)"];
+
   return (
     <main className="flex-1 p-6 max-w-6xl mx-auto w-full grid gap-6">
       <header className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold">{brand.name}</h1>
+          <div className="flex flex-wrap items-center gap-2">
+            <h1 className="text-2xl font-semibold">{brand.name}</h1>
+            {brands.length > 1 &&
+              brands
+                .filter((b) => b.id !== brand.id)
+                .map((b) => (
+                  <Button key={b.id} variant="outline" size="sm" asChild>
+                    <a href={`/dashboard?brand=${b.id}`}>{b.name}</a>
+                  </Button>
+                ))}
+          </div>
           <p className="text-sm text-muted-foreground">
             Plan <Badge variant="secondary">{limits.label}</Badge> · {limits.promptsPerBrand} prompts/brand ·{" "}
             {limits.cadenceLabel}
           </p>
         </div>
         <div className="flex gap-2">
+          <Button variant="outline" asChild>
+            <a href={`/settings/brand?brand=${brand.id}`}>Settings</a>
+          </Button>
           <RunNowButton brandId={brand.id} />
           <form
             action={async () => {
@@ -165,6 +234,32 @@ export default async function DashboardPage() {
           </CardHeader>
         </Card>
       </div>
+
+      <Card className="border-2 border-[var(--poppy)]/30">
+        <CardHeader>
+          <CardTitle className="text-base">Your action plan</CardTitle>
+          <CardDescription>
+            What would actually move your number this week — computed from your latest readings.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="grid gap-3 sm:grid-cols-3">
+          {actions.slice(0, 3).map((action, i) => (
+            <div key={action.title} className="rounded-xl border p-4">
+              <div className="flex items-center gap-2">
+                <span
+                  aria-hidden
+                  className="flex size-6 items-center justify-center rounded-md text-xs font-bold text-white"
+                  style={{ backgroundColor: ACTION_COLORS[i] }}
+                >
+                  {i + 1}
+                </span>
+                <p className="text-sm font-semibold">{action.title}</p>
+              </div>
+              <p className="mt-2 text-xs leading-relaxed text-muted-foreground">{action.detail}</p>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
 
       <div className="grid gap-4 lg:grid-cols-2">
         <Card>

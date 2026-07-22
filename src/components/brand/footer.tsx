@@ -11,7 +11,7 @@ export function BrandFooter() {
             Perception, <span className="text-[var(--poppy)]">measured</span>.
           </p>
         </div>
-        <nav aria-label="Footer" className="flex gap-6 text-sm text-white/60">
+        <nav aria-label="Footer" className="flex flex-wrap gap-6 text-sm text-white/60">
           <Link href="/score" className="transition-colors hover:text-white">
             Free scan
           </Link>
@@ -20,6 +20,12 @@ export function BrandFooter() {
           </Link>
           <Link href="/login" className="transition-colors hover:text-white">
             Log in
+          </Link>
+          <Link href="/terms" className="transition-colors hover:text-white">
+            Terms
+          </Link>
+          <Link href="/privacy" className="transition-colors hover:text-white">
+            Privacy
           </Link>
         </nav>
       </div>
