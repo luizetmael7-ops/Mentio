@@ -1,4 +1,4 @@
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenAI, ThinkingLevel } from "@google/genai";
 import type { CitedSource, GroundedAnswer, LlmProvider } from "../types";
 import { domainOf, estimateCostUsd } from "../pricing";
 
@@ -26,7 +26,7 @@ export const googleProvider: LlmProvider = {
       // thinkingLevel "low" : réponse directe type grand public — sans ça, le modèle
       // « réfléchit » longuement et multiplie le coût par 10. NB : thinkingBudget
       // et thinkingLevel "off" sont refusés (400) par gemini-flash-latest.
-      config: { tools: [{ googleSearch: {} }], thinkingConfig: { thinkingLevel: "low" } },
+      config: { tools: [{ googleSearch: {} }], thinkingConfig: { thinkingLevel: ThinkingLevel.LOW } },
     });
 
     const sources = new Map<string, CitedSource>();
