@@ -47,17 +47,16 @@ export default function ScorePage() {
             </div>
             <div>
               <label htmlFor="score-category" className="eyebrow mb-1.5 block !text-[0.65rem]">
-                Category
+                Your industry — any industry works
               </label>
-              <select
+              <input
                 id="score-category"
                 name="category"
-                defaultValue="beaute_cosmetique"
-                className="h-11 w-full rounded-xl border border-[var(--line)] bg-[var(--porcelain)]/50 px-3 text-sm"
-              >
-                <option value="beaute_cosmetique">Beauty &amp; skincare</option>
-                <option value="complements">Supplements &amp; wellness</option>
-              </select>
+                required
+                minLength={3}
+                placeholder="e.g. skincare, running shoes, fintech"
+                className="h-11 w-full rounded-xl border border-[var(--line)] bg-[var(--porcelain)]/50 px-4 outline-none"
+              />
             </div>
             <div>
               <label htmlFor="score-email" className="eyebrow mb-1.5 block !text-[0.65rem]">

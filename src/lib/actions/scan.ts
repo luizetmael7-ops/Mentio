@@ -54,7 +54,7 @@ async function createScanAndRun(brandName: string, category: string): Promise<st
 
   await inngest.send({
     name: "mentio/public-scan.run",
-    data: { scanId: scan.id, brandName: normalize(brandName), displayName: brandName },
+    data: { scanId: scan.id, brandName: normalize(brandName), displayName: brandName, category },
   });
   await captureServer("scan_started", ipHash, { brand_name: brandName, category });
 
@@ -64,8 +64,8 @@ async function createScanAndRun(brandName: string, category: string): Promise<st
 /** Scan public depuis la landing : teaser visible, email demandé ensuite. */
 export async function startScan(formData: FormData) {
   const brandName = String(formData.get("brandName") ?? "").trim();
-  const category = String(formData.get("category") ?? "beaute_cosmetique");
-  if (!brandName || brandName.length < 2) throw new Error("Nom de marque requis");
+  const category = String(formData.get("category") ?? "").trim() || "consumer products";
+  if (!brandName || brandName.length < 2) throw new Error("Brand name required");
 
   const scanId = await createScanAndRun(brandName, category);
   redirect(`/scan/${scanId}`);
@@ -74,10 +74,10 @@ export async function startScan(formData: FormData) {
 /** Scan depuis /score : email en amont → lead enregistré, rapport déverrouillé d'office. */
 export async function startScanWithEmail(formData: FormData) {
   const brandName = String(formData.get("brandName") ?? "").trim();
-  const category = String(formData.get("category") ?? "beaute_cosmetique");
+  const category = String(formData.get("category") ?? "").trim() || "consumer products";
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
-  if (!brandName || brandName.length < 2) throw new Error("Nom de marque requis");
-  if (!email.includes("@")) throw new Error("Email invalide");
+  if (!brandName || brandName.length < 2) throw new Error("Brand name required");
+  if (!email.includes("@")) throw new Error("Invalid email");
 
   const scanId = await createScanAndRun(brandName, category);
 

@@ -1,16 +1,18 @@
 import Link from "next/link";
-import { ArrowRight, BellRing, Compass, HandHeart } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { startScan } from "@/lib/actions/scan";
 import { BrandNav } from "@/components/brand/nav";
 import { BrandFooter } from "@/components/brand/footer";
 import { ReadingSwatch, spectrumOf } from "@/components/brand/reading-swatch";
 import { PricingTiers, WhiteGloveStrip, UpgradeLadder } from "@/components/brand/pricing-tiers";
 import { AutopilotStrip } from "@/components/brand/autopilot-strip";
+import { ClimbLoop } from "@/components/brand/climb-loop";
 import { Reveal } from "@/components/brand/reveal";
 
-/* The Mentio Index — refreshed from scripts/run-study.ts (content/etude-2026-07-data.json) */
-const INDEX_EDITION = "July 2026 · Beauty & supplements · 100 AI answers";
-const MENTIO_INDEX = [
+/* The Mentio Index — auto-rafraîchi chaque dimanche par le cron weekly-index ;
+   fallback sur l'édition du lancement si la table est vide. */
+const FALLBACK_EDITION = "July 2026 · Beauty & supplements · 100 AI answers";
+const FALLBACK_INDEX = [
   { name: "La Roche-Posay", mentions: 19, top1: 9 },
   { name: "Typology", mentions: 13, top1: 1 },
   { name: "Avène", mentions: 12, top1: 1 },
@@ -18,7 +20,33 @@ const MENTIO_INDEX = [
   { name: "Novoma", mentions: 10, top1: 1 },
   { name: "CeraVe", mentions: 9, top1: 3 },
 ];
-const INDEX_MAX = MENTIO_INDEX[0].mentions;
+
+async function getIndexEdition() {
+  try {
+    const { supabaseAdmin } = await import("@/lib/supabase/admin");
+    const { data } = await supabaseAdmin()
+      .from("index_editions")
+      .select("edition_date, data")
+      .eq("vertical", "beaute_complements")
+      .order("edition_date", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (!data) return null;
+    const payload = data.data as { runs: number; topBrands: Array<{ name: string; total: number; top1: number }> };
+    const list = (payload.topBrands ?? [])
+      .slice(0, 6)
+      .map((b) => ({ name: b.name, mentions: b.total, top1: b.top1 }));
+    if (list.length < 3) return null;
+    const label = new Date(data.edition_date).toLocaleDateString("en-US", {
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+    });
+    return { list, edition: `${label} edition · Beauty & supplements · ${payload.runs} AI answers` };
+  } catch {
+    return null;
+  }
+}
 
 export default async function LandingPage({
   searchParams,
@@ -26,6 +54,10 @@ export default async function LandingPage({
   searchParams: Promise<{ error?: string }>;
 }) {
   const { error } = await searchParams;
+  const liveIndex = await getIndexEdition();
+  const mentioIndex = liveIndex?.list ?? FALLBACK_INDEX;
+  const indexEdition = liveIndex?.edition ?? FALLBACK_EDITION;
+  const indexMax = mentioIndex[0].mentions;
 
   return (
     <div className="relative flex min-h-screen flex-col overflow-x-clip bg-[var(--porcelain)] text-[var(--ink)]">
@@ -76,17 +108,16 @@ export default async function LandingPage({
                 className="h-11 w-full flex-1 rounded-xl bg-transparent px-4 text-base outline-none placeholder:text-[var(--ink-soft)]/60"
               />
               <label htmlFor="hero-category" className="sr-only">
-                Category
+                Your industry
               </label>
-              <select
+              <input
                 id="hero-category"
                 name="category"
-                defaultValue="beaute_cosmetique"
-                className="h-11 rounded-xl bg-[var(--porcelain)] px-3 text-sm text-[var(--ink-soft)]"
-              >
-                <option value="beaute_cosmetique">Beauty &amp; skincare</option>
-                <option value="complements">Supplements &amp; wellness</option>
-              </select>
+                required
+                minLength={3}
+                placeholder="Industry — e.g. skincare, coffee, SaaS"
+                className="h-11 rounded-xl bg-[var(--porcelain)] px-3 text-sm text-[var(--ink-soft)] outline-none sm:w-56"
+              />
               <button
                 type="submit"
                 className="flex h-11 shrink-0 items-center justify-center gap-1.5 rounded-xl bg-[var(--poppy)] px-6 font-semibold text-white transition-transform hover:scale-[1.02]"
@@ -100,7 +131,7 @@ export default async function LandingPage({
               </p>
             )}
             <p className="mt-3 font-metric text-xs text-[var(--ink-soft)]">
-              Free · 60 seconds · no signup · more industries soon
+              Free · 60 seconds · no signup · any industry
             </p>
           </div>
 
@@ -139,13 +170,13 @@ export default async function LandingPage({
             <h2 className="mt-3 font-display text-3xl font-extrabold uppercase tracking-wide sm:text-4xl">
               Who the AIs recommend <span className="text-[var(--poppy)]">right now</span>
             </h2>
-            <p className="mt-2 font-metric text-xs text-[var(--ink-soft)]">{INDEX_EDITION}</p>
+            <p className="mt-2 font-metric text-xs text-[var(--ink-soft)]">{indexEdition}</p>
           </Reveal>
           <Reveal>
             <div className="mt-8 overflow-hidden rounded-3xl border border-[var(--line)] bg-white">
               <ol>
-                {MENTIO_INDEX.map((brand, i) => {
-                  const relative = Math.round((brand.mentions / INDEX_MAX) * 100);
+                {mentioIndex.map((brand, i) => {
+                  const relative = Math.round((brand.mentions / indexMax) * 100);
                   const spectrum = spectrumOf(relative);
                   return (
                     <li
@@ -200,34 +231,17 @@ export default async function LandingPage({
           </Reveal>
         </section>
 
-        {/* Beyond measuring — the solution */}
+        {/* The climb loop — how the problem actually gets fixed */}
         <section className="mx-auto max-w-6xl px-5 py-16">
           <Reveal>
-            <p className="eyebrow">Beyond the score</p>
-            <h2 className="mt-3 max-w-2xl font-display text-3xl font-extrabold uppercase tracking-wide sm:text-4xl">
-              We don&apos;t stop at measuring<span className="text-[var(--poppy)]">.</span>
+            <p className="eyebrow">The fix</p>
+            <h2 className="mt-3 max-w-3xl font-display text-3xl font-extrabold uppercase tracking-wide sm:text-4xl">
+              Measured daily. Fixed <span className="text-[var(--poppy)]">deliberately</span>.
             </h2>
           </Reveal>
-          <div className="mt-10 grid gap-4 sm:grid-cols-3">
-            {[
-              [Compass, "Sources intelligence", "The AIs trust independent blogs and comparison sites — not your homepage. We map exactly where to get cited to move your number."],
-              [BellRing, "Overtake alerts", "A competitor slips into the answer above you? Your score drops? You know before your customers do."],
-              [HandHeart, "White-glove everything", "You pay. We configure your prompts, competitors and tracking, and keep tuning them. You just read the report."],
-            ].map(([Icon, title, text]) => {
-              const IconComponent = Icon as typeof Compass;
-              return (
-                <Reveal key={String(title)}>
-                  <article className="h-full rounded-3xl bg-[var(--plum)] p-7 text-white">
-                    <IconComponent aria-hidden className="size-6 text-[var(--spectrum-amber)]" />
-                    <h3 className="mt-4 font-display text-lg font-extrabold uppercase tracking-wide">
-                      {String(title)}
-                    </h3>
-                    <p className="mt-3 text-sm leading-relaxed text-white/70">{String(text)}</p>
-                  </article>
-                </Reveal>
-              );
-            })}
-          </div>
+          <Reveal className="mt-8">
+            <ClimbLoop />
+          </Reveal>
         </section>
 
         {/* Pricing */}

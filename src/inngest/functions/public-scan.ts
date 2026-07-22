@@ -8,6 +8,7 @@ import { inngest } from "../client";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { activeProviders, askWithTimeout } from "@/lib/llm";
 import { judgeAnswer, sameBrand } from "@/lib/llm/judge";
+import { generateScanPrompts } from "@/lib/llm/scan-prompts";
 
 const SCAN_PROMPTS = 10;
 const SCAN_MODELS = 2;
@@ -30,16 +31,18 @@ export const publicScan = inngest.createFunction(
       await supabase.from("public_scans").update({ status: "running" }).eq("id", scanId);
     });
 
-    const prompts = await step.run("pick-prompts", async () => {
-      const { data, error } = await supabase
-        .from("prompts")
-        .select("id, text")
-        .eq("vertical", "beaute_complements")
-        .is("brand_id", null)
-        .eq("is_active", true);
-      if (error) throw new Error(error.message);
-      // Échantillon aléatoire de 10 prompts
-      return (data ?? []).sort(() => Math.random() - 0.5).slice(0, SCAN_PROMPTS);
+    // Questions générées à la volée pour l'industrie du scan → scan universel.
+    // Les anciennes catégories fixes restent lisibles (fallback sur un libellé).
+    const LEGACY_CATEGORIES: Record<string, string> = {
+      beaute_cosmetique: "beauté et cosmétique",
+      complements: "compléments alimentaires",
+    };
+    const category = (event.data.category as string | undefined) ?? "beauté et cosmétique";
+    const industry = LEGACY_CATEGORIES[category] ?? category;
+
+    const prompts = await step.run("generate-prompts", async () => {
+      const questions = await generateScanPrompts(industry, SCAN_PROMPTS);
+      return questions.map((text) => ({ text }));
     });
 
     const providers = activeProviders().slice(0, SCAN_MODELS);
