@@ -13,7 +13,7 @@ const PER_MILLION: Record<string, { input: number; output: number }> = {
 // Coût fixe estimé par requête avec recherche web activée (outil web_search / grounding)
 const SEARCH_CALL_USD: Record<string, number> = {
   openai: 0.01,
-  google: 0.035, // gratuit ≤ 1500 requêtes/jour, facturé au-delà
+  google: 0, // grounding gratuit ≤ 1500 requêtes/jour — largement au-dessus de notre volume
   anthropic: 0.01, // 10 $/1000 recherches, par recherche effectuée
   perplexity: 0.005,
 };

@@ -23,9 +23,10 @@ export const googleProvider: LlmProvider = {
     const response = await client().models.generateContent({
       model: RUNNER_MODEL,
       contents: prompt,
-      // thinkingBudget 0 : réponse directe type grand public — sans ça, le modèle
-      // « réfléchit » longuement et multiplie le coût par 10
-      config: { tools: [{ googleSearch: {} }], thinkingConfig: { thinkingBudget: 0 } },
+      // thinkingLevel "low" : réponse directe type grand public — sans ça, le modèle
+      // « réfléchit » longuement et multiplie le coût par 10. NB : thinkingBudget
+      // et thinkingLevel "off" sont refusés (400) par gemini-flash-latest.
+      config: { tools: [{ googleSearch: {} }], thinkingConfig: { thinkingLevel: "low" } },
     });
 
     const sources = new Map<string, CitedSource>();
