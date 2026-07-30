@@ -12,7 +12,7 @@ import { PricingTiers, WhiteGloveStrip, UpgradeLadder } from "@/components/brand
 import { AutopilotStrip } from "@/components/brand/autopilot-strip";
 import { ClimbLoop } from "@/components/brand/climb-loop";
 import { Reveal } from "@/components/brand/reveal";
-import { getLatestEdition, formatEditionDate } from "@/lib/index-edition";
+import { getLatestEdition, formatEditionDate, brandSlug } from "@/lib/index-edition";
 
 export const metadata: Metadata = {
   title: "Mentio — les IA recommandent-elles votre marque ?",
@@ -227,12 +227,17 @@ export default async function LandingPage({
                           className="h-8 w-3 shrink-0 rounded-md"
                           style={{ backgroundColor: tier.color }}
                         />
-                        <span className="min-w-0 flex-1">
-                          <span className="block truncate font-semibold">{brand.name}</span>
+                        <Link
+                          href={`/marques/${brandSlug(brand.name)}`}
+                          className="min-w-0 flex-1 group"
+                        >
+                          <span className="block truncate font-semibold underline decoration-[var(--line)] underline-offset-4 transition-colors group-hover:decoration-[var(--ink)]">
+                            {brand.name}
+                          </span>
                           <span className="font-metric text-[0.65rem] uppercase tracking-wider text-[var(--ink-soft)]">
                             {tier.label}
                           </span>
-                        </span>
+                        </Link>
                         {brand.top1 > 0 && (
                           <span className="font-metric hidden text-xs tabular-nums text-[var(--ink-soft)] sm:block">
                             1<sup>re</sup> × {brand.top1}
@@ -263,9 +268,10 @@ export default async function LandingPage({
               <div className="rounded-2xl border border-[var(--line)] bg-white p-5 sm:p-6">
                 <p className="eyebrow mb-1">Le barème Mentio</p>
                 <p className="mb-4 text-sm text-[var(--ink-soft)]">
-                  Le vocabulaire de la catégorie : cinq paliers, un score sur 100. Les scores du
-                  Baromètre sont bas pour tout le monde — l&apos;édition couvre plusieurs
-                  sous-catégories. Sur votre seule catégorie, les scores sont bien plus élevés.
+                  Cinq paliers, un score sur 100. Regardez bien la colonne : la marque la mieux
+                  placée de France plafonne à <strong className="text-[var(--ink)]">Aperçue</strong>,
+                  et personne n&apos;atteint <strong className="text-[var(--ink)]">Prescrite</strong>
+                  . Le terrain est vide — c&apos;est précisément maintenant qu&apos;on le prend.
                 </p>
                 <TierScale />
               </div>
@@ -373,12 +379,19 @@ export default async function LandingPage({
             <p className="mt-3 text-[var(--ink-soft)]">
               Annuel : deux mois offerts. Sans engagement, résiliable en deux clics.
             </p>
-            <p className="mt-4 max-w-2xl rounded-xl border border-[var(--line)] bg-white px-4 py-3 text-sm text-[var(--ink-soft)]">
-              <span className="font-semibold text-[var(--ink)]">Offre fondateurs.</span> Mentio
-              vient de sortir. Les 20 premières marques qui s&apos;abonnent gardent leur tarif à
-              vie, même quand les prix augmenteront. C&apos;est le seul avantage lié à la date
-              d&apos;arrivée — le classement, lui, ne s&apos;achète pas.
-            </p>
+            <ul className="mt-5 flex flex-wrap gap-x-5 gap-y-1.5 font-metric text-[0.7rem] uppercase tracking-wider text-[var(--ink-soft)]">
+              {[
+                "Prix publics, jamais de devis",
+                "Sans engagement",
+                "Résiliation en deux clics",
+                "Vos données exportables",
+              ].map((item) => (
+                <li key={item} className="flex items-center gap-1.5">
+                  <span aria-hidden className="size-1 rounded-full bg-[var(--poppy)]" />
+                  {item}
+                </li>
+              ))}
+            </ul>
           </Reveal>
           <div className="mt-12">
             <UpgradeLadder />

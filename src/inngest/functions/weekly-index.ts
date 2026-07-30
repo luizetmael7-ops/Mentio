@@ -36,8 +36,20 @@ export const weeklyIndex = inngest.createFunction(
     const providers = activeProviders().filter((p) => p.key === "chatgpt" || p.key === "gemini");
     const jobs = prompts.flatMap((p) => providers.map((provider) => ({ text: p.text, model: provider.key })));
 
-    const brandStats = new Map<string, { total: number; top1: number }>();
+    // Agrégats + DÉTAIL réponse par réponse. Le détail ne coûte aucun appel LLM
+    // supplémentaire (ce sont les mêmes runs) et c'est lui qui rend les pages
+    // marques possibles : par modèle, questions perdues, concurrents cités à la place.
+    const brandStats = new Map<
+      string,
+      { total: number; top1: number; positions: number[]; byModel: Record<string, number> }
+    >();
     const sourceStats = new Map<string, number>();
+    const answers: Array<{
+      prompt: string;
+      model: string;
+      brands: Array<{ name: string; position: number }>;
+      sources: string[];
+    }> = [];
     let runs = 0;
 
     for (let start = 0; start < jobs.length; start += BATCH) {
@@ -51,6 +63,8 @@ export const weeklyIndex = inngest.createFunction(
               const answer = await askWithTimeout(provider, job.text);
               const { extraction } = await judgeAnswer(answer.text);
               return {
+                prompt: job.text,
+                model: job.model,
                 brands: extraction.brands.map((b) => ({ name: b.name, position: b.position })),
                 sources: answer.sources.map((s) => s.domain),
               };
@@ -64,11 +78,14 @@ export const weeklyIndex = inngest.createFunction(
       for (const r of results) {
         if (!r) continue;
         runs += 1;
+        answers.push(r);
         for (const b of r.brands) {
           const key = [...brandStats.keys()].find((k) => sameBrand(k, b.name)) ?? b.name;
-          const s = brandStats.get(key) ?? { total: 0, top1: 0 };
+          const s = brandStats.get(key) ?? { total: 0, top1: 0, positions: [], byModel: {} };
           s.total += 1;
           if (b.position === 1) s.top1 += 1;
+          if (b.position > 0) s.positions.push(b.position);
+          s.byModel[r.model] = (s.byModel[r.model] ?? 0) + 1;
           brandStats.set(key, s);
         }
         for (const d of r.sources) sourceStats.set(d, (sourceStats.get(d) ?? 0) + 1);
@@ -84,14 +101,24 @@ export const weeklyIndex = inngest.createFunction(
       const data = {
         runs,
         models: providers.map((p) => p.key),
+        // 50 marques : le classement public en affiche 50 et chacune a sa page
         topBrands: [...brandStats.entries()]
-          .map(([name, s]) => ({ name, total: s.total, top1: s.top1 }))
+          .map(([name, s]) => ({
+            name,
+            total: s.total,
+            top1: s.top1,
+            avgPosition: s.positions.length
+              ? Math.round((s.positions.reduce((a, b) => a + b, 0) / s.positions.length) * 10) / 10
+              : undefined,
+            byModel: s.byModel,
+          }))
           .sort((a, b) => b.total - a.total)
-          .slice(0, 15),
+          .slice(0, 50),
         topSources: [...sourceStats.entries()]
           .map(([domain, count]) => ({ domain, count }))
           .sort((a, b) => b.count - a.count)
-          .slice(0, 15),
+          .slice(0, 30),
+        answers,
       };
       const { error } = await supabase
         .from("index_editions")

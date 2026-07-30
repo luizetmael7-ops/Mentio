@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { ArrowRight } from "lucide-react";
-import { startScanWithEmail } from "@/lib/actions/scan";
+import { startScan } from "@/lib/actions/scan";
 import { BrandNav } from "@/components/brand/nav";
 import { BrandFooter } from "@/components/brand/footer";
 import { ReadingSwatch } from "@/components/brand/reading-swatch";
@@ -32,7 +32,7 @@ export default function ScorePage() {
           </p>
 
           <form
-            action={startScanWithEmail}
+            action={startScan}
             className="mt-8 max-w-md space-y-3 rounded-3xl border border-[var(--line)] bg-white p-6 shadow-[0_12px_48px_rgb(23,21,32,0.08)]"
           >
             <div>
@@ -61,19 +61,6 @@ export default function ScorePage() {
                 className="h-11 w-full rounded-xl border border-[var(--line)] bg-[var(--porcelain)]/50 px-4 outline-none"
               />
             </div>
-            <div>
-              <label htmlFor="score-email" className="eyebrow mb-1.5 block !text-[0.65rem]">
-                Votre email (pour recevoir le rapport)
-              </label>
-              <input
-                id="score-email"
-                name="email"
-                type="email"
-                required
-                placeholder="vous@votremarque.fr"
-                className="h-11 w-full rounded-xl border border-[var(--line)] bg-[var(--porcelain)]/50 px-4 outline-none"
-              />
-            </div>
             <button
               type="submit"
               className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-[var(--poppy)] font-semibold text-white transition-transform hover:scale-[1.01]"
@@ -81,15 +68,11 @@ export default function ScorePage() {
               Lancer mon relevé <ArrowRight aria-hidden className="size-4" />
             </button>
             <p className="text-center font-metric text-[0.65rem] text-[var(--ink-soft)]">
-              Gratuit · ~60 secondes · rapport complet inclus
+              Gratuit · ~60 secondes · sans email
             </p>
             <p className="text-center text-[0.65rem] leading-relaxed text-[var(--ink-soft)]">
-              Votre email sert uniquement à vous envoyer ce rapport et le suivi de votre marque.
-              Désinscription en un clic — voir la{" "}
-              <a href="/privacy" className="underline">
-                politique de confidentialité
-              </a>
-              .
+              Vous voyez votre score et les marques citées à votre place tout de suite. On ne vous
+              demande une adresse qu&apos;ensuite, pour le rapport détaillé.
             </p>
           </form>
         </div>

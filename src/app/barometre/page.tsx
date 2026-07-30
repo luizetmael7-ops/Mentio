@@ -4,11 +4,11 @@ import { ArrowRight } from "lucide-react";
 import { BrandNav } from "@/components/brand/nav";
 import { BrandFooter } from "@/components/brand/footer";
 import { TierScale } from "@/components/brand/tier";
-import { tierOf } from "@/lib/spectrum";
 import { CountUp } from "@/components/brand/count-up";
 import { Reveal } from "@/components/brand/reveal";
+import { RankingTable, type RankingRow } from "@/components/brand/ranking-table";
 import { modelName } from "@/lib/models";
-import { getEditions, formatEditionDate } from "@/lib/index-edition";
+import { getEditions, formatEditionDate, brandSlug, brandScore } from "@/lib/index-edition";
 
 export const metadata: Metadata = {
   title: "Le Baromètre Mentio — quelles marques les IA recommandent vraiment",
@@ -59,7 +59,23 @@ export default async function BarometrePage() {
 
   // Mouvement vs édition précédente (le vrai intérêt d'un baromètre longitudinal)
   const rankBefore = new Map<string, number>();
-  (previous?.brands ?? []).forEach((b, i) => rankBefore.set(b.name.toLowerCase(), i));
+  (previous?.brands ?? []).forEach((b, i) => rankBefore.set(brandSlug(b.name), i));
+
+  const rows: RankingRow[] = brands.slice(0, 50).map((brand, i) => {
+    const before = rankBefore.get(brandSlug(brand.name));
+    return {
+      name: brand.name,
+      total: brand.total,
+      top1: brand.top1,
+      score: brandScore(brand, latest.runs),
+      delta: before === undefined ? null : before - i,
+    };
+  });
+
+  // Les mouvements de l'édition : l'unité de contenu la plus partageable
+  const movers = rows.filter((r) => r.delta !== null && r.delta !== 0);
+  const risers = [...movers].sort((a, b) => b.delta! - a.delta!).filter((r) => r.delta! > 0).slice(0, 3);
+  const fallers = [...movers].sort((a, b) => a.delta! - b.delta!).filter((r) => r.delta! < 0).slice(0, 3);
 
   const editionLabel = formatEditionDate(latest.date);
   const modelsLabel = latest.models.map((m) => modelName(m)).join(" + ");
@@ -101,93 +117,68 @@ export default async function BarometrePage() {
           </dl>
         </section>
 
-        {/* Le classement */}
+        {/* Les mouvements de l'édition */}
+        {(risers.length > 0 || fallers.length > 0) && (
+          <section className="mx-auto max-w-5xl px-5 pb-10">
+            <Reveal>
+              <div className="grid gap-4 sm:grid-cols-2">
+                {[
+                  { titre: "Plus fortes hausses", data: risers, jade: true },
+                  { titre: "Plus fortes baisses", data: fallers, jade: false },
+                ]
+                  .filter((bloc) => bloc.data.length > 0)
+                  .map((bloc) => (
+                    <div
+                      key={bloc.titre}
+                      className="rounded-2xl border border-[var(--line)] bg-white p-5"
+                    >
+                      <p className="eyebrow mb-3">{bloc.titre}</p>
+                      <ul className="space-y-2">
+                        {bloc.data.map((row) => (
+                          <li key={row.name} className="flex items-center justify-between gap-3">
+                            <Link
+                              href={`/marques/${brandSlug(row.name)}`}
+                              className="min-w-0 truncate font-semibold underline decoration-[var(--line)] underline-offset-4 transition-colors hover:decoration-[var(--ink)]"
+                            >
+                              {row.name}
+                            </Link>
+                            <span
+                              className={`font-metric shrink-0 text-sm tabular-nums ${bloc.jade ? "text-[var(--jade)]" : "text-[var(--poppy)]"}`}
+                            >
+                              {row.delta! > 0 ? `▲${row.delta}` : `▼${Math.abs(row.delta!)}`}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+              </div>
+            </Reveal>
+          </section>
+        )}
+
+        {/* Le classement complet */}
         <section className="mx-auto max-w-5xl px-5 pb-10">
           <Reveal>
-            <div className="overflow-hidden rounded-3xl border border-[var(--line)] bg-white">
-              <div className="flex flex-wrap items-baseline justify-between gap-2 border-b border-[var(--line)] px-5 py-4 sm:px-7">
-                <h2 className="font-display text-lg font-extrabold uppercase tracking-wide">
-                  Édition du {editionLabel}
-                </h2>
-                <p className="font-metric text-xs tabular-nums text-[var(--ink-soft)]">
-                  {latest.runs} réponses · {modelsLabel}
-                </p>
-              </div>
-
-              {/* Légende — indispensable pour lire « 18/100 » et « 1re × 12 » */}
-              <p className="border-b border-[var(--line)] bg-[var(--porcelain)]/60 px-5 py-3 text-xs leading-relaxed text-[var(--ink-soft)] sm:px-7">
-                <span className="font-metric text-[var(--ink)]">18/100</span> = la marque est citée
-                dans 18 réponses sur {latest.runs}. ·{" "}
-                <span className="font-metric text-[var(--ink)]">1re × 12</span> = elle arrive 12 fois
-                en première position de la réponse. ·{" "}
-                <span className="font-metric text-[var(--jade)]">▲3</span> = elle a gagné 3 places
-                depuis l&apos;édition précédente.
+            <div className="mb-4 flex flex-wrap items-baseline justify-between gap-2">
+              <h2 className="font-display text-lg font-extrabold uppercase tracking-wide">
+                Édition du {editionLabel} — {rows.length} marques
+              </h2>
+              <p className="font-metric text-xs tabular-nums text-[var(--ink-soft)]">
+                {latest.runs} réponses · {modelsLabel}
               </p>
-
-              <ol>
-                {brands.slice(0, 15).map((brand, i) => {
-                  const score = Math.round((brand.total / latest.runs) * 100);
-                  const tier = tierOf(score);
-                  const before = rankBefore.get(brand.name.toLowerCase());
-                  const delta = before === undefined ? null : before - i;
-                  return (
-                    <li
-                      key={brand.name}
-                      className="flex items-center gap-3 border-b border-[var(--line)] px-5 py-3.5 last:border-b-0 sm:gap-4 sm:px-7"
-                    >
-                      <span className="font-metric w-6 shrink-0 text-sm tabular-nums text-[var(--ink-soft)]">
-                        {String(i + 1).padStart(2, "0")}
-                      </span>
-                      <span
-                        aria-hidden
-                        className="h-9 w-2.5 shrink-0 rounded-md"
-                        style={{ backgroundColor: tier.color }}
-                      />
-                      <span className="min-w-0 flex-1">
-                        <span className="block truncate font-semibold">{brand.name}</span>
-                        <span className="font-metric text-[0.65rem] uppercase tracking-wider text-[var(--ink-soft)]">
-                          {tier.label}
-                          {brand.top1 > 0 && (
-                            <span className="sm:hidden"> · 1re × {brand.top1}</span>
-                          )}
-                        </span>
-                      </span>
-                      {delta !== null && delta !== 0 && (
-                        <span
-                          className={`font-metric text-[0.65rem] tabular-nums ${delta > 0 ? "text-[var(--jade)]" : "text-[var(--poppy)]"}`}
-                        >
-                          {delta > 0 ? `▲${delta}` : `▼${Math.abs(delta)}`}
-                        </span>
-                      )}
-                      {delta === null && previous && (
-                        <span className="font-metric text-[0.65rem] text-[var(--jade)]">
-                          NOUVEAU
-                        </span>
-                      )}
-                      {brand.top1 > 0 && (
-                        <span className="font-metric hidden text-xs tabular-nums text-[var(--ink-soft)] sm:block">
-                          1<sup>re</sup> × {brand.top1}
-                        </span>
-                      )}
-                      <span className="font-metric w-16 shrink-0 text-right text-sm tabular-nums">
-                        {brand.total}
-                        <span className="text-[var(--ink-soft)]">/{latest.runs}</span>
-                      </span>
-                    </li>
-                  );
-                })}
-              </ol>
-              <div className="flex flex-col items-start justify-between gap-3 bg-[var(--porcelain)]/60 px-5 py-4 sm:flex-row sm:items-center sm:px-7">
-                <p className="text-sm text-[var(--ink-soft)]">
-                  Pas dans cette liste ? C&apos;est exactement ce que nous aidons à corriger.
-                </p>
-                <Link
-                  href="/score"
-                  className="inline-flex items-center gap-1.5 rounded-full bg-[var(--poppy)] px-4 py-2 text-sm font-semibold text-white transition-transform hover:scale-[1.02]"
-                >
-                  Mesurer ma marque <ArrowRight aria-hidden className="size-3.5" />
-                </Link>
-              </div>
+            </div>
+            <RankingTable rows={rows} runs={latest.runs} hasPrevious={Boolean(previous)} />
+            <div className="mt-4 flex flex-col items-start justify-between gap-3 rounded-2xl border border-[var(--line)] bg-white px-5 py-4 sm:flex-row sm:items-center sm:px-7">
+              <p className="text-sm text-[var(--ink-soft)]">
+                Pas dans cette liste ? C&apos;est exactement ce que nous aidons à corriger.
+              </p>
+              <Link
+                href="/score"
+                className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-[var(--poppy)] px-4 py-2 text-sm font-semibold text-white transition-transform hover:scale-[1.02]"
+              >
+                Mesurer ma marque <ArrowRight aria-hidden className="size-3.5" />
+              </Link>
             </div>
           </Reveal>
         </section>
@@ -198,11 +189,12 @@ export default async function BarometrePage() {
             <div className="rounded-2xl border border-[var(--line)] bg-white p-5 sm:p-6">
               <p className="eyebrow mb-1">Le barème Mentio</p>
               <p className="mb-4 text-sm text-[var(--ink-soft)]">
-                La couleur de chaque ligne correspond au score de la marque, ramené sur 100. Les
-                scores sont bas pour tout le monde : cette édition couvre plusieurs sous-catégories
-                (solaires, collagène, magnésium…), et aucune marque n&apos;est pertinente sur les 50
-                questions. Une marque mesurée sur sa seule catégorie obtient un score bien plus
-                élevé — c&apos;est ce que fait le scan.
+                La couleur de chaque ligne correspond au score de la marque, ramené sur 100. Aucune
+                marque française n&apos;est encore <strong className="text-[var(--ink)]">Prescrite</strong>,
+                et la première du classement plafonne à{" "}
+                <strong className="text-[var(--ink)]">Aperçue</strong> : sur les questions
+                d&apos;achat de cette catégorie, les IA n&apos;ont pas de favori installé. La place
+                est à prendre, par celles qui s&apos;en occupent maintenant.
               </p>
               <TierScale />
             </div>

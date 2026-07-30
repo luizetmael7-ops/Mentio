@@ -374,10 +374,9 @@ export default async function LandingPageEn({
                   See all plans →
                 </Link>
               </p>
-              <p className="mt-4 text-sm text-[var(--ink-soft)]">
-                <span className="font-semibold text-[var(--ink)]">Founding offer.</span> Mentio just
-                launched. The first 20 brands to subscribe keep their price for life. That is the
-                only advantage tied to arriving early — the ranking itself is never for sale.
+              <p className="mt-4 font-metric text-[0.7rem] uppercase tracking-wider text-[var(--ink-soft)]">
+                Public prices, never a quote · No lock-in · Cancel in two clicks · Your data is
+                exportable
               </p>
             </div>
           </Reveal>

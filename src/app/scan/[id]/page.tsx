@@ -51,10 +51,10 @@ export default async function ScanPage({ params }: { params: Promise<{ id: strin
       <main className="flex-1 flex items-center justify-center p-6">
         <Card className="w-full max-w-md text-center">
           <CardHeader>
-            <CardTitle>The scan failed</CardTitle>
+            <CardTitle>Le scan a échoué</CardTitle>
             <CardDescription>
-              Please try again in a few minutes.{" "}
-              <Link href="/" className="underline">Back to home</Link>
+              Réessayez dans quelques minutes.{" "}
+              <Link href="/" className="underline">Retour à l’accueil</Link>
             </CardDescription>
           </CardHeader>
         </Card>
@@ -67,37 +67,35 @@ export default async function ScanPage({ params }: { params: Promise<{ id: strin
   return (
     <main className="flex-1 p-6 max-w-3xl mx-auto w-full grid gap-6">
       <header className="text-center grid gap-2">
-        <p className="text-sm text-muted-foreground">AI visibility reading</p>
+        <p className="text-sm text-muted-foreground">Relevé de visibilité IA</p>
         <h1 className="text-3xl font-semibold">{scan.brand_name}</h1>
       </header>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <Card className="text-center">
           <CardHeader>
-            <CardDescription>AI visibility score</CardDescription>
+            <CardDescription>Score de visibilité IA</CardDescription>
             <CardTitle className="text-5xl tabular-nums">
               {teaser.score}
               <span className="text-lg font-normal text-muted-foreground"> / 100</span>
             </CardTitle>
             <CardDescription>
-              Cited in {teaser.citedCount} answer{teaser.citedCount > 1 ? "s" : ""} out of{" "}
-              {teaser.runCount}
+              {`Citée dans ${teaser.citedCount} réponse${teaser.citedCount > 1 ? "s" : ""} sur ${teaser.runCount}`}
             </CardDescription>
           </CardHeader>
         </Card>
         <Card className="text-center">
           <CardHeader>
-            <CardDescription>Meanwhile…</CardDescription>
+            <CardDescription>Pendant ce temps…</CardDescription>
             {teaser.shock ? (
               <>
                 <CardTitle className="text-2xl">{teaser.shock.competitor}</CardTitle>
                 <CardDescription>
-                  gets cited {teaser.shock.competitorCount} times by the AIs on these very same
-                  questions{teaser.shock.targetCount === 0 ? " — and you, zero." : "."}
+                  {`est citée ${teaser.shock.competitorCount} fois par les IA sur ces mêmes questions${teaser.shock.targetCount === 0 ? " — et vous, zéro." : "."}`}
                 </CardDescription>
               </>
             ) : (
-              <CardTitle className="text-2xl">No brand dominates (yet)</CardTitle>
+              <CardTitle className="text-2xl">Aucune marque ne domine (encore)</CardTitle>
             )}
           </CardHeader>
         </Card>
@@ -105,13 +103,13 @@ export default async function ScanPage({ params }: { params: Promise<{ id: strin
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Per AI model</CardTitle>
+          <CardTitle className="text-base">Modèle par modèle</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-wrap items-center gap-4">
           {teaser.perModel.map((m) => (
             <div key={m.model} className="text-sm">
               <Badge variant="secondary">{modelLabel(m.model)}</Badge>{" "}
-              cited {m.citedCount}/{m.runCount}
+              {`citée ${m.citedCount}/${m.runCount}`}
             </div>
           ))}
           <div className="ml-auto">
@@ -123,17 +121,17 @@ export default async function ScanPage({ params }: { params: Promise<{ id: strin
       {!unlocked ? (
         <Card className="border-2">
           <CardHeader>
-            <CardTitle>Unlock the full report</CardTitle>
+            <CardTitle>Recevoir le rapport détaillé</CardTitle>
             <CardDescription>
-              The question-by-question breakdown: who gets cited, at what rank, on which model —
-              and the brands taking your place.
+              Le détail question par question : qui est cité, à quelle position, sur quel modèle —
+              et les marques qui prennent votre place.
             </CardDescription>
           </CardHeader>
           <CardContent>
             <form action={submitLead} className="flex flex-col sm:flex-row gap-2">
               <input type="hidden" name="scanId" value={scan.id} />
-              <Input type="email" name="email" required placeholder="you@yourbrand.com" className="flex-1" />
-              <Button type="submit">See the full report</Button>
+              <Input type="email" name="email" required placeholder="vous@votremarque.fr" className="flex-1" />
+              <Button type="submit">Voir le rapport</Button>
             </form>
           </CardContent>
         </Card>
@@ -141,16 +139,16 @@ export default async function ScanPage({ params }: { params: Promise<{ id: strin
         <>
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">Who the AIs cite on your questions</CardTitle>
+              <CardTitle className="text-base">Qui les IA citent sur vos questions</CardTitle>
             </CardHeader>
             <CardContent>
               <ul className="grid gap-2">
                 {teaser.topBrands.map((b) => (
                   <li key={b.name} className="flex justify-between text-sm">
                     <span>
-                      {b.name} {b.isTarget && <Badge>you</Badge>}
+                      {b.name} {b.isTarget && <Badge>vous</Badge>}
                     </span>
-                    <span className="tabular-nums text-muted-foreground">{b.count} mentions</span>
+                    <span className="tabular-nums text-muted-foreground">{`${b.count} citations`}</span>
                   </li>
                 ))}
               </ul>
@@ -158,16 +156,16 @@ export default async function ScanPage({ params }: { params: Promise<{ id: strin
           </Card>
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">Question-by-question breakdown</CardTitle>
+              <CardTitle className="text-base">Détail question par question</CardTitle>
             </CardHeader>
             <CardContent>
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Question asked to the AI</TableHead>
-                    <TableHead>Model</TableHead>
-                    <TableHead>Cited?</TableHead>
-                    <TableHead>Who gets cited</TableHead>
+                    <TableHead>Question posée à l’IA</TableHead>
+                    <TableHead>Modèle</TableHead>
+                    <TableHead>Citée ?</TableHead>
+                    <TableHead>Qui est cité</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -177,9 +175,9 @@ export default async function ScanPage({ params }: { params: Promise<{ id: strin
                       <TableCell className="text-sm">{modelLabel(d.model)}</TableCell>
                       <TableCell>
                         {d.cited ? (
-                          <Badge>yes{d.position ? ` · #${d.position}` : ""}</Badge>
+                          <Badge>oui{d.position ? ` · n°${d.position}` : ""}</Badge>
                         ) : (
-                          <Badge variant="outline">no</Badge>
+                          <Badge variant="outline">non</Badge>
                         )}
                       </TableCell>
                       <TableCell className="max-w-[200px] truncate text-sm text-muted-foreground">
@@ -193,14 +191,14 @@ export default async function ScanPage({ params }: { params: Promise<{ id: strin
           </Card>
           <Card className="text-center">
             <CardHeader>
-              <CardTitle className="text-base">Track your score every week, against your competitors</CardTitle>
+              <CardTitle className="text-base">Suivez votre score chaque semaine, face à vos concurrents</CardTitle>
               <CardDescription>
-                This scan is a snapshot. Mentio tracks your AI visibility over time — free.
+                Ce scan est un instantané. Mentio suit votre visibilité IA dans le temps — gratuitement.
               </CardDescription>
             </CardHeader>
             <CardContent>
               <Button asChild>
-                <Link href="/signup">Start my free tracking</Link>
+                <Link href="/signup">Lancer mon suivi gratuit</Link>
               </Button>
             </CardContent>
           </Card>
@@ -208,8 +206,8 @@ export default async function ScanPage({ params }: { params: Promise<{ id: strin
       )}
 
       <p className="text-xs text-muted-foreground text-center">
-        Readings based on the models&apos; official APIs with web search enabled — a strong proxy of
-        consumer answers, not an exact replica.
+        Relevés effectués via les APIs officielles des modèles, recherche web activée — un bon reflet
+        des réponses vues par les consommateurs, pas une copie exacte.
       </p>
     </main>
   );
