@@ -238,6 +238,8 @@
   transition:
     opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1),
     transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  /* Apparition échelonnée quand plusieurs blocs se suivent (lignes de classement) */
+  transition-delay: calc(var(--reveal-index, 0) * 40ms);
 }
 .reveal-armed.is-visible {
   opacity: 1;

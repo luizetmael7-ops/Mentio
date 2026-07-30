@@ -9,7 +9,7 @@ import { MODEL_META } from "@/lib/models-meta";
 /** La cadence par modèle, lisible d'un regard : Daily / Weekly / absent. */
 function CadenceGrid({ plan, dark }: { plan: (typeof PLAN_LIMITS)["free"]; dark?: boolean }) {
   return (
-    <div className="mt-4 grid grid-cols-2 gap-1.5">
+    <div className="mt-4 grid grid-cols-1 gap-1.5 min-[420px]:grid-cols-2">
       {Object.entries(MODEL_META).map(([key, meta]) => {
         const cadence = plan.modelCadence[key as keyof typeof plan.modelCadence] as
           | Cadence
@@ -46,7 +46,7 @@ function CadenceGrid({ plan, dark }: { plan: (typeof PLAN_LIMITS)["free"]; dark?
                     : ""
               }`}
             >
-              {cadence === "daily" ? "Daily" : cadence === "weekly" ? "Weekly" : "—"}
+              {cadence === "daily" ? "Quotidien" : cadence === "weekly" ? "Hebdo" : "—"}
             </span>
           </div>
         );
@@ -58,10 +58,10 @@ function CadenceGrid({ plan, dark }: { plan: (typeof PLAN_LIMITS)["free"]; dark?
 /** L'échelle d'upgrade : LA différence clé entre chaque palier, en une ligne. */
 export function UpgradeLadder() {
   const steps: Array<[string, string]> = [
-    ["Free", "1 AI · 5 questions · weekly"],
-    ["Starter", "all 4 AIs · 50 questions"],
-    ["Growth", "daily readings · 3 brands · alerts"],
-    ["Agency", "10 brands · white-glove · custom prompts"],
+    ["Free", "1 IA · 5 questions · hebdo"],
+    ["Starter", "les 4 IA · 50 questions"],
+    ["Growth", "relevés quotidiens · 3 marques · alertes"],
+    ["Agency", "10 marques · service sur mesure · questions personnalisées"],
   ];
   return (
     <div className="mb-10 flex flex-col items-stretch gap-2 sm:flex-row sm:items-center">
@@ -94,12 +94,12 @@ export function PricingTiers() {
       <div className="mb-8 flex items-center justify-center">
         <div
           role="group"
-          aria-label="Billing period"
+          aria-label="Période de facturation"
           className="inline-flex items-center gap-1 rounded-full border border-[var(--line)] bg-white p-1"
         >
           {[
-            { label: "Monthly", value: false },
-            { label: "Annual", value: true },
+            { label: "Mensuel", value: false },
+            { label: "Annuel", value: true },
           ].map((option) => {
             const active = annual === option.value;
             return (
@@ -121,7 +121,7 @@ export function PricingTiers() {
                       active ? "text-[var(--spectrum-amber)]" : "text-[var(--jade)]"
                     }`}
                   >
-                    2 months free
+                    2 mois offerts
                   </span>
                 )}
               </button>
@@ -145,7 +145,7 @@ export function PricingTiers() {
             return (
               <article
                 key={key}
-                aria-label={`${plan.label} plan`}
+                aria-label={`Formule ${plan.label}`}
                 className={
                   isAgency
                     ? "relative flex flex-col rounded-3xl bg-[var(--plum)] p-7 text-white shadow-[0_24px_80px_rgb(31,24,48,0.45)]"
@@ -158,59 +158,61 @@ export function PricingTiers() {
               >
                 {isStarter && (
                   <span className="absolute -top-3 left-6 flex items-center gap-1 rounded-full bg-[var(--jade)] px-3 py-0.5 font-metric text-[0.65rem] uppercase tracking-widest text-white">
-                    <Sparkles aria-hidden className="size-3" /> Start here
+                    <Sparkles aria-hidden className="size-3" /> Commencez ici
                   </span>
                 )}
                 {isGrowth && (
                   <span className="absolute -top-3 left-6 rounded-full bg-[var(--poppy)] px-3 py-0.5 font-metric text-[0.65rem] uppercase tracking-widest text-white">
-                    Most popular
+                    Le plus choisi
                   </span>
                 )}
                 {isAgency && (
                   <span className="absolute -top-3 left-6 rounded-full bg-[var(--spectrum-amber)] px-3 py-0.5 font-metric text-[0.65rem] uppercase tracking-widest text-[var(--ink)]">
-                    The flagship
+                    Le fleuron
                   </span>
                 )}
                 <h3 className="font-display text-lg font-extrabold uppercase tracking-wide">
                   {plan.label}
                 </h3>
                 <p className="mt-3 font-metric text-4xl font-bold tabular-nums">
-                  €{displayPrice}
+                  {displayPrice} €
                   <span
                     className={`text-sm font-normal ${isAgency ? "text-white/50" : "text-[var(--ink-soft)]"}`}
                   >
                     {" "}
-                    /mo
+                    /mois
                   </span>
                 </p>
                 <p
                   className={`mt-1 h-4 text-xs ${isAgency ? "text-white/50" : "text-[var(--ink-soft)]"}`}
                 >
-                  {annual && !isFree ? `€${plan.priceMonthlyEur * 10} billed yearly` : ""}
+                  {annual && !isFree ? `${plan.priceMonthlyEur * 10} € facturés à l'année` : ""}
                 </p>
                 {isStarter && (
                   <p className="mt-1 text-xs font-medium text-[var(--jade)]">
-                    Everything you need to know where you stand.
+                    Tout ce qu&apos;il faut pour savoir où vous en êtes.
                   </p>
                 )}
                 <dl
                   className={`mt-4 space-y-1.5 text-sm ${isAgency ? "text-white/80" : "text-[var(--ink-soft)]"}`}
                 >
                   <div className="flex justify-between">
-                    <dt>Brands</dt>
-                    <dd className="font-metric">{plan.brands}</dd>
+                    <dt>Marques</dt>
+                    <dd className="font-metric tabular-nums">{plan.brands}</dd>
                   </div>
                   <div className="flex justify-between">
-                    <dt>Prompts{plan.brands > 1 ? " / brand" : ""}</dt>
-                    <dd className="font-metric">{plan.promptsPerBrand}</dd>
+                    <dt>Questions{plan.brands > 1 ? " / marque" : ""}</dt>
+                    <dd className="font-metric tabular-nums">{plan.promptsPerBrand}</dd>
                   </div>
                   <div className="flex justify-between">
-                    <dt>AI models</dt>
-                    <dd className="font-metric">{Object.keys(plan.modelCadence).length}</dd>
+                    <dt>Modèles d&apos;IA</dt>
+                    <dd className="font-metric tabular-nums">
+                      {Object.keys(plan.modelCadence).length}
+                    </dd>
                   </div>
                   <div className="flex justify-between">
-                    <dt>Competitors</dt>
-                    <dd className="font-metric">{plan.competitors}</dd>
+                    <dt>Concurrents suivis</dt>
+                    <dd className="font-metric tabular-nums">{plan.competitors}</dd>
                   </div>
                 </dl>
                 <CadenceGrid plan={plan} dark={isAgency} />
@@ -249,7 +251,7 @@ export function PricingTiers() {
                           : "mt-6 rounded-full bg-[var(--ink)] py-2.5 text-center font-semibold text-white transition-transform hover:scale-[1.02]"
                   }
                 >
-                  {isFree ? "Start free" : "Get started"}
+                  {isFree ? "Commencer gratuitement" : "Choisir cette formule"}
                 </Link>
               </article>
             );
@@ -260,13 +262,13 @@ export function PricingTiers() {
   );
 }
 
-/** The done-for-you strip — shown under every pricing grid. */
+/** Le bandeau « on s'occupe de tout » — affiché sous chaque grille de tarifs. */
 export function WhiteGloveStrip() {
   return (
     <div className="mt-8 rounded-2xl border border-[var(--line)] bg-white/70 p-5 text-center text-sm text-[var(--ink-soft)]">
-      <span className="font-semibold text-[var(--ink)]">Zero setup, seriously.</span> We configure
-      your prompts, competitors and tracking for you. You pay, we handle everything else — you just
-      read the report.
+      <span className="font-semibold text-[var(--ink)]">Aucune configuration, vraiment.</span> Nous
+      paramétrons vos questions, vos concurrents et le suivi pour vous. Vous n&apos;avez plus
+      qu&apos;à lire le rapport.
     </div>
   );
 }

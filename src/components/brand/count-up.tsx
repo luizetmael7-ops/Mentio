@@ -1,10 +1,17 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+
+// useLayoutEffect avertit pendant le rendu serveur — on choisit le bon selon l'environnement.
+const useIsomorphicLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
 /**
- * Compteur qui s'incrémente quand il entre dans le viewport.
- * Respecte prefers-reduced-motion (affiche la valeur finale d'emblée).
+ * Compteur en AMÉLIORATION PROGRESSIVE : le HTML rendu côté serveur contient la
+ * VRAIE valeur. Sans JS (crawlers, modèles d'IA qui lisent la page, onglet en
+ * arrière-plan), le chiffre juste est là — jamais un « 0 » sur un produit de données.
+ *
+ * Avec JS, on remet à 0 avant le premier paint (useLayoutEffect, donc pas de
+ * clignotement) puis on anime à l'entrée dans le viewport.
  */
 export function CountUp({
   to,
@@ -18,15 +25,19 @@ export function CountUp({
   className?: string;
 }) {
   const ref = useRef<HTMLSpanElement>(null);
-  const [value, setValue] = useState(0);
+  // Valeur initiale = la vraie : c'est ce qui part dans le HTML serveur.
+  const [value, setValue] = useState(to);
+
+  useIsomorphicLayoutEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    // JS est là et l'animation est autorisée : on part de 0, avant le premier paint.
+    setValue(0);
+  }, [to]);
 
   useEffect(() => {
     const node = ref.current;
     if (!node) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setValue(to);
-      return;
-    }
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     let started = false;
     const animate = () => {
@@ -52,7 +63,7 @@ export function CountUp({
     );
     observer.observe(node);
 
-    // Filet : si l'observer ne signale rien, on affiche quand même le chiffre.
+    // Filet : si l'observer ne signale rien, on remet la vraie valeur.
     const safety = setTimeout(() => {
       observer.disconnect();
       if (!started) setValue(to);
@@ -65,7 +76,7 @@ export function CountUp({
   }, [to, duration]);
 
   return (
-    <span ref={ref} className={className}>
+    <span ref={ref} className={`tabular-nums ${className}`}>
       {value}
       {suffix}
     </span>

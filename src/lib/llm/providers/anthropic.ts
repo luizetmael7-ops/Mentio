@@ -1,6 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import type { CitedSource, GroundedAnswer, LlmProvider } from "../types";
 import { domainOf, estimateCostUsd } from "../pricing";
+import { isModelConfigured } from "@/lib/models";
 
 const RUNNER_MODEL = process.env.ANTHROPIC_RUNNER_MODEL ?? "claude-haiku-4-5";
 
@@ -14,7 +15,7 @@ export const anthropicProvider: LlmProvider = {
   key: "claude",
   label: "Claude (Anthropic)",
 
-  isConfigured: () => Boolean(process.env.ANTHROPIC_API_KEY),
+  isConfigured: () => isModelConfigured("claude"),
 
   async ask(prompt: string): Promise<GroundedAnswer> {
     const messages: Anthropic.MessageParam[] = [{ role: "user", content: prompt }];

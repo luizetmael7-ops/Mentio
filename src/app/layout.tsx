@@ -23,9 +23,14 @@ const spaceMono = Space_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://mentio.fr"),
-  title: "Mentio — Perception, measured.",
+  title: "Mentio — la perception, mesurée.",
   description:
-    "Mentio tracks your brand's presence inside ChatGPT, Gemini, Claude and Perplexity answers — against competitors, model by model, over time.",
+    "Mentio mesure la présence de votre marque dans les réponses de ChatGPT, Gemini, Claude et Perplexity — face à vos concurrents, modèle par modèle, semaine après semaine.",
+  openGraph: {
+    type: "website",
+    locale: "fr_FR",
+    siteName: "Mentio",
+  },
 };
 
 export default function RootLayout({
@@ -35,7 +40,7 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="en"
+      lang="fr"
       className={`${archivo.variable} ${inter.variable} ${spaceMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">

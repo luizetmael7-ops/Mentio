@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { spectrumOf } from "@/lib/spectrum";
+import { tierOf, SPECTRUM_GRADIENT, TIERS } from "@/lib/spectrum";
 
 /**
  * Le « relevé nuancier » — signature UI de Mentio.
@@ -17,11 +17,14 @@ export interface Reading {
 
 export function ReadingSwatch({
   readings,
-  title = "Today's reading",
+  title = "Relevé du jour",
+  caption,
   animate = true,
 }: {
   readings: Reading[];
   title?: string;
+  /** Mention sous le relevé — sert à dire quand les valeurs sont illustratives */
+  caption?: string;
   animate?: boolean;
 }) {
   const gridRef = useRef<HTMLDivElement>(null);
@@ -45,7 +48,7 @@ export function ReadingSwatch({
       <figcaption className="eyebrow mb-5">{title}</figcaption>
       <div ref={gridRef} className="grid grid-cols-2 gap-4 sm:grid-cols-4">
         {readings.map((reading, index) => {
-          const spectrum = spectrumOf(reading.value);
+          const spectrum = tierOf(reading.value);
           return (
             <div
               key={reading.model}
@@ -54,11 +57,11 @@ export function ReadingSwatch({
             >
               <div
                 role="img"
-                aria-label={`${reading.model} : ${reading.value} out of 100 — ${spectrum.label}`}
+                aria-label={`${reading.model} : ${reading.value} sur 100 — ${spectrum.label}`}
                 className="flex h-28 items-end justify-between rounded-xl p-3 sm:h-32"
                 style={{ backgroundColor: spectrum.color }}
               >
-                <span className="font-metric text-2xl font-bold leading-none text-white">
+                <span className="font-metric text-2xl font-bold leading-none tabular-nums text-white">
                   {reading.value}
                 </span>
               </div>
@@ -68,20 +71,18 @@ export function ReadingSwatch({
           );
         })}
       </div>
-      {/* Échelle du spectre */}
+      {/* Échelle du barème — les deux extrêmes suffisent ici, la légende complète est ailleurs */}
       <div className="mt-6 border-t border-[var(--line)] pt-4">
-        <div
-          aria-hidden
-          className="h-1.5 rounded-full"
-          style={{
-            background:
-              "linear-gradient(to right, var(--spectrum-ash), var(--spectrum-iris), var(--spectrum-coral), var(--spectrum-amber), var(--spectrum-poppy))",
-          }}
-        />
+        <div aria-hidden className="h-1.5 rounded-full" style={{ background: SPECTRUM_GRADIENT }} />
         <div className="mt-1.5 flex justify-between font-metric text-[0.62rem] uppercase tracking-wider text-[var(--ink-soft)]">
-          <span>Invisible</span>
-          <span>Top answer</span>
+          <span>{TIERS[0].label}</span>
+          <span>{TIERS[TIERS.length - 1].label}</span>
         </div>
+        {caption && (
+          <p className="mt-3 font-metric text-[0.62rem] uppercase tracking-wider text-[var(--ink-soft)]">
+            {caption}
+          </p>
+        )}
       </div>
     </figure>
   );

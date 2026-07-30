@@ -11,7 +11,16 @@ import { useEffect, useRef } from "react";
  * monté côté client qu'on « arme » l'animation, avec un filet de sécurité qui
  * révèle le bloc quoi qu'il arrive.
  */
-export function Reveal({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+export function Reveal({
+  children,
+  className = "",
+  style,
+}: {
+  children: React.ReactNode;
+  className?: string;
+  /** Passer `--reveal-index` pour échelonner l'apparition d'une série de blocs */
+  style?: React.CSSProperties;
+}) {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -49,7 +58,7 @@ export function Reveal({ children, className = "" }: { children: React.ReactNode
   }, []);
 
   return (
-    <div ref={ref} className={className}>
+    <div ref={ref} className={className} style={style}>
       {children}
     </div>
   );

@@ -8,26 +8,26 @@ const STEPS = [
   {
     n: "01",
     color: "var(--spectrum-ash)",
-    title: "Measure",
-    text: "Daily prompts fired at the 4 AIs reveal exactly where you stand — and where you're invisible.",
+    title: "Mesurer",
+    text: "Les questions posées aux IA révèlent exactement où vous en êtes — et où vous êtes invisible.",
   },
   {
     n: "02",
     color: "var(--spectrum-iris)",
-    title: "Diagnose",
-    text: "We map the sources the AIs actually read — the blogs and rankings deciding who gets recommended.",
+    title: "Diagnostiquer",
+    text: "On cartographie les sources que les IA lisent vraiment : les blogs et comparatifs qui décident qui est recommandé.",
   },
   {
     n: "03",
     color: "var(--spectrum-amber)",
-    title: "Get cited",
-    text: "You land your brand on those exact pages. That's the lever that moves AI answers.",
+    title: "Se faire citer",
+    text: "Vous placez votre marque sur ces pages précises. C'est le levier qui fait bouger les réponses.",
   },
   {
     n: "04",
     color: "var(--spectrum-poppy)",
-    title: "Rise",
-    text: "Tomorrow's reading proves it worked. Alerts catch any slip before your customers do.",
+    title: "Monter",
+    text: "Le relevé suivant le prouve. Les alertes rattrapent le moindre décrochage avant vos clients.",
   },
 ];
 
@@ -58,8 +58,8 @@ export function ClimbLoop() {
       </div>
       <p className="mt-8 flex items-center justify-center gap-2 border-t border-white/10 pt-6 text-center text-sm text-white/60">
         <RotateCcw aria-hidden className="size-4 text-[var(--spectrum-amber)]" />
-        Repeat weekly. The prompts alone don&apos;t move the needle — acting on what they reveal
-        does. Mentio hands you both.
+        On recommence chaque semaine. Poser les questions ne fait pas monter le score — agir sur ce
+        qu&apos;elles révèlent, oui. Mentio vous donne les deux.
       </p>
     </div>
   );

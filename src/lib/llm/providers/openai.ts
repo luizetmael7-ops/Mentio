@@ -1,6 +1,7 @@
 import OpenAI from "openai";
 import type { CitedSource, GroundedAnswer, LlmProvider } from "../types";
 import { domainOf, estimateCostUsd } from "../pricing";
+import { isModelConfigured } from "@/lib/models";
 
 const RUNNER_MODEL = process.env.OPENAI_RUNNER_MODEL ?? "gpt-5.4-mini";
 
@@ -14,7 +15,7 @@ export const openaiProvider: LlmProvider = {
   key: "chatgpt",
   label: "ChatGPT (OpenAI)",
 
-  isConfigured: () => Boolean(process.env.OPENAI_API_KEY),
+  isConfigured: () => isModelConfigured("chatgpt"),
 
   async ask(prompt: string): Promise<GroundedAnswer> {
     const response = await client().responses.create({

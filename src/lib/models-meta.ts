@@ -1,11 +1,11 @@
-/** Métadonnées d'affichage des modèles suivis (client-safe). Couleurs validées CVD (dataviz). */
-export const MODEL_META: Record<string, { label: string; color: string }> = {
-  chatgpt: { label: "ChatGPT", color: "#2a78d6" },
-  gemini: { label: "Gemini", color: "#1baf7a" },
-  claude: { label: "Claude", color: "#eda100" },
-  perplexity: { label: "Perplexity", color: "#4a3aa7" },
-};
+/**
+ * Vue « affichage » des modèles, dérivée de la source unique (@/lib/models).
+ * Client-safe : aucune lecture d'environnement au chargement du module.
+ */
+import { MODELS, modelName } from "@/lib/models";
 
-export function modelLabel(key: string): string {
-  return MODEL_META[key]?.label ?? key;
-}
+export const MODEL_META: Record<string, { label: string; color: string }> = Object.fromEntries(
+  MODELS.map((m) => [m.key, { label: m.name, color: m.color }])
+);
+
+export const modelLabel = modelName;

@@ -1,5 +1,6 @@
 import type { CitedSource, GroundedAnswer, LlmProvider } from "../types";
 import { domainOf, estimateCostUsd } from "../pricing";
+import { isModelConfigured } from "@/lib/models";
 
 const RUNNER_MODEL = process.env.PERPLEXITY_RUNNER_MODEL ?? "sonar";
 
@@ -15,7 +16,7 @@ export const perplexityProvider: LlmProvider = {
   key: "perplexity",
   label: "Perplexity",
 
-  isConfigured: () => Boolean(process.env.PERPLEXITY_API_KEY),
+  isConfigured: () => isModelConfigured("perplexity"),
 
   async ask(prompt: string): Promise<GroundedAnswer> {
     const res = await fetch("https://api.perplexity.ai/chat/completions", {

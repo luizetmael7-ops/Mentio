@@ -1,6 +1,7 @@
 import { GoogleGenAI, ThinkingLevel } from "@google/genai";
 import type { CitedSource, GroundedAnswer, LlmProvider } from "../types";
 import { domainOf, estimateCostUsd } from "../pricing";
+import { isModelConfigured } from "@/lib/models";
 
 // Alias qui suit toujours le modèle flash courant servi au grand public
 const RUNNER_MODEL = process.env.GOOGLE_RUNNER_MODEL ?? "gemini-flash-latest";
@@ -17,7 +18,7 @@ export const googleProvider: LlmProvider = {
   key: "gemini",
   label: "Gemini (Google)",
 
-  isConfigured: () => Boolean(process.env.GOOGLE_GENERATIVE_AI_API_KEY),
+  isConfigured: () => isModelConfigured("gemini"),
 
   async ask(prompt: string): Promise<GroundedAnswer> {
     const response = await client().models.generateContent({
