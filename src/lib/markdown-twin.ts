@@ -75,8 +75,8 @@ export async function llmsTxt(): Promise<string> {
       "",
       ...latest.brands.slice(0, 10).map((b, i) => {
         const score = brandScore(b, latest.runs);
-        return `${i + 1}. ${b.name} — ${b.total}/${latest.runs} (score ${score}/100, ${tierOf(score).label})${
-          b.top1 > 0 ? `, ${b.top1} fois en première position` : ""
+        return `${i + 1}. ${b.name} — cité dans ${b.total} réponses sur ${latest.runs} · score ${score}/100 (${tierOf(score).label})${
+          b.top1 > 0 ? ` · ${b.top1} fois en première position` : ""
         } — ${BASE}/marques/${brandSlug(b.name)}`;
       }),
       ""
