@@ -46,7 +46,9 @@ export default async function LandingPageEn({
     : "";
 
   return (
-    <div className="flex min-h-screen flex-col bg-[var(--porcelain)] text-[var(--ink)]">
+    /* Le layout racine est le seul à rendre <html lang="fr"> ; on redéclare donc la
+       langue sur ce sous-arbre — c'est ce que lisent les lecteurs d'écran et les crawlers. */
+    <div lang="en" className="flex min-h-screen flex-col bg-[var(--porcelain)] text-[var(--ink)]">
       <BrandNav locale="en" />
 
       <main id="top" className="flex-1">
