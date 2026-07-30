@@ -76,6 +76,11 @@ export const weeklyIndex = inngest.createFunction(
     }
 
     return await step.run("save-edition", async () => {
+      // Ne jamais publier une édition vide : mieux vaut garder la précédente
+      // que d'afficher un index à zéro si les providers ont échoué.
+      if (runs === 0 || brandStats.size === 0) {
+        throw new Error("Édition abandonnée : aucun run exploitable (providers en échec ?)");
+      }
       const data = {
         runs,
         models: providers.map((p) => p.key),

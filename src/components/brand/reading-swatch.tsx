@@ -1,3 +1,8 @@
+"use client";
+
+import { useEffect, useRef } from "react";
+import { spectrumOf } from "@/lib/spectrum";
+
 /**
  * Le « relevé nuancier » — signature UI de Mentio.
  * Une pastille de pigment par modèle d'IA, colorée sur le spectre de visibilité
@@ -9,17 +14,6 @@ export interface Reading {
   value: number; // 0–100
 }
 
-const SPECTRUM = [
-  { min: 85, color: "var(--spectrum-poppy)", label: "Top answer" },
-  { min: 65, color: "var(--spectrum-amber)", label: "Well cited" },
-  { min: 45, color: "var(--spectrum-coral)", label: "Cited" },
-  { min: 20, color: "var(--spectrum-iris)", label: "Glimpsed" },
-  { min: 0, color: "var(--spectrum-ash)", label: "Invisible" },
-];
-
-export function spectrumOf(value: number) {
-  return SPECTRUM.find((s) => value >= s.min) ?? SPECTRUM[SPECTRUM.length - 1];
-}
 
 export function ReadingSwatch({
   readings,
@@ -30,10 +24,26 @@ export function ReadingSwatch({
   title?: string;
   animate?: boolean;
 }) {
+  const gridRef = useRef<HTMLDivElement>(null);
+
+  // La cascade n'est « armée » qu'une fois le JS actif : sans lui, les pastilles
+  // restent simplement visibles (jamais de contenu masqué par une animation).
+  useEffect(() => {
+    const grid = gridRef.current;
+    if (!grid || !animate) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const cells = [...grid.children];
+    cells.forEach((cell) => cell.classList.add("swatch-armed"));
+    const id = requestAnimationFrame(() =>
+      requestAnimationFrame(() => cells.forEach((cell) => cell.classList.remove("swatch-armed")))
+    );
+    return () => cancelAnimationFrame(id);
+  }, [animate]);
+
   return (
     <figure className="rounded-3xl border border-[var(--line)] bg-white p-6 shadow-[0_16px_60px_rgb(23,21,32,0.08)] sm:p-8">
       <figcaption className="eyebrow mb-5">{title}</figcaption>
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+      <div ref={gridRef} className="grid grid-cols-2 gap-4 sm:grid-cols-4">
         {readings.map((reading, index) => {
           const spectrum = spectrumOf(reading.value);
           return (

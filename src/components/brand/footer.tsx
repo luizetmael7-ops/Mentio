@@ -15,6 +15,9 @@ export function BrandFooter() {
           <Link href="/score" className="transition-colors hover:text-white">
             Free scan
           </Link>
+          <Link href="/index" className="transition-colors hover:text-white">
+            The Index
+          </Link>
           <Link href="/pricing" className="transition-colors hover:text-white">
             Pricing
           </Link>

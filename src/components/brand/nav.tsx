@@ -17,6 +17,12 @@ export function BrandNav() {
             Free scan
           </Link>
           <Link
+            href="/index"
+            className="hidden rounded-full px-3 py-1.5 font-medium text-[var(--ink-soft)] transition-colors hover:text-[var(--ink)] sm:block"
+          >
+            The Index
+          </Link>
+          <Link
             href="/pricing"
             className="rounded-full px-3 py-1.5 font-medium text-[var(--ink-soft)] transition-colors hover:text-[var(--ink)]"
           >

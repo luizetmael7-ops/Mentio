@@ -3,7 +3,8 @@ import { ArrowRight } from "lucide-react";
 import { startScan } from "@/lib/actions/scan";
 import { BrandNav } from "@/components/brand/nav";
 import { BrandFooter } from "@/components/brand/footer";
-import { ReadingSwatch, spectrumOf } from "@/components/brand/reading-swatch";
+import { ReadingSwatch } from "@/components/brand/reading-swatch";
+import { spectrumOf } from "@/lib/spectrum";
 import { PricingTiers, WhiteGloveStrip, UpgradeLadder } from "@/components/brand/pricing-tiers";
 import { AutopilotStrip } from "@/components/brand/autopilot-strip";
 import { ClimbLoop } from "@/components/brand/climb-loop";
@@ -205,7 +206,10 @@ export default async function LandingPage({
               </ol>
               <div className="flex flex-col items-start justify-between gap-3 bg-[var(--porcelain)]/60 px-5 py-4 sm:flex-row sm:items-center sm:px-7">
                 <p className="text-sm text-[var(--ink-soft)]">
-                  Not on the list? That&apos;s exactly what we help you fix.
+                  Not on the list? That&apos;s exactly what we help you fix.{" "}
+                  <Link href="/index" className="font-medium text-[var(--ink)] underline">
+                    See the full Index →
+                  </Link>
                 </p>
                 <Link
                   href="/score"

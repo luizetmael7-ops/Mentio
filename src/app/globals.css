@@ -193,21 +193,20 @@
   }
 }
 
-/* Le « relevé nuancier » : les pastilles de pigment se révèlent en cascade */
-@keyframes swatch-in {
-  from {
-    opacity: 0;
-    transform: translateY(10px) scaleY(0.7);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scaleY(1);
-  }
-}
+/* Le « relevé nuancier » : cascade en TRANSITIONS (jamais en animation `both`).
+   Une animation qui ne joue pas — onglet ouvert en arrière-plan, moteur qui la
+   suspend — laisserait le contenu invisible. Une transition non jouée applique
+   directement l'état final : le contenu reste toujours lisible. */
 .swatch-anim {
-  animation: swatch-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
-  animation-delay: calc(var(--swatch-index, 0) * 120ms);
   transform-origin: bottom;
+  transition:
+    opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: calc(var(--swatch-index, 0) * 110ms);
+}
+.swatch-armed {
+  opacity: 0;
+  transform: translateY(10px) scaleY(0.8);
 }
 
 /* Marquee vertical des prompts (autopilot strip) */
@@ -231,31 +230,27 @@
   }
 }
 
-/* Reveal discret au scroll */
-@keyframes rise-in {
-  from {
-    opacity: 0;
-    transform: translateY(14px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-.reveal {
+/* Reveal discret au scroll — transitions, pour la même raison que ci-dessus */
+/* Le contenu est visible par défaut ; `reveal-armed` n'est posé qu'en JS (voir Reveal). */
+.reveal-armed {
   opacity: 0;
+  transform: translateY(14px);
+  transition:
+    opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
 }
-.reveal.is-visible {
-  animation: rise-in 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+.reveal-armed.is-visible {
+  opacity: 1;
+  transform: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .swatch-anim,
-  .reveal.is-visible {
-    animation: none !important;
-  }
-  .reveal {
-    opacity: 1;
+  .swatch-armed,
+  .reveal-armed {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
   }
 }
 

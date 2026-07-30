@@ -5,6 +5,7 @@ import { supabaseAdmin } from "@/lib/supabase/admin";
 import { submitLead } from "@/lib/actions/lead";
 import { modelLabel } from "@/lib/models-meta";
 import { ScanPoller } from "@/components/scan-poller";
+import { ScanProgress } from "@/components/scan-progress";
 import { ShareReading } from "@/components/share-reading";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -38,20 +39,9 @@ export default async function ScanPage({ params }: { params: Promise<{ id: strin
 
   if (scan.status === "pending" || scan.status === "running") {
     return (
-      <main className="flex-1 flex items-center justify-center p-6">
+      <main className="flex flex-1 items-center justify-center bg-[var(--porcelain)] p-6">
         <ScanPoller scanId={scan.id} />
-        <Card className="w-full max-w-md text-center">
-          <CardHeader>
-            <CardTitle>Reading “{scan.brand_name}”…</CardTitle>
-            <CardDescription>
-              We&apos;re asking the AIs 10 real buying questions from your category, live. About a
-              minute.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="animate-pulse text-4xl">🔎</div>
-          </CardContent>
-        </Card>
+        <ScanProgress brandName={scan.brand_name} />
       </main>
     );
   }

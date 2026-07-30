@@ -47,7 +47,13 @@ const NON_BRANDS = new Set(
   ].map((n) => normalizeBrandName(n))
 );
 
-export async function judgeAnswer(rawAnswer: string): Promise<{ extraction: Extraction; costUsd: number }> {
+function clean(extraction: Extraction): Extraction {
+  extraction.brands = extraction.brands.filter((b) => !NON_BRANDS.has(normalizeBrandName(b.name)));
+  return extraction;
+}
+
+/** Juge principal — OpenAI (le moins cher pour de l'extraction). */
+async function judgeWithOpenAI(rawAnswer: string) {
   const completion = await client().chat.completions.parse({
     model: JUDGE_MODEL,
     messages: [
@@ -58,15 +64,58 @@ export async function judgeAnswer(rawAnswer: string): Promise<{ extraction: Extr
   });
 
   const extraction = completion.choices[0]?.message.parsed;
-  if (!extraction) throw new Error("Juge : extraction JSON vide ou refusée");
-  extraction.brands = extraction.brands.filter((b) => !NON_BRANDS.has(normalizeBrandName(b.name)));
+  if (!extraction) throw new Error("Juge OpenAI : extraction JSON vide ou refusée");
 
   const usage = completion.usage;
   const costUsd = Number(
     (((usage?.prompt_tokens ?? 0) * 0.25 + (usage?.completion_tokens ?? 0) * 2.0) / 1_000_000).toFixed(6)
   );
+  return { extraction: clean(extraction), costUsd };
+}
 
-  return { extraction, costUsd };
+/**
+ * Juge de secours — Claude Haiku 4.5. Indispensable : sans lui, un quota OpenAI
+ * épuisé faisait tomber TOUT le pipeline (scans, index, runs quotidiens), même
+ * quand les autres modèles répondaient parfaitement.
+ */
+async function judgeWithAnthropic(rawAnswer: string) {
+  const Anthropic = (await import("@anthropic-ai/sdk")).default;
+  const { zodOutputFormat } = await import("@anthropic-ai/sdk/helpers/zod");
+  const anthropic = new Anthropic();
+
+  const message = await anthropic.messages.parse({
+    model: "claude-haiku-4-5",
+    max_tokens: 2048,
+    system: SYSTEM,
+    messages: [{ role: "user", content: rawAnswer }],
+    output_config: { format: zodOutputFormat(ExtractionSchema) },
+  });
+
+  const extraction = message.parsed_output;
+  if (!extraction) throw new Error("Juge Anthropic : extraction JSON vide ou refusée");
+
+  const costUsd = Number(
+    ((message.usage.input_tokens * 1.0 + message.usage.output_tokens * 5.0) / 1_000_000).toFixed(6)
+  );
+  return { extraction: clean(extraction), costUsd };
+}
+
+export async function judgeAnswer(rawAnswer: string): Promise<{ extraction: Extraction; costUsd: number }> {
+  const openAiConfigured = Boolean(process.env.OPENAI_API_KEY);
+  const anthropicConfigured = Boolean(process.env.ANTHROPIC_API_KEY);
+
+  if (openAiConfigured) {
+    try {
+      return await judgeWithOpenAI(rawAnswer);
+    } catch (error) {
+      if (!anthropicConfigured) throw error;
+      console.warn(
+        `Juge OpenAI indisponible (${(error as Error).message.slice(0, 80)}) → bascule sur Claude`
+      );
+    }
+  }
+  if (!anthropicConfigured) throw new Error("Aucun juge configuré (OPENAI_API_KEY / ANTHROPIC_API_KEY)");
+  return judgeWithAnthropic(rawAnswer);
 }
 
 /** Comparaison tolérante de noms de marques ("Nutri&Co" ≈ "nutri and co" ≈ "Nutri & Co") */
