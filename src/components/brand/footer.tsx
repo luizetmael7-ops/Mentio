@@ -9,6 +9,9 @@ const COPY = {
     index: "Le Baromètre",
     pricing: "Tarifs",
     login: "Connexion",
+    sources: "Sources",
+    scale: "Le barème",
+    contact: "Contact",
     terms: "CGU",
     privacy: "Confidentialité",
     legal:
@@ -22,6 +25,9 @@ const COPY = {
     index: "The Index",
     pricing: "Pricing",
     login: "Log in",
+    sources: "Sources",
+    scale: "Le barème",
+    contact: "Contact",
     terms: "Terms",
     privacy: "Privacy",
     legal:
@@ -50,11 +56,20 @@ export function BrandFooter({ locale = "fr" }: { locale?: "fr" | "en" }) {
           <Link href="/barometre" className="transition-colors hover:text-white">
             {t.index}
           </Link>
+          <Link href="/sources" className="transition-colors hover:text-white">
+            {t.sources}
+          </Link>
+          <Link href="/score-mentio" className="transition-colors hover:text-white">
+            {t.scale}
+          </Link>
           <Link href="/pricing" className="transition-colors hover:text-white">
             {t.pricing}
           </Link>
           <Link href="/login" className="transition-colors hover:text-white">
             {t.login}
+          </Link>
+          <Link href="/contact" className="transition-colors hover:text-white">
+            {t.contact}
           </Link>
           <Link href="/terms" className="transition-colors hover:text-white">
             {t.terms}

@@ -9,6 +9,7 @@ import { inngest } from "../client";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { activeProviders, askWithTimeout } from "@/lib/llm";
 import { judgeAnswer, sameBrand } from "@/lib/llm/judge";
+import { guard, recordSpend } from "@/lib/spend-guard";
 
 const VERTICAL = "beaute_complements";
 const BATCH = 5;
@@ -32,6 +33,12 @@ export const weeklyIndex = inngest.createFunction(
       if (error) throw new Error(error.message);
       return data ?? [];
     });
+
+    // Coupe-circuit : le Baromètre est du contenu, pas du revenu — il est plafonné.
+    const budget = await step.run("check-budget", async () => guard("index"));
+    if (!budget.allowed) {
+      return { skipped: true, reason: budget.reason, spentUsd: budget.spentUsd };
+    }
 
     const providers = activeProviders().filter((p) => p.key === "chatgpt" || p.key === "gemini");
     const jobs = prompts.flatMap((p) => providers.map((provider) => ({ text: p.text, model: provider.key })));
@@ -61,6 +68,7 @@ export const weeklyIndex = inngest.createFunction(
             if (!provider) return null;
             try {
               const answer = await askWithTimeout(provider, job.text);
+              await recordSpend("index", answer.costUsd);
               const { extraction } = await judgeAnswer(answer.text);
               return {
                 prompt: job.text,
@@ -127,11 +135,10 @@ export const weeklyIndex = inngest.createFunction(
       return { runs, top: data.topBrands.slice(0, 3).map((b) => `${b.name} (${b.total})`) };
     });
 
-    // La newsletter part maintenant que l'édition existe — jamais à vide.
-    await step.sendEvent("notify-subscribers", {
-      name: "mentio/index.published",
-      data: { vertical: VERTICAL },
-    });
+    // Newsletter EN PAUSE (décision du 2026-07-30) : le code d'envoi est conservé
+    // dans functions/newsletter.ts, mais la fonction n'est plus enregistrée et
+    // l'événement n'est plus émis. Pour réactiver : réenregistrer la fonction dans
+    // api/inngest/route.ts et remettre le sendEvent "mentio/index.published" ici.
 
     return saved;
   }

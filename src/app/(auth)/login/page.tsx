@@ -1,12 +1,17 @@
+import type { Metadata } from "next";
 import { Suspense } from "react";
 import { AuthForm } from "@/components/auth-form";
 
+export const metadata: Metadata = {
+  title: "Connexion — Mentio",
+  description: "Accédez au suivi de la visibilité de votre marque dans les réponses d'IA.",
+  alternates: { canonical: "/login" },
+};
+
 export default function LoginPage() {
   return (
-    <main className="flex-1 flex items-center justify-center p-6">
-      <Suspense>
-        <AuthForm mode="login" />
-      </Suspense>
-    </main>
+    <Suspense>
+      <AuthForm mode="login" />
+    </Suspense>
   );
 }

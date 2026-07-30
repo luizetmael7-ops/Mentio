@@ -10,6 +10,7 @@ const COPY = {
     nav: "Navigation principale",
     scan: "Scan gratuit",
     index: "Le Baromètre",
+    sources: "Sources",
     pricing: "Tarifs",
     login: "Connexion",
     signup: "Commencer",
@@ -21,6 +22,7 @@ const COPY = {
     nav: "Main navigation",
     scan: "Free scan",
     index: "The Index",
+    sources: "Sources",
     pricing: "Pricing",
     login: "Log in",
     signup: "Get started",
@@ -48,6 +50,12 @@ export function BrandNav({ locale = "fr" }: { locale?: "fr" | "en" }) {
             className="hidden rounded-full px-3 py-1.5 font-medium text-[var(--ink-soft)] transition-colors hover:text-[var(--ink)] sm:block"
           >
             {t.index}
+          </Link>
+          <Link
+            href="/sources"
+            className="hidden rounded-full px-3 py-1.5 font-medium text-[var(--ink-soft)] transition-colors hover:text-[var(--ink)] lg:block"
+          >
+            {t.sources}
           </Link>
           <Link
             href="/pricing"

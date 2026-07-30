@@ -31,13 +31,15 @@ export function TierBadge({
 export function TierScale({ highlight }: { highlight?: number }) {
   const active = highlight === undefined ? null : tierOf(highlight);
   return (
-    <div>
+    /* Requête de CONTENEUR, pas de viewport : l'échelle est aussi affichée dans des
+       colonnes étroites (volet d'inscription), où cinq colonnes se chevauchaient. */
+    <div className="@container">
       <div
         aria-hidden
         className="h-2 rounded-full"
         style={{ background: SPECTRUM_GRADIENT }}
       />
-      <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2 sm:grid-cols-5 sm:gap-x-2">
+      <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2 @md:grid-cols-3 @2xl:grid-cols-5 @2xl:gap-x-2">
         {TIERS.map((tier) => {
           const isActive = active?.key === tier.key;
           return (

@@ -12,7 +12,6 @@ import { PricingTiers, WhiteGloveStrip, UpgradeLadder } from "@/components/brand
 import { AutopilotStrip } from "@/components/brand/autopilot-strip";
 import { ClimbLoop } from "@/components/brand/climb-loop";
 import { Reveal } from "@/components/brand/reveal";
-import { NewsletterForm } from "@/components/brand/newsletter-form";
 import { getLatestEdition, formatEditionDate, brandSlug } from "@/lib/index-edition";
 
 export const metadata: Metadata = {
@@ -401,33 +400,41 @@ export default async function LandingPage({
           </div>
         </section>
 
-        {/* Newsletter du Baromètre */}
-        <section className="mx-auto max-w-3xl px-5 py-8">
-          <Reveal>
-            <NewsletterForm source="landing" />
-          </Reveal>
-        </section>
-
         {/* ---------- 8. LE FONDATEUR ---------- */}
         <section className="mx-auto max-w-3xl px-5 py-16">
           <Reveal>
             <div className="rounded-3xl border border-[var(--line)] bg-white p-7 sm:p-9">
-              <p className="eyebrow">Qui construit Mentio</p>
+              <p className="eyebrow">Un baromètre indépendant</p>
               <p className="mt-4 text-lg leading-relaxed">
-                Mentio est construit par <strong>Maël Luizet</strong>, seul, depuis Nice. J&apos;ai
-                commencé par mesurer ma propre curiosité : quelles marques les IA citent-elles quand
-                on leur demande quoi acheter ? Personne ne publiait la réponse. Alors je la publie
-                chaque semaine.
+                Mentio est un produit indépendant, développé en France. Personne n&apos;achète sa
+                place au classement, aucune marque ne sponsorise une édition, et la méthode est
+                publiée en entier — vous pouvez la contester chiffre par chiffre.
               </p>
-              <p className="mt-4 text-sm text-[var(--ink-soft)]">
-                Une question, un doute sur un chiffre, une marque à corriger dans le classement ?
-                Écrivez-moi, je réponds moi-même :{" "}
-                <a
-                  href="mailto:hello@mentio.fr"
+              <ul className="mt-6 grid gap-2.5 text-sm text-[var(--ink-soft)] sm:grid-cols-2">
+                {[
+                  "Aucun placement payant, jamais",
+                  "Méthodologie publique et datée",
+                  "Droit de réponse pour toute marque classée",
+                  "Données exportables et API ouverte",
+                ].map((item) => (
+                  <li key={item} className="flex items-start gap-2">
+                    <span
+                      aria-hidden
+                      className="mt-1.5 size-1.5 shrink-0 rounded-full bg-[var(--poppy)]"
+                    />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+              <p className="mt-6 text-sm text-[var(--ink-soft)]">
+                Un doute sur un chiffre, une marque à corriger, une réclamation ?{" "}
+                <Link
+                  href="/contact"
                   className="font-medium text-[var(--ink)] underline decoration-[var(--line)] underline-offset-4"
                 >
-                  hello@mentio.fr
-                </a>
+                  Écrivez-nous
+                </Link>{" "}
+                — chaque message est lu.
               </p>
             </div>
           </Reveal>

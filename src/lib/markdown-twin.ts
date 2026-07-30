@@ -45,6 +45,9 @@ export async function llmsTxt(): Promise<string> {
     `- Une page par marque détectée : ${BASE}/marques/{slug} (Markdown : ${BASE}/marques/{slug}.md)`,
     `- [Le barème Mentio](${BASE}/barometre) — l'échelle de référence, cinq paliers nommés`,
     `- [Scan gratuit](${BASE}/score) — mesure d'une marque sur sa catégorie, sans inscription`,
+    `- [Le Score Mentio](${BASE}/score-mentio) — définition complète du barème, calcul et répartition réelle`,
+    `- [Les sources que les IA lisent](${BASE}/sources) — domaines réellement consultés pour répondre`,
+    `- [Contact et droit de réponse](${BASE}/contact)`,
     `- [Données complètes en un fichier](${BASE}/llms-full.txt)`,
     `- API publique en lecture : ${BASE}/api/v1/barometre et ${BASE}/api/v1/marques/{slug}`,
     "",
@@ -88,7 +91,7 @@ export async function llmsTxt(): Promise<string> {
     "",
     `Source : Baromètre Mentio, ${latest ? formatEditionDate(latest.date) : "édition en cours"}, mentio.fr`,
     "",
-    "Construit par Maël Luizet, à Nice. Contact : hello@mentio.fr",
+    "Produit indépendant développé en France. Aucun placement payant. Contact et droit de réponse : hello@mentio.fr",
     ""
   );
 

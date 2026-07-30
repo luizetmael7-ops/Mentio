@@ -8,6 +8,7 @@ import { inngest } from "../client";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { activeProviders, askWithTimeout } from "@/lib/llm";
 import { judgeAnswer, sameBrand } from "@/lib/llm/judge";
+import { guard, recordSpend } from "@/lib/spend-guard";
 import { generateScanPrompts } from "@/lib/llm/scan-prompts";
 
 const SCAN_PROMPTS = 10;
@@ -26,6 +27,19 @@ export const publicScan = inngest.createFunction(
   async ({ event, step }) => {
     const supabase = supabaseAdmin();
     const { scanId, brandName } = event.data as { scanId: string; brandName: string; displayName: string };
+
+    // Coupe-circuit : les scans publics ne rapportent rien, ils sont donc plafonnés.
+    // Un client payant n'est jamais concerné (bucket "paid" = plafond infini).
+    const budget = await step.run("check-budget", async () => guard("public_scan"));
+    if (!budget.allowed) {
+      await step.run("mark-quota", async () => {
+        await supabase
+          .from("public_scans")
+          .update({ status: "failed", error: budget.reason })
+          .eq("id", scanId);
+      });
+      return { skipped: true, reason: budget.reason, spentUsd: budget.spentUsd };
+    }
 
     await step.run("mark-running", async () => {
       await supabase.from("public_scans").update({ status: "running" }).eq("id", scanId);
@@ -69,6 +83,7 @@ export const publicScan = inngest.createFunction(
             if (!provider) return { model: job.model, detail: null };
             try {
               const answer = await askWithTimeout(provider, job.promptText);
+              await recordSpend("public_scan", answer.costUsd);
               const { extraction } = await judgeAnswer(answer.text);
               const target = extraction.brands.find((b) => sameBrand(b.name, brandName));
               return {

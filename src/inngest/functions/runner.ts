@@ -7,6 +7,7 @@ import { inngest } from "../client";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { activeProviders, getProvider, askWithTimeout } from "@/lib/llm";
 import { PLAN_LIMITS, isRunDue, modelsDue, planModels, type Plan } from "@/lib/plans";
+import { guard, recordSpend } from "@/lib/spend-guard";
 
 export const dailyRunner = inngest.createFunction(
   { id: "daily-runner", triggers: [{ cron: "TZ=Europe/Paris 0 6 * * *" }] },
@@ -75,7 +76,7 @@ export const brandRunner = inngest.createFunction(
     const events = prompts.flatMap((prompt) =>
       models.map((model) => ({
         name: "mentio/prompt.run",
-        data: { brandId, promptId: prompt.id, promptText: prompt.text, model },
+        data: { brandId, promptId: prompt.id, promptText: prompt.text, model, plan },
       }))
     );
     if (events.length > 0) await step.sendEvent("fan-out-runs", events);
@@ -106,7 +107,16 @@ export const promptRunner = inngest.createFunction(
       return { skipped: true, reason: `provider ${model} non configuré` };
     }
 
+    // Les comptes gratuits sont plafonnés ; les payants ne le sont jamais.
+    const plan = ((event.data.plan as string) ?? "free") as Plan;
+    const bucket = plan === "free" ? "free_plan" : "paid";
+    const budget = await step.run("check-budget", async () => guard(bucket));
+    if (!budget.allowed) {
+      return { skipped: true, reason: budget.reason };
+    }
+
     const answer = await step.run("ask-llm", () => askWithTimeout(provider, promptText, 60_000));
+    await step.run("record-spend", async () => recordSpend(bucket, answer.costUsd));
 
     const promptRunId = await step.run("save-run", async () => {
       const { data, error } = await supabase

@@ -386,21 +386,37 @@ export default async function LandingPageEn({
         <section className="mx-auto max-w-3xl px-5 py-8">
           <Reveal>
             <div className="rounded-3xl border border-[var(--line)] bg-white p-7 sm:p-9">
-              <p className="eyebrow">Who builds Mentio</p>
+              <p className="eyebrow">An independent barometer</p>
               <p className="mt-4 text-lg leading-relaxed">
-                Mentio is built by <strong>Maël Luizet</strong>, alone, from Nice. It started as my
-                own curiosity: which brands do the AIs cite when you ask them what to buy? Nobody
-                was publishing the answer. So I publish it every week.
+                Mentio is an independent product, built in France. Nobody buys their place in the
+                ranking, no brand sponsors an edition, and the method is published in full — you can
+                challenge it number by number.
               </p>
-              <p className="mt-4 text-sm text-[var(--ink-soft)]">
-                A question, a doubt about a number, a brand to correct in the ranking? Write to me, I
-                answer myself:{" "}
-                <a
-                  href="mailto:hello@mentio.fr"
+              <ul className="mt-6 grid gap-2.5 text-sm text-[var(--ink-soft)] sm:grid-cols-2">
+                {[
+                  "No paid placement, ever",
+                  "Public, dated methodology",
+                  "Right of reply for every ranked brand",
+                  "Exportable data and an open API",
+                ].map((item) => (
+                  <li key={item} className="flex items-start gap-2">
+                    <span
+                      aria-hidden
+                      className="mt-1.5 size-1.5 shrink-0 rounded-full bg-[var(--poppy)]"
+                    />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+              <p className="mt-6 text-sm text-[var(--ink-soft)]">
+                A doubt about a number, a brand to correct, a complaint?{" "}
+                <Link
+                  href="/contact"
                   className="font-medium text-[var(--ink)] underline decoration-[var(--line)] underline-offset-4"
                 >
-                  hello@mentio.fr
-                </a>
+                  Write to us
+                </Link>{" "}
+                — every message is read.
               </p>
             </div>
           </Reveal>
