@@ -13,6 +13,7 @@ const COPY = {
     privacy: "Confidentialité",
     legal:
       "Relevés effectués via les APIs officielles des modèles, recherche web activée. Fait en France 🇫🇷",
+    machines: "Pour les machines",
   },
   en: {
     tagline: ["Perception, ", "measured", "."],
@@ -25,6 +26,7 @@ const COPY = {
     privacy: "Privacy",
     legal:
       "Readings taken via the models' official APIs, web search enabled. Made in France 🇫🇷",
+    machines: "For machines",
   },
 } as const;
 
@@ -62,7 +64,16 @@ export function BrandFooter({ locale = "fr" }: { locale?: "fr" | "en" }) {
           </Link>
         </nav>
       </div>
-      <div className="mx-auto mt-10 flex max-w-6xl items-center gap-3 border-t border-white/10 pt-6 text-xs text-white/40">
+      {/* Mentio mesure quelles sources les IA citent : il doit lui-même être lisible par elles. */}
+      <div className="mx-auto mt-8 flex max-w-6xl flex-wrap items-center gap-x-5 gap-y-2 border-t border-white/10 pt-6 font-metric text-[0.65rem] uppercase tracking-wider text-white/40">
+        <span>{t.machines}</span>
+        <a href="/llms.txt" className="transition-colors hover:text-white">llms.txt</a>
+        <a href="/llms-full.txt" className="transition-colors hover:text-white">llms-full.txt</a>
+        <a href="/barometre.md" className="transition-colors hover:text-white">barometre.md</a>
+        <a href="/api/v1/barometre" className="transition-colors hover:text-white">API</a>
+        <a href="/sitemap.xml" className="transition-colors hover:text-white">sitemap</a>
+      </div>
+      <div className="mx-auto mt-6 flex max-w-6xl items-center gap-3 text-xs text-white/40">
         <LogoMark size={14} />
         <p>Mentio — mentio.fr · {t.legal}</p>
       </div>

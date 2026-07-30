@@ -92,7 +92,7 @@ export const weeklyIndex = inngest.createFunction(
       }
     }
 
-    return await step.run("save-edition", async () => {
+    const saved = await step.run("save-edition", async () => {
       // Ne jamais publier une édition vide : mieux vaut garder la précédente
       // que d'afficher un index à zéro si les providers ont échoué.
       if (runs === 0 || brandStats.size === 0) {
@@ -126,5 +126,13 @@ export const weeklyIndex = inngest.createFunction(
       if (error) throw new Error(error.message);
       return { runs, top: data.topBrands.slice(0, 3).map((b) => `${b.name} (${b.total})`) };
     });
+
+    // La newsletter part maintenant que l'édition existe — jamais à vide.
+    await step.sendEvent("notify-subscribers", {
+      name: "mentio/index.published",
+      data: { vertical: VERTICAL },
+    });
+
+    return saved;
   }
 );

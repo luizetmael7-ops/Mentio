@@ -8,6 +8,7 @@ import { TierScale, TierBadge } from "@/components/brand/tier";
 import { tierOf } from "@/lib/spectrum";
 import { modelName } from "@/lib/models";
 import { ClaimBrand } from "@/components/brand/claim-brand";
+import { BadgeEmbed } from "@/components/brand/badge-embed";
 import {
   getEditions,
   formatEditionDate,
@@ -371,6 +372,32 @@ export default async function BrandPage({ params }: { params: Promise<{ slug: st
         <section className="mt-12">
           <ClaimBrand brandName={brand.name} slug={slug} />
         </section>
+
+        {/* Badge embarquable */}
+        <section className="mt-6">
+          <BadgeEmbed slug={slug} brandName={brand.name} />
+        </section>
+
+        {/* Comparaisons — les pages /vs/ à forte intention */}
+        {topRivals.length > 0 && (
+          <section className="mt-12">
+            <h2 className="font-display text-xl font-extrabold uppercase tracking-wide">
+              Comparer
+            </h2>
+            <ul className="mt-4 flex flex-wrap gap-2">
+              {topRivals.slice(0, 6).map((rival) => (
+                <li key={rival.name}>
+                  <Link
+                    href={`/vs/${slug}-vs-${brandSlug(rival.name)}`}
+                    className="inline-flex rounded-full border border-[var(--line)] bg-white px-4 py-2 text-sm font-medium transition-colors hover:border-[var(--ink)]"
+                  >
+                    {brand.name} ou {rival.name} ?
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
 
         {/* Le barème, pour lire le score */}
         <section className="mt-12 rounded-2xl border border-[var(--line)] bg-white p-5 sm:p-6">

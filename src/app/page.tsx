@@ -12,6 +12,7 @@ import { PricingTiers, WhiteGloveStrip, UpgradeLadder } from "@/components/brand
 import { AutopilotStrip } from "@/components/brand/autopilot-strip";
 import { ClimbLoop } from "@/components/brand/climb-loop";
 import { Reveal } from "@/components/brand/reveal";
+import { NewsletterForm } from "@/components/brand/newsletter-form";
 import { getLatestEdition, formatEditionDate, brandSlug } from "@/lib/index-edition";
 
 export const metadata: Metadata = {
@@ -398,6 +399,13 @@ export default async function LandingPage({
             <PricingTiers />
             <WhiteGloveStrip />
           </div>
+        </section>
+
+        {/* Newsletter du Baromètre */}
+        <section className="mx-auto max-w-3xl px-5 py-8">
+          <Reveal>
+            <NewsletterForm source="landing" />
+          </Reveal>
         </section>
 
         {/* ---------- 8. LE FONDATEUR ---------- */}

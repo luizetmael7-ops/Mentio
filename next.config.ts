@@ -10,6 +10,12 @@ const nextConfig: NextConfig = {
       { source: "/index", destination: "/barometre", permanent: true },
     ];
   },
+  async rewrites() {
+    return [
+      // Jumeaux Markdown : /marques/la-roche-posay.md — l'URL que les modèles devinent
+      { source: "/marques/:slug.md", destination: "/marques/:slug/md" },
+    ];
+  },
 };
 
 export default nextConfig;

@@ -16,7 +16,10 @@ export interface Tier {
   label: string;
   min: number;
   max: number;
+  /** Variable CSS — pour le site */
   color: string;
+  /** Valeur hexadécimale — pour les contextes sans CSS : images OG, badge SVG, emails */
+  hex: string;
   /** Une phrase qui explique ce que le palier veut dire concrètement */
   meaning: string;
 }
@@ -28,6 +31,7 @@ export const TIERS: Tier[] = [
     min: 0,
     max: 9,
     color: "var(--spectrum-ash)",
+    hex: "#727387",
     meaning:
       "Votre marque est quasi absente des réponses : moins d'une question d'achat sur dix la mentionne.",
   },
@@ -37,6 +41,7 @@ export const TIERS: Tier[] = [
     min: 10,
     max: 29,
     color: "var(--spectrum-iris)",
+    hex: "#7A5FA8",
     meaning: "Votre marque apparaît, mais rarement et jamais en tête.",
   },
   {
@@ -45,6 +50,7 @@ export const TIERS: Tier[] = [
     min: 30,
     max: 54,
     color: "var(--spectrum-coral)",
+    hex: "#EF8060",
     meaning: "Vous faites partie des réponses, sans être un premier choix.",
   },
   {
@@ -53,6 +59,7 @@ export const TIERS: Tier[] = [
     min: 55,
     max: 79,
     color: "var(--spectrum-amber)",
+    hex: "#E7A94B",
     meaning: "Les IA vous recommandent régulièrement, souvent parmi les premiers.",
   },
   {
@@ -61,6 +68,7 @@ export const TIERS: Tier[] = [
     min: 80,
     max: 100,
     color: "var(--spectrum-poppy)",
+    hex: "#E8462B",
     meaning: "Vous êtes la réponse par défaut : cité en tête sur la majorité des questions.",
   },
 ];

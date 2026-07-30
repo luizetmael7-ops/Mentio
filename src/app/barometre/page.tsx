@@ -7,6 +7,7 @@ import { TierScale } from "@/components/brand/tier";
 import { CountUp } from "@/components/brand/count-up";
 import { Reveal } from "@/components/brand/reveal";
 import { RankingTable, type RankingRow } from "@/components/brand/ranking-table";
+import { NewsletterForm } from "@/components/brand/newsletter-form";
 import { modelName } from "@/lib/models";
 import { getEditions, formatEditionDate, brandSlug, brandScore } from "@/lib/index-edition";
 
@@ -236,6 +237,13 @@ export default async function BarometrePage() {
             </Reveal>
           </section>
         )}
+
+        {/* Newsletter — l'audience possédée */}
+        <section className="mx-auto max-w-5xl px-5 pb-20">
+          <Reveal>
+            <NewsletterForm source="barometre" />
+          </Reveal>
+        </section>
 
         {/* Méthodologie — ce qui rend le baromètre crédible */}
         <section className="mx-auto max-w-3xl px-5 pb-24">
