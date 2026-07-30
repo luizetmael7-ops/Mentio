@@ -83,7 +83,7 @@ export default async function OgImage({ params }: { params: Promise<{ slug: stri
               Score Mentio
             </div>
             <div style={{ display: "flex", alignItems: "baseline", color: "#fff" }}>
-              <div style={{ fontSize: 128, fontWeight: 800, lineHeight: 1 }}>{score}</div>
+              <div style={{ fontSize: 128, fontWeight: 800, lineHeight: 1 }}>{String(score)}</div>
               <div style={{ fontSize: 36, color: "rgba(255,255,255,0.6)" }}>/100</div>
             </div>
             <div
@@ -119,8 +119,11 @@ export default async function OgImage({ params }: { params: Promise<{ slug: stri
             </div>
             {found && (
               <div style={{ fontSize: 22, color: "#544F60", marginTop: 18 }}>
-                {found.rank === 1 ? "1re" : `${found.rank}e`} du Baromètre ·{" "}
-                {found.brand.top1 > 0 ? `${found.brand.top1} fois en 1re position` : "jamais en tête"}
+                {`${found.rank === 1 ? "1re" : `${found.rank}e`} du Baromètre · ${
+                  found.brand.top1 > 0
+                    ? `${found.brand.top1} fois en 1re position`
+                    : "jamais en tête"
+                }`}
               </div>
             )}
           </div>
