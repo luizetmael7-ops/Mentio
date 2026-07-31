@@ -12,6 +12,7 @@
  */
 import { readFileSync, writeFileSync } from "node:fs";
 import { normalizeBrandName, sameBrand } from "../src/lib/llm/judge";
+import { contextFor } from "./outreach-questions";
 
 const CIBLES = "/Users/maelluizet/Downloads/mentio-cibles.md";
 const DATA = "content/etude-2026-07-data.json";
@@ -98,6 +99,27 @@ function leaderboard(group: "supplements" | "beauty") {
 
 const BOARDS = { supplements: leaderboard("supplements"), beauty: leaderboard("beauty") };
 
+/**
+ * Les marques qui ont RÉELLEMENT une page publiée, lues sur l'API publique.
+ *
+ * On a d'abord essayé de recalculer la coupe des 50 en local : ça a produit deux
+ * liens morts, parce que la fusion des variantes de noms ne redonne pas exactement
+ * le même classement que l'édition en base. On lit donc la source de vérité.
+ * Si l'API ne répond pas, on n'envoie AUCUN lien — jamais de lien mort.
+ */
+let PUBLISHED_SLUGS = new Set<string>();
+
+async function loadPublishedSlugs() {
+  try {
+    const res = await fetch("https://mentio.fr/api/v1/barometre?limit=50");
+    const json = (await res.json()) as { brands?: Array<{ slug: string }> };
+    PUBLISHED_SLUGS = new Set((json.brands ?? []).map((b) => b.slug));
+    console.log(`   ${PUBLISHED_SLUGS.size} pages marques publiées (source : API)`);
+  } catch {
+    console.warn("   ⚠ API injoignable — aucun lien marque ne sera inséré");
+  }
+}
+
 /** Marque la plus citée toutes catégories confondues — sert au message C (chiffre exact). */
 const OVERALL_LEADER = [...BOARDS.supplements, ...BOARDS.beauty].reduce(
   (best, b) => {
@@ -129,20 +151,14 @@ function examplePrompt(group: "supplements" | "beauty", leaderName: string) {
   return (hit ?? runsByGroup[group][0]).prompt;
 }
 
-const CATEGORY_PHRASE: Record<number, string> = {
-  1: "quel complément alimentaire choisir",
-  2: "quelle marque de soins visage choisir",
-  3: "quel shampoing / déodorant naturel choisir",
-  4: "quel café ou quelle boisson choisir",
-  5: "quelle marque de snacking choisir",
-  6: "quelle culotte menstruelle choisir",
-  7: "quelle marque bébé choisir",
-  8: "quelle croquette ou pâtée choisir",
-  9: "quelle marque de vêtements made in France choisir",
-  10: "quel matelas / quelle marque maison choisir",
-};
-
-const groupForCategory = (i: number): "supplements" | "beauty" => (i === 1 ? "supplements" : "beauty");
+/**
+ * Seules les catégories 1 à 3 sont mesurées. Avant, tout le reste tombait dans
+ * « beauty » : un torréfacteur recevait donc le classement beauté et une
+ * comparaison à La Roche-Posay. Les non mesurées renvoient null et partent en
+ * accroche C, qui ne cite aucun chiffre d'un autre rayon comme s'il était le leur.
+ */
+const groupForCategory = (i: number): "supplements" | "beauty" | null =>
+  i === 1 ? "supplements" : i === 2 || i === 3 ? "beauty" : null;
 
 /** Vouvoiement partout : un seul message doit tenir sur Insta, LinkedIn ET mail. */
 function greeting(t: Target) {
@@ -152,26 +168,61 @@ function greeting(t: Target) {
 interface Message {
   type: "A" | "B" | "C";
   subject: string;
+  /** Version longue — mail et LinkedIn */
   message: string;
+  /** Version courte — DM Instagram, le canal principal (les CEO y sont joignables) */
+  insta: string;
   linkedinNote: string;
 }
 
 function buildMessage(t: Target): Message {
-  const covered = COVERED_CATEGORIES.includes(t.categoryIndex);
   const group = groupForCategory(t.categoryIndex);
+  const hello = greeting(t);
+  // Le contexte par marque ne sert qu'aux rayons non mesurés (accroche C) :
+  // pour les rayons mesurés, on dispose des vraies questions de l'étude.
+  const ctx = contextFor(t.brand, t.categoryIndex);
+  const intro =
+    "je m'appelle Maël, je mesure quelles marques les IA recommandent quand un client leur demande quoi acheter — ChatGPT, Gemini, Claude et Perplexity.";
+
+  // ── Catégorie NON mesurée : accroche C ────────────────────────────────────
+  // On ne transpose jamais un chiffre de beauté sur un autre rayon. Le levier,
+  // c'est la question du prospect : il la teste lui-même en 30 secondes.
+  if (!group) {
+    const selfTest = `Un test que vous pouvez faire tout de suite : demandez à ChatGPT « ${ctx.question} » et regardez si ${t.brand} sort.`;
+    return {
+      type: "C",
+      subject: `${t.brand} sort-elle quand on demande à ChatGPT ?`,
+      message: [
+        `${hello} ${intro}`,
+        ``,
+        selfTest,
+        ``,
+        `J'ai mesuré ça sérieusement sur un seul rayon pour l'instant, la beauté : sur ${data.runs} réponses, même la marque la mieux placée n'apparaît que ${OVERALL_LEADER.total} fois, et la plupart des marques jamais. ${cap(ctx.rayon)}, personne ne l'a encore mesuré.`,
+        ``,
+        `Je peux faire tourner le test complet sur ${t.brand} gratuitement : 10 vraies questions d'achat, les 4 modèles, et je vous renvoie qui est cité à votre place et sur quels sites les IA sont allées chercher. Ça vous intéresse ?`,
+        ``,
+        `Maël — mentio.fr`,
+      ].join("\n"),
+      insta: [
+        `Bonjour ! Maël, je mesure quelles marques ChatGPT et Gemini recommandent quand on leur demande quoi acheter.`,
+        ``,
+        `Test en 30 s : demandez à ChatGPT « ${ctx.question} » — regardez si ${t.brand} sort.`,
+        ``,
+        `Je peux faire le test complet sur ${t.brand} gratuitement (10 questions, 4 IA) et vous envoyer qui est cité à votre place. Ça vous dit ?`,
+      ].join("\n"),
+      linkedinNote: `Bonjour${t.founder ? " " + t.founder : ""}, je mesure quelles marques les IA recommandent quand un client demande quoi acheter. Testez : demandez à ChatGPT « ${ctx.question} ». Je peux faire le test complet sur ${t.brand} gratuitement.`.slice(0, 290),
+    };
+  }
+
   const board = BOARDS[group];
   const total = runsByGroup[group].length;
-  const hello = greeting(t);
-  const intro =
-    "je m'appelle Maël, je construis un petit outil (Mentio) qui mesure quelles marques ChatGPT, Gemini & co recommandent quand un client leur demande quoi acheter.";
-
   const mine = board.find((b) => sameBrand(b.name, t.brand));
   const leader = board.find((b) => !sameBrand(b.name, t.brand))!;
   const runner = board.filter((b) => !sameBrand(b.name, t.brand))[1];
   const sources = SOURCES[group];
 
-  if (covered && mine) {
-    // A — citée : chiffres exacts, et l'écart avec le leader
+  if (mine) {
+    // A — la marque EST citée : chiffres exacts et écart avec le leader
     // Un même prompt est joué sur plusieurs modèles → on dédoublonne par texte,
     // et on ne garde que les prompts où la marque est absente sur TOUS les modèles.
     const promptsWithBrand = new Set(
@@ -190,65 +241,85 @@ function buildMessage(t: Target): Message {
       .map((p) => `« ${p} »`);
     return {
       type: "A",
-      subject: `${t.brand} vs ${leader.name} sur ChatGPT`,
+      subject: `${t.brand} ${mine.total}/${total} face à ${leader.name} ${leader.total}/${total}`,
       message: [
         `${hello} ${intro}`,
         ``,
-        `J'ai passé ${total} vraies questions d'achat de votre catégorie : ${t.brand} ressort ${mine.total} fois, ${leader.name} ${leader.total} fois (dont ${leader.top1} fois en tête).`,
+        `J'ai passé ${total} vraies questions d'achat de votre catégorie : ${t.brand} ressort ${mine.total} fois, ${leader.name} ${leader.total} fois (dont ${leader.top1} en tête).`,
         `Là où vous n'apparaissez pas : ${absent.join(" et ") || "plusieurs questions clés"}.`,
         ``,
-        `Je vous envoie le détail complet (les questions, les marques citées à votre place, et les 3 sites que les IA lisent le plus pour répondre) ? C'est gratuit, je cherche surtout des retours honnêtes.`,
+        ...(PUBLISHED_SLUGS.has(slugOf(t.brand))
+          ? [`Votre page est déjà en ligne : mentio.fr/marques/${slugOf(t.brand)}`, ``]
+          : []),
+        `Je vous envoie le détail complet — les questions, les marques citées à votre place, et les sites que les IA lisent le plus pour répondre ? C'est gratuit, je cherche surtout des retours honnêtes.`,
         ``,
         `Maël`,
       ].join("\n"),
-      linkedinNote: `Bonjour${t.founder ? " " + t.founder : ""}, j'ai mesuré la visibilité de ${t.brand} dans les réponses de ChatGPT : ${mine.total}/${total}, contre ${leader.total}/${total} pour ${leader.name}. Je vous envoie le détail si ça vous intéresse ?`,
-    };
-  }
-
-  if (covered) {
-    // B — catégorie mesurée, marque jamais citée
-    return {
-      type: "B",
-      subject: `un test que j'ai fait sur ${t.brand}`,
-      message: [
-        `${hello} ${intro}`,
+      insta: [
+        `Bonjour ! Maël, je mesure quelles marques les IA recommandent quand on leur demande quoi acheter.`,
         ``,
-        `J'ai passé ${total} vraies questions d'achat de votre catégorie (type « ${examplePrompt(group, leader.name)} »). ${t.brand} n'apparaît pas une seule fois — pendant que ${leader.name} est cité ${leader.total} fois et ${runner.name} ${runner.total} fois.`,
-        `Le point intéressant : pour répondre, les IA lisent surtout ${sources.slice(0, 2).join(" et ")} — pas les sites des marques.`,
+        `Sur ${total} vraies questions de votre catégorie : ${t.brand} sort ${mine.total} fois, ${leader.name} ${leader.total} fois.`,
         ``,
-        `Je vous envoie le détail (les questions exactes + les sources où il faudrait être) ? C'est gratuit, je cherche surtout des retours honnêtes.`,
-        ``,
-        `Maël`,
+        ...(PUBLISHED_SLUGS.has(slugOf(t.brand))
+          ? [`Votre page : mentio.fr/marques/${slugOf(t.brand)}`, ``]
+          : []),
+        `Je vous envoie le détail (questions perdues + sites à viser) si vous voulez, c'est gratuit.`,
       ].join("\n"),
-      linkedinNote: `Bonjour${t.founder ? " " + t.founder : ""}, j'ai mesuré quelles marques ChatGPT recommande dans votre catégorie sur ${total} questions : ${t.brand} n'y apparaît jamais, ${leader.name} ${leader.total} fois. Je vous envoie le détail ?`,
+      linkedinNote: `Bonjour${t.founder ? " " + t.founder : ""}, j'ai mesuré la visibilité de ${t.brand} dans les réponses de ChatGPT : ${mine.total}/${total}, contre ${leader.total}/${total} pour ${leader.name}. Je vous envoie le détail si ça vous intéresse ?`.slice(0, 290),
     };
   }
 
-  // C — catégorie pas encore mesurée : on propose le test (dépense uniquement sur un « oui »)
+  // B — catégorie mesurée, marque jamais citée
   return {
-    type: "C",
-    subject: `${t.brand} dans les réponses de ChatGPT`,
+    type: "B",
+    subject: `${t.brand} n'apparaît dans aucune des ${total} réponses`,
     message: [
       `${hello} ${intro}`,
       ``,
-      `J'ai commencé par les marques françaises de beauté et de compléments : sur ${data.runs} réponses analysées, ${OVERALL_LEADER.name} rafle ${OVERALL_LEADER.total} citations à lui seul et la majorité des autres marques n'apparaissent jamais. Personne ne mesure ça, alors que de plus en plus de clients demandent conseil à une IA avant d'acheter.`,
+      `J'ai passé ${total} vraies questions d'achat de votre catégorie, du type « ${examplePrompt(group, leader.name)} ». ${t.brand} n'apparaît pas une seule fois, pendant que ${leader.name} est cité ${leader.total} fois et ${runner.name} ${runner.total} fois.`,
+      `Le point intéressant : pour répondre, les IA lisent surtout ${sources.slice(0, 2).join(" et ")} — pas les sites des marques.`,
       ``,
-      `Je peux faire tourner le test sur ${t.brand} (${CATEGORY_PHRASE[t.categoryIndex]}) : 10 questions posées à ChatGPT, Gemini, Claude et Perplexity, et je vous renvoie qui est cité à votre place. Ça me prend 2 minutes et c'est gratuit — je le lance ?`,
+      `Je vous envoie le détail (les questions exactes et les sources où il faudrait être) ? C'est gratuit, je cherche surtout des retours honnêtes.`,
       ``,
-      `Maël`,
+      `Maël — mentio.fr`,
     ].join("\n"),
-    linkedinNote: `Bonjour${t.founder ? " " + t.founder : ""}, je mesure quelles marques les IA (ChatGPT, Gemini…) recommandent quand un client demande quoi acheter. Je peux faire le test sur ${t.brand} gratuitement et vous envoyer qui est cité à votre place — je le lance ?`,
+    insta: [
+      `Bonjour ! Maël, je mesure quelles marques les IA recommandent quand on leur demande quoi acheter.`,
+      ``,
+      `Sur ${total} vraies questions de votre catégorie, ${t.brand} n'apparaît jamais — ${leader.name} ${leader.total} fois.`,
+      ``,
+      `Testez vous-même : demandez à ChatGPT « ${examplePrompt(group, leader.name)} ».`,
+      ``,
+      `Je vous envoie le détail et les sites à viser si vous voulez, c'est gratuit.`,
+    ].join("\n"),
+    linkedinNote: `Bonjour${t.founder ? " " + t.founder : ""}, j'ai mesuré quelles marques ChatGPT recommande dans votre catégorie sur ${total} questions : ${t.brand} n'y apparaît jamais, ${leader.name} ${leader.total} fois. Je vous envoie le détail ?`.slice(0, 290),
   };
 }
 
-const FOLLOWUP_3 = `Je remonte mon message — je vous envoie le rapport en 2 min si vous voulez, sans engagement.`;
-const FOLLOWUP_7 = `Dernier ping de ma part : je garde une place dans les 10 marques que j'accompagne en test jusqu'à vendredi, ensuite je passe à la suivante. Bonne continuation dans tous les cas !`;
+/** Majuscule initiale, pour « le café de spécialité » → « Le café de spécialité ». */
+function cap(s: string) {
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+/** Même règle que le site, pour que le lien envoyé existe vraiment. */
+function slugOf(name: string) {
+  return name
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+const FOLLOWUP_3 = `Je remonte mon message au cas où il serait passé à la trappe — le test reste gratuit et sans engagement, dites-moi juste oui.`;
+const FOLLOWUP_7 = `Dernier message de ma part, promis. Si le sujet revient dans six mois, le classement est public et gratuit : mentio.fr/barometre. Bonne continuation !`;
 
 function csvCell(value: string) {
   return `"${value.replace(/"/g, '""')}"`;
 }
 
-function main() {
+async function main() {
+  await loadPublishedSlugs();
   const targets = parseTargets();
   const rows = targets.map((t) => ({ ...t, ...buildMessage(t) }));
 
@@ -258,7 +329,7 @@ function main() {
   // ── CSV (tracker) ──
   const header = [
     "priorite", "marque", "categorie", "fondateur", "accroche",
-    "objet_email", "message", "note_linkedin", "relance_j3", "relance_j7",
+    "objet_email", "message_instagram", "message_long", "note_linkedin", "relance_j3", "relance_j7",
     "canal_utilise", "statut", "date_envoi", "date_relance", "notes",
   ];
   const csv = [
@@ -266,7 +337,7 @@ function main() {
     ...rows.map((r) =>
       [
         r.size, r.brand, r.categoryName, r.founder || "", r.type,
-        r.subject, r.message, r.linkedinNote, FOLLOWUP_3, FOLLOWUP_7,
+        r.subject, r.insta, r.message, r.linkedinNote, FOLLOWUP_3, FOLLOWUP_7,
         "", "à_envoyer", "", "", "",
       ].map(csvCell).join(",")
     ),
@@ -300,15 +371,23 @@ function main() {
         `## ${i + 1}. ${r.brand} ${r.size} — accroche ${r.type}`,
         `*${r.categoryName}${r.founder ? ` · ${r.founder}` : ""}*`,
         ``,
-        `**Objet (mail) :** ${r.subject}`,
+        `**① DM Instagram** — le canal principal (${r.insta.length} car.)`,
         ``,
-        `**Message (Insta / LinkedIn / mail) :**`,
+        "```",
+        r.insta,
+        "```",
+        ``,
+        `**② Mail ou LinkedIn** — objet : *${r.subject}*`,
         ``,
         "```",
         r.message,
         "```",
         ``,
-        `**Note d'invitation LinkedIn (${r.linkedinNote.length} car.) :** ${r.linkedinNote}`,
+        `**③ Note d'invitation LinkedIn** (${r.linkedinNote.length} car.)`,
+        ``,
+        "```",
+        r.linkedinNote,
+        "```",
         ``,
       ].join("\n")
     ),
