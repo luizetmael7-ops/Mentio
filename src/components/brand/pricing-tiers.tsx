@@ -248,12 +248,14 @@ export function PricingTiers() {
                 <h3 className="font-display text-lg font-extrabold uppercase tracking-wide">
                   {plan.label}
                 </h3>
-                <p className="mt-3 font-metric text-4xl font-bold tabular-nums">
-                  {displayPrice} €
+                {/* Space Mono a des espaces très larges : « 49 € /mois » laissait deux
+                    blancs béants. On dimensionne chaque partie et on gère l'écart. */}
+                <p className="mt-3 flex items-baseline gap-1 font-metric font-bold">
+                  <span className="text-4xl tabular-nums">{displayPrice}</span>
+                  <span className="text-2xl">€</span>
                   <span
-                    className={`text-sm font-normal ${isAgency ? "text-white/50" : "text-[var(--ink-soft)]"}`}
+                    className={`ml-0.5 text-sm font-normal ${isAgency ? "text-white/50" : "text-[var(--ink-soft)]"}`}
                   >
-                    {" "}
                     /mois
                   </span>
                 </p>
@@ -262,11 +264,11 @@ export function PricingTiers() {
                 >
                   {annual && !isFree ? `${plan.priceMonthlyEur * 10} € facturés à l'année` : ""}
                 </p>
-                {isStarter && (
-                  <p className="mt-1 text-xs font-medium text-[var(--jade)]">
-                    Tout ce qu&apos;il faut pour savoir où vous en êtes.
-                  </p>
-                )}
+                {/* Hauteur réservée sur TOUTES les cartes : sans ça, la phrase de Starter
+                    décalait ses lignes de spécifications par rapport aux autres colonnes. */}
+                <p className="mt-1 h-8 text-xs font-medium leading-tight text-[var(--jade)]">
+                  {isStarter ? "Tout ce qu'il faut pour savoir où vous en êtes." : ""}
+                </p>
                 <dl
                   className={`mt-4 space-y-1.5 text-sm ${isAgency ? "text-white/80" : "text-[var(--ink-soft)]"}`}
                 >
