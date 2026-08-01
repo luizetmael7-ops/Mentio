@@ -9,7 +9,7 @@ import { modelName } from "@/lib/models";
 import { getEditions, formatEditionDate, brandSlug } from "@/lib/index-edition";
 
 export const metadata: Metadata = {
-  title: "Les sites que les IA lisent pour recommander une marque — Mentio",
+  title: "Les sites que les IA lisent avant de recommander — Mentio",
   description:
     "Classement des domaines réellement consultés par ChatGPT et Gemini pour répondre aux questions d'achat. Être cité sur ces pages est le levier le plus direct en visibilité IA.",
   alternates: { canonical: "/sources" },
@@ -182,8 +182,8 @@ export default async function SourcesPage() {
                 {[
                   {
                     n: "01",
-                    t: "Repérez les domaines de votre catégorie",
-                    d: "Ceux d'où partent les réponses où vous n'apparaissez pas. Votre page marque les liste précisément.",
+                    t: "Repérez les domaines de votre rayon",
+                    d: "Ceux qui alimentent les réponses où vous n'apparaissez pas. Votre page marque les liste.",
                   },
                   {
                     n: "02",
@@ -192,8 +192,8 @@ export default async function SourcesPage() {
                   },
                   {
                     n: "03",
-                    t: "Mesurez au relevé suivant",
-                    d: "Un domaine gagné se voit dans les citations des semaines qui suivent. C'est là que le suivi longitudinal sert.",
+                    t: "Vérifiez au relevé suivant",
+                    d: "Un domaine gagné se voit dans les citations des semaines suivantes. C'est tout l'intérêt du suivi dans le temps.",
                   },
                 ].map((step) => (
                   <li key={step.n} className="rounded-2xl bg-white/5 p-5">

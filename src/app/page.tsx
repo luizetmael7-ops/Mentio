@@ -8,7 +8,12 @@ import { ReadingSwatch } from "@/components/brand/reading-swatch";
 import { TierScale } from "@/components/brand/tier";
 import { tierOf } from "@/lib/spectrum";
 import { activeModels, modelsSentence, modelName } from "@/lib/models";
-import { PricingTiers, WhiteGloveStrip, UpgradeLadder } from "@/components/brand/pricing-tiers";
+import {
+  PricingTiers,
+  WhiteGloveStrip,
+  UpgradeLadder,
+  CadenceMatrix,
+} from "@/components/brand/pricing-tiers";
 import { AutopilotStrip } from "@/components/brand/autopilot-strip";
 import { ClimbLoop } from "@/components/brand/climb-loop";
 import { Reveal } from "@/components/brand/reveal";
@@ -47,15 +52,14 @@ export default async function LandingPage({
           <div>
             <p className="eyebrow mb-5">Mentio — la perception, mesurée</p>
             <h1 className="font-display text-4xl font-black uppercase leading-[0.98] tracking-tight sm:text-6xl">
-              Sachez si les IA recommandent votre marque
-              <span className="text-[var(--poppy)]">.</span>
+              L&apos;IA cite trois marques.
               <br />
-              <span className="text-[var(--spectrum-ash)]">Et faites-les changer d&apos;avis.</span>
+              <span className="text-[var(--spectrum-ash)]">
+                La vôtre en fait partie<span className="text-[var(--poppy)]"> ?</span>
+              </span>
             </h1>
             <p className="mt-6 max-w-lg text-lg leading-relaxed text-[var(--ink-soft)]">
-              Vos clients demandent à {modelsSentence(models)} quoi acheter. Mentio pose les
-              questions à leur place, compte qui est cité, et vous montre les pages à travailler
-              pour y entrer. Relevé chaque semaine, marques françaises.
+              {`Vos clients demandent à ${modelsSentence(models)} ce qu'ils doivent acheter. Mentio pose ces questions chaque semaine, compte les marques citées, et vous montre où agir pour entrer dans les réponses.`}
             </p>
 
             {/* Deux rangées : à une seule, le champ marque se faisait écraser par le bouton */}
@@ -83,7 +87,7 @@ export default async function LandingPage({
                   name="category"
                   required
                   minLength={3}
-                  placeholder="Secteur — ex. soin visage, café"
+                  placeholder="Votre secteur"
                   className="h-11 min-w-0 flex-1 rounded-xl bg-[var(--porcelain)] px-4 text-sm text-[var(--ink)] outline-none placeholder:text-[var(--ink-soft)]/70"
                 />
                 <button
@@ -120,13 +124,12 @@ export default async function LandingPage({
           <Reveal className="mx-auto max-w-4xl">
             <p className="eyebrow !text-white/50">Le problème</p>
             <p className="mt-5 font-display text-2xl font-extrabold uppercase leading-tight tracking-wide sm:text-4xl">
-              Vos clients ne cherchent plus, ils demandent conseil.
+              Vos clients ne cherchent plus.
               <br />
-              L&apos;IA répond avec{" "}
-              <span className="text-[var(--spectrum-amber)]">trois marques</span>.
+              Ils demandent <span className="text-[var(--spectrum-amber)]">conseil</span>.
               <br />
-              Si vous n&apos;en faites pas partie,{" "}
-              <span className="text-[var(--spectrum-ash)]">vous n&apos;existez pas</span>.
+              Et l&apos;IA répond{" "}
+              <span className="text-[var(--spectrum-ash)]">sans vous</span>.
             </p>
             {edition && (
               <p className="mt-7 max-w-2xl text-white/70">
@@ -153,18 +156,18 @@ export default async function LandingPage({
             {[
               {
                 n: "01",
-                t: "On pose 50 questions d'achat",
-                d: "Les questions que vos clients tapent vraiment, pas des mots-clés. Les mêmes chaque semaine, pour que les relevés soient comparables.",
+                t: "50 questions d'achat, chaque semaine",
+                d: "Celles que vos clients tapent vraiment, pas des mots-clés. Toujours les mêmes, pour comparer d'une semaine sur l'autre.",
               },
               {
                 n: "02",
-                t: "On compte qui est cité",
+                t: "On compte les marques citées",
                 d: `Chaque réponse de ${modelsSentence(models)} est lue et dépouillée : marques citées, position, ton. Vous obtenez un score sur 100 et votre palier.`,
               },
               {
                 n: "03",
-                t: "On vous dit quoi travailler",
-                d: "Les pages et sites que les IA lisent pour répondre, les questions où un concurrent gagne, et l'ordre dans lequel s'y attaquer.",
+                t: "On vous dit par où commencer",
+                d: "Les sites que les IA lisent pour répondre, les questions où un concurrent passe devant, et l'ordre des priorités.",
               },
             ].map((step, i) => (
               <Reveal key={step.n} style={{ "--reveal-index": i } as React.CSSProperties}>
@@ -189,7 +192,7 @@ export default async function LandingPage({
             <Reveal>
               <p className="eyebrow">L&apos;Index Mentio</p>
               <h2 className="mt-3 font-display text-3xl font-extrabold uppercase tracking-wide sm:text-4xl">
-                Qui les IA recommandent <span className="text-[var(--poppy)]">aujourd&apos;hui</span>
+                Les marques citées <span className="text-[var(--poppy)]">aujourd&apos;hui</span>
               </h2>
               <p className="mt-2 font-metric text-xs text-[var(--ink-soft)]">
                 {[
@@ -324,7 +327,7 @@ export default async function LandingPage({
         <section className="px-5 py-4">
           <Reveal className="mx-auto flex max-w-4xl flex-col items-center gap-4 rounded-2xl border border-[var(--line)] bg-white px-6 py-7 text-center sm:flex-row sm:justify-between sm:text-left">
             <p className="max-w-md text-[var(--ink-soft)]">
-              Où en est votre marque, aujourd&apos;hui, dans ces réponses ?
+              Et votre marque, elle sort où dans ces réponses ?
             </p>
             <Link
               href="/score"
@@ -340,7 +343,7 @@ export default async function LandingPage({
           <Reveal>
             <p className="eyebrow">Méthodologie</p>
             <h2 className="mt-3 font-display text-2xl font-extrabold uppercase tracking-wide sm:text-3xl">
-              Comment le score est calculé
+              Ce qu'il y a derrière le score
             </h2>
             <ul className="mt-6 space-y-3 text-sm leading-relaxed text-[var(--ink-soft)]">
               <li>
@@ -396,6 +399,7 @@ export default async function LandingPage({
           <div className="mt-12">
             <UpgradeLadder />
             <PricingTiers />
+            <CadenceMatrix />
             <WhiteGloveStrip />
           </div>
         </section>
@@ -444,7 +448,7 @@ export default async function LandingPage({
         <section className="px-5 pb-24 pt-4">
           <Reveal className="mx-auto max-w-4xl">
             <div className="rounded-[2rem] border-2 border-[var(--ink)] bg-white p-10 text-center sm:p-14">
-              <p className="eyebrow">Un dernier relevé avant de partir</p>
+              <p className="eyebrow">Une dernière chose</p>
               <h2 className="mx-auto mt-4 max-w-xl font-display text-3xl font-extrabold uppercase tracking-wide sm:text-4xl">
                 Votre concurrent est peut-être déjà{" "}
                 <span className="text-[var(--poppy)]">la réponse</span>.

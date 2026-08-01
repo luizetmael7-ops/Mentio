@@ -4,53 +4,127 @@ import { useState } from "react";
 import Link from "next/link";
 import { ArrowRight, Check, Sparkles } from "lucide-react";
 import { PLAN_LIMITS, type Plan, type Cadence } from "@/lib/plans";
-import { MODEL_META } from "@/lib/models-meta";
+import { MODELS } from "@/lib/models";
+import type { ModelKey } from "@/lib/llm/types";
 
-/** La cadence par modèle, lisible d'un regard : Daily / Weekly / absent. */
-function CadenceGrid({ plan, dark }: { plan: (typeof PLAN_LIMITS)["free"]; dark?: boolean }) {
+/**
+ * La cadence, en une ligne dans la carte.
+ *
+ * Avant : une grille de 4 puces « ChatGPT — Quotidien » par carte, répétée sur les
+ * 4 formules. Seize étiquettes pour une information qui tient en une phrase, et un
+ * rendu bricolé. Le détail complet vit maintenant dans un seul tableau sous la
+ * grille (CadenceMatrix), là où on compare vraiment.
+ */
+function CadenceLine({ plan, dark }: { plan: (typeof PLAN_LIMITS)["free"]; dark?: boolean }) {
+  const keys = Object.keys(plan.modelCadence) as ModelKey[];
+  const daily = keys.filter((k) => plan.modelCadence[k] === "daily");
+  const summary =
+    daily.length === keys.length
+      ? "Relevé quotidien"
+      : daily.length > 0
+        ? `Quotidien sur ${daily.length} modèle${daily.length > 1 ? "s" : ""}, hebdomadaire sur les autres`
+        : "Relevé hebdomadaire";
+
   return (
-    <div className="mt-4 grid grid-cols-1 gap-1.5 min-[420px]:grid-cols-2">
-      {Object.entries(MODEL_META).map(([key, meta]) => {
-        const cadence = plan.modelCadence[key as keyof typeof plan.modelCadence] as
-          | Cadence
-          | undefined;
-        return (
-          <div
-            key={key}
-            className={`flex items-center justify-between gap-2 rounded-lg px-2.5 py-1.5 text-[0.7rem] ${
-              cadence
-                ? dark
-                  ? "bg-white/10"
-                  : "bg-[var(--porcelain)]/80"
-                : dark
-                  ? "bg-white/[0.03] opacity-40"
-                  : "bg-transparent opacity-35"
-            }`}
-          >
-            <span className="flex items-center gap-1.5 font-medium">
-              <span
-                aria-hidden
-                className="size-1.5 rounded-full"
-                style={{ backgroundColor: cadence ? meta.color : "var(--spectrum-ash)" }}
-              />
-              {meta.label}
-            </span>
+    <div
+      className={`mt-4 rounded-xl px-3 py-2.5 ${dark ? "bg-white/10" : "bg-[var(--porcelain)]/80"}`}
+    >
+      <div className="flex items-center gap-1.5">
+        {MODELS.map((model) => {
+          const active = keys.includes(model.key);
+          return (
             <span
-              className={`font-metric uppercase tracking-wide ${
-                cadence === "daily"
-                  ? "font-bold text-[var(--poppy)]"
-                  : cadence
-                    ? dark
-                      ? "text-white/60"
-                      : "text-[var(--ink-soft)]"
-                    : ""
-              }`}
-            >
-              {cadence === "daily" ? "Quotidien" : cadence === "weekly" ? "Hebdo" : "—"}
-            </span>
-          </div>
-        );
-      })}
+              key={model.key}
+              title={model.name}
+              aria-hidden
+              className="size-2 rounded-full"
+              style={{
+                backgroundColor: active ? model.color : "currentColor",
+                opacity: active ? 1 : 0.2,
+              }}
+            />
+          );
+        })}
+        <span
+          className={`font-metric ml-1.5 text-[0.65rem] uppercase tracking-wider ${dark ? "text-white/60" : "text-[var(--ink-soft)]"}`}
+        >
+          {keys.length} IA sur 4
+        </span>
+      </div>
+      <p className={`mt-1.5 text-xs ${dark ? "text-white/70" : "text-[var(--ink-soft)]"}`}>
+        {summary}
+      </p>
+    </div>
+  );
+}
+
+/**
+ * Le détail des cadences, une seule fois, là où la comparaison a du sens :
+ * les modèles en lignes, les formules en colonnes.
+ */
+export function CadenceMatrix() {
+  const plans = Object.entries(PLAN_LIMITS) as Array<[Plan, (typeof PLAN_LIMITS)["free"]]>;
+  return (
+    <div className="mt-8 overflow-hidden rounded-2xl border border-[var(--line)] bg-white">
+      <p className="border-b border-[var(--line)] px-5 py-3.5 text-sm">
+        <span className="font-semibold">À quelle fréquence chaque IA est interrogée</span>
+      </p>
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-[30rem] text-sm">
+          <thead>
+            <tr className="border-b border-[var(--line)] bg-[var(--porcelain)]/60">
+              <th scope="col" className="px-5 py-2.5 text-left font-metric text-[0.65rem] uppercase tracking-wider text-[var(--ink-soft)]">
+                Modèle
+              </th>
+              {plans.map(([key, plan]) => (
+                <th
+                  key={key}
+                  scope="col"
+                  className="px-3 py-2.5 text-center font-display text-xs font-extrabold uppercase tracking-wide"
+                >
+                  {plan.label}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {MODELS.map((model) => (
+              <tr key={model.key} className="border-b border-[var(--line)] last:border-b-0">
+                <th scope="row" className="px-5 py-3 text-left font-medium">
+                  <span className="flex items-center gap-2">
+                    <span
+                      aria-hidden
+                      className="size-2 shrink-0 rounded-full"
+                      style={{ backgroundColor: model.color }}
+                    />
+                    {model.name}
+                  </span>
+                </th>
+                {plans.map(([key, plan]) => {
+                  const cadence = plan.modelCadence[model.key] as Cadence | undefined;
+                  return (
+                    <td key={key} className="px-3 py-3 text-center">
+                      {cadence === "daily" ? (
+                        <span className="font-metric text-xs font-bold uppercase tracking-wide text-[var(--poppy)]">
+                          Chaque jour
+                        </span>
+                      ) : cadence ? (
+                        <span className="font-metric text-xs uppercase tracking-wide text-[var(--ink-soft)]">
+                          Chaque semaine
+                        </span>
+                      ) : (
+                        <span aria-label="non inclus" className="text-[var(--line)]">
+                          —
+                        </span>
+                      )}
+                    </td>
+                  );
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
@@ -215,7 +289,7 @@ export function PricingTiers() {
                     <dd className="font-metric tabular-nums">{plan.competitors}</dd>
                   </div>
                 </dl>
-                <CadenceGrid plan={plan} dark={isAgency} />
+                <CadenceLine plan={plan} dark={isAgency} />
                 <ul
                   className={`mt-5 flex-1 space-y-2.5 border-t pt-5 text-sm ${
                     isAgency

@@ -21,14 +21,13 @@ export default function ScorePage() {
         <div>
           <p className="eyebrow">Le score gratuit</p>
           <h1 className="mt-3 font-display text-4xl font-black uppercase leading-[0.95] tracking-tight sm:text-6xl">
-            Votre relevé
+            Où en est
             <br />
-            de <span className="text-[var(--poppy)]">visibilité IA</span>
+            <span className="text-[var(--poppy)]">votre marque</span> ?
           </h1>
           <p className="mt-5 max-w-md text-[var(--ink-soft)]">
-            On pose en direct aux IA 10 vraies questions d&apos;achat de votre catégorie. Vous
-            obtenez votre score, la liste des marques citées à votre place, et le détail question par
-            question.
+            On pose en direct 10 vraies questions d&apos;achat de votre secteur. Vous obtenez votre
+            score, les marques citées à votre place, et le détail question par question.
           </p>
 
           <form

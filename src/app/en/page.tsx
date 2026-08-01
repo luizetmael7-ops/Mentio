@@ -12,9 +12,9 @@ import { Reveal } from "@/components/brand/reveal";
 import { getLatestEdition } from "@/lib/index-edition";
 
 export const metadata: Metadata = {
-  title: "Mentio — do the AIs recommend your brand?",
+  title: "Mentio — do the AIs recommend you?",
   description:
-    "Mentio measures every week whether ChatGPT, Gemini, Claude and Perplexity cite your brand when a customer asks what to buy — and tells you what to fix to get in.",
+    "Weekly measurement of whether ChatGPT, Gemini, Claude and Perplexity name your brand when customers ask what to buy — and what to fix.",
   alternates: {
     canonical: "/en",
     languages: { "fr-FR": "/", en: "/en", "x-default": "/" },
@@ -57,15 +57,13 @@ export default async function LandingPageEn({
           <div>
             <p className="eyebrow mb-5">Mentio — perception, measured</p>
             <h1 className="font-display text-4xl font-black uppercase leading-[0.98] tracking-tight sm:text-6xl">
-              Find out if the AIs recommend your brand
-              <span className="text-[var(--poppy)]">.</span>
+              Do the AIs recommend you
+              <span className="text-[var(--poppy)]">?</span>
               <br />
-              <span className="text-[var(--spectrum-ash)]">Then change their mind.</span>
+              <span className="text-[var(--spectrum-ash)]">We measure. You fix.</span>
             </h1>
             <p className="mt-6 max-w-lg text-lg leading-relaxed text-[var(--ink-soft)]">
-              Your customers now ask {modelsSentenceEn(models)} what to buy. Mentio asks the
-              questions for you, counts who gets cited, and shows you the pages to work on to get
-              in. Measured weekly, French brands.
+              {`Customers ask ${modelsSentenceEn(models)} what to buy. Mentio asks the same questions weekly, counts who gets named, and shows you where to act. French brands.`}
             </p>
 
             <form
@@ -92,7 +90,7 @@ export default async function LandingPageEn({
                   name="category"
                   required
                   minLength={3}
-                  placeholder="Industry — e.g. skincare, coffee"
+                  placeholder="Your industry"
                   className="h-11 min-w-0 flex-1 rounded-xl bg-[var(--porcelain)] px-4 text-sm text-[var(--ink)] outline-none placeholder:text-[var(--ink-soft)]/70"
                 />
                 <button
@@ -128,13 +126,12 @@ export default async function LandingPageEn({
           <Reveal className="mx-auto max-w-4xl">
             <p className="eyebrow !text-white/50">The problem</p>
             <p className="mt-5 font-display text-2xl font-extrabold uppercase leading-tight tracking-wide sm:text-4xl">
-              Your customers no longer search, they ask for advice.
+              People don&apos;t search. They ask.
               <br />
-              The AI answers with{" "}
-              <span className="text-[var(--spectrum-amber)]">three brands</span>.
+              The AI names <span className="text-[var(--spectrum-amber)]">three brands</span>.
               <br />
-              If you&apos;re not one of them,{" "}
-              <span className="text-[var(--spectrum-ash)]">you don&apos;t exist</span>.
+              You&apos;re one of them —{" "}
+              <span className="text-[var(--spectrum-ash)]">or you don&apos;t exist</span>.
             </p>
             {edition && (
               <p className="mt-7 max-w-2xl text-white/70">
@@ -153,7 +150,7 @@ export default async function LandingPageEn({
           <Reveal>
             <p className="eyebrow">How it works</p>
             <h2 className="mt-3 max-w-3xl font-display text-3xl font-extrabold uppercase tracking-wide sm:text-4xl">
-              We ask the AIs so you don&apos;t have to
+              We ask, so you don&apos;t have to
               <span className="text-[var(--poppy)]">.</span>
             </h2>
           </Reveal>
@@ -161,18 +158,18 @@ export default async function LandingPageEn({
             {[
               {
                 n: "01",
-                t: "We ask 50 buying questions",
-                d: "The questions your customers actually type, not keywords. The same ones every week, so readings stay comparable.",
+                t: "50 buying questions, weekly",
+                d: "What customers actually type, not keywords. Same list every week, so readings compare.",
               },
               {
                 n: "02",
-                t: "We count who gets cited",
-                d: `Every answer from ${modelsSentenceEn(models)} is read and broken down: brands cited, position, tone. You get a score out of 100 and your tier.`,
+                t: "We count who gets named",
+                d: `Every answer from ${modelsSentenceEn(models)} is parsed: brands, rank, tone. You get a score out of 100 and a tier.`,
               },
               {
                 n: "03",
-                t: "We tell you what to work on",
-                d: "The pages and sites the AIs actually read, the questions where a competitor wins, and the order to tackle them in.",
+                t: "We tell you where to start",
+                d: "The sites the AIs actually read, the questions a competitor wins, and the order to fix them.",
               },
             ].map((step, i) => (
               <Reveal key={step.n} style={{ "--reveal-index": i } as React.CSSProperties}>
@@ -194,7 +191,7 @@ export default async function LandingPageEn({
             <Reveal>
               <p className="eyebrow">The Mentio Index</p>
               <h2 className="mt-3 font-display text-3xl font-extrabold uppercase tracking-wide sm:text-4xl">
-                Who the AIs recommend <span className="text-[var(--poppy)]">today</span>
+                Named <span className="text-[var(--poppy)]">today</span>
               </h2>
               <p className="mt-2 font-metric text-xs text-[var(--ink-soft)]">
                 {[
@@ -283,7 +280,7 @@ export default async function LandingPageEn({
               <div className="rounded-3xl bg-[var(--plum)] p-7 text-white sm:p-10">
                 <p className="eyebrow !text-white/50">The lever</p>
                 <h2 className="mt-3 max-w-2xl font-display text-2xl font-extrabold uppercase tracking-wide sm:text-3xl">
-                  The AIs read these pages — not yours
+                  The AIs read these pages, not yours
                 </h2>
                 <p className="mt-4 max-w-2xl text-white/70">
                   These are the sites the models actually consulted to answer, on the {editionDate}{" "}
@@ -317,7 +314,7 @@ export default async function LandingPageEn({
         <section className="px-5 py-4">
           <Reveal className="mx-auto flex max-w-4xl flex-col items-center gap-4 rounded-2xl border border-[var(--line)] bg-white px-6 py-7 text-center sm:flex-row sm:justify-between sm:text-left">
             <p className="max-w-md text-[var(--ink-soft)]">
-              Where does your brand stand in those answers, today?
+              So — are you in the answer?
             </p>
             <Link
               href="/score"
@@ -333,7 +330,7 @@ export default async function LandingPageEn({
           <Reveal>
             <p className="eyebrow">Methodology</p>
             <h2 className="mt-3 font-display text-2xl font-extrabold uppercase tracking-wide sm:text-3xl">
-              How the score is calculated
+              How the score works
             </h2>
             <ul className="mt-6 space-y-3 text-sm leading-relaxed text-[var(--ink-soft)]">
               <li>

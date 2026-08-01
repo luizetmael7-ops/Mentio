@@ -11,7 +11,7 @@ import { modelName } from "@/lib/models";
 import { getEditions, formatEditionDate, brandSlug, brandScore } from "@/lib/index-edition";
 
 export const metadata: Metadata = {
-  title: "Le Baromètre Mentio — quelles marques les IA recommandent vraiment",
+  title: "Le Baromètre Mentio — les marques que les IA recommandent",
   description:
     "Chaque semaine, nous posons à ChatGPT et Gemini les mêmes 50 questions d'achat réelles et comptons les marques qu'ils recommandent. Le classement permanent de la visibilité IA.",
   alternates: { canonical: "/barometre" },
@@ -32,7 +32,7 @@ export default async function BarometrePage() {
         <main className="mx-auto w-full max-w-3xl flex-1 px-5 pb-24 pt-32">
           <p className="eyebrow">Le Baromètre Mentio</p>
           <h1 className="mt-3 font-display text-4xl font-black uppercase tracking-tight">
-            La première édition arrive dimanche
+            Première édition dimanche
           </h1>
           <p className="mt-4 text-[var(--ink-soft)]">
             Chaque dimanche, nous posons aux IA les mêmes 50 questions d&apos;achat réelles et
@@ -92,12 +92,12 @@ export default async function BarometrePage() {
             </span>
           </div>
           <h1 className="mt-3 max-w-3xl font-display text-4xl font-black uppercase leading-[0.95] tracking-tight sm:text-6xl">
-            Quelles marques les IA <span className="text-[var(--poppy)]">recommandent</span>
+            Les marques que les IA <span className="text-[var(--poppy)]">recommandent</span>
           </h1>
           {/* Phrase composée en une seule chaîne : ce transform JSX rogne les espaces
               aux deux bouts d'un texte multi-ligne, ce qui collait « Gemini » et « les ». */}
           <p className="mt-5 max-w-2xl text-[var(--ink-soft)]">
-            {`Chaque semaine, nous posons à ${modelsLabel} les mêmes 50 questions d’achat réelles — celles que vos clients tapent — et nous comptons les marques qui reviennent. Aucun avis, aucun sponsor : juste les réponses, mesurées. Édition en cours : beauté, soin & compléments (France).`}
+            {`Chaque semaine, on pose à ${modelsLabel} les mêmes 50 questions d’achat — celles que vos clients tapent — et on compte les marques qui reviennent. Aucun avis, aucun sponsor : les réponses, mesurées. Édition en cours : beauté, soin et compléments (France).`}
           </p>
 
           {/* Chiffres clés — vraies valeurs dans le HTML, animation en supplément */}
@@ -208,7 +208,7 @@ export default async function BarometrePage() {
               <div className="rounded-3xl bg-[var(--plum)] p-7 text-white sm:p-10">
                 <p className="eyebrow !text-white/50">D&apos;où viennent les réponses</p>
                 <h2 className="mt-3 max-w-2xl font-display text-2xl font-extrabold uppercase tracking-wide sm:text-3xl">
-                  Les IA lisent ces pages — pas votre site
+                  Les IA lisent ces pages, pas votre site
                 </h2>
                 <ul className="mt-7 grid gap-2 sm:grid-cols-2">
                   {sources.slice(0, 10).map((source, i) => (

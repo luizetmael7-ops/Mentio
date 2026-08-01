@@ -1,35 +1,40 @@
 import type { Metadata } from "next";
 import { BrandNav } from "@/components/brand/nav";
 import { BrandFooter } from "@/components/brand/footer";
-import { PricingTiers, WhiteGloveStrip, UpgradeLadder } from "@/components/brand/pricing-tiers";
+import {
+  PricingTiers,
+  WhiteGloveStrip,
+  UpgradeLadder,
+  CadenceMatrix,
+} from "@/components/brand/pricing-tiers";
 import { Reveal } from "@/components/brand/reveal";
 
 export const metadata: Metadata = {
-  title: "Pricing — Mentio",
+  title: "Tarifs — Mentio",
   description:
     "AI visibility tracking from €0. Start free, scale when it works — cancel in two clicks.",
 };
 
 const FAQ: Array<[string, string]> = [
   [
-    "Why do cadences differ per model?",
-    "Every AI answer with web search has a real cost. Growth and Agency run the economical models (ChatGPT, Gemini) daily and the pricier ones (Claude, Perplexity) weekly — the best signal per euro, by design.",
+    "Pourquoi la fréquence change selon le modèle ?",
+    "Chaque réponse d'IA avec recherche web a un coût réel. Growth et Agency interrogent les modèles économiques (ChatGPT, Gemini) chaque jour et les plus chers (Claude, Perplexity) chaque semaine. C'est le meilleur signal par euro, et c'est assumé.",
   ],
   [
-    "Does the reading reflect what my customers actually see?",
-    "We use the models' official APIs with web search enabled — a strong, documented proxy of consumer answers. We never scrape consumer apps.",
+    "Le relevé correspond-il à ce que voient vraiment mes clients ?",
+    "On passe par les APIs officielles des modèles, recherche web activée. C'est un bon reflet, documenté, de ce que voit un client — jamais du scraping des applications grand public.",
   ],
   [
-    "What does “white-glove setup” mean?",
-    "We build your prompt set, add your competitors, and tune the tracking for you. You don't configure anything — you get a reading that's right from day one.",
+    "Que veut dire « mise en route faite par nous » ?",
+    "On écrit vos questions, on ajoute vos concurrents et on règle le suivi. Vous ne configurez rien : le premier relevé est déjà juste.",
   ],
   [
-    "Can I change my mind?",
-    "Anytime. No lock-in: upgrade, downgrade or cancel in two clicks from the Stripe billing portal.",
+    "Puis-je changer d'avis ?",
+    "À tout moment. Sans engagement : changez de formule ou résiliez en deux clics depuis l'espace de facturation.",
   ],
   [
-    "Other industries than beauty?",
-    "Today's prompt library covers beauty, skincare and supplements. More industries are coming — and Agency includes a custom prompt library for yours, right now.",
+    "Et les secteurs autres que la beauté ?",
+    "La bibliothèque de questions couvre aujourd'hui la beauté, le soin et les compléments. D'autres secteurs arrivent — et Agency inclut dès maintenant une bibliothèque sur mesure pour le vôtre.",
   ],
 ];
 
@@ -39,19 +44,20 @@ export default function PricingPage() {
       <BrandNav />
       <main className="flex-1">
         <section className="mx-auto max-w-6xl px-5 pb-16 pt-32">
-          <p className="eyebrow">Pricing</p>
+          <p className="eyebrow">Tarifs</p>
           <h1 className="mt-3 font-display text-4xl font-black uppercase tracking-tight sm:text-6xl">
-            Priced like a tool<span className="text-[var(--poppy)]">,</span>
+            Le prix d&apos;un outil<span className="text-[var(--poppy)]">,</span>
             <br />
-            not a consultancy<span className="text-[var(--poppy)]">.</span>
+            pas d&apos;un cabinet<span className="text-[var(--poppy)]">.</span>
           </h1>
           <p className="mt-4 max-w-xl text-[var(--ink-soft)]">
-            Annual: 2 months free. No lock-in. Every tier is calibrated on the real cost of the
-            models — no magic, no hidden margin.
+            Annuel : deux mois offerts. Sans engagement. Chaque formule est calée sur le coût réel
+            des modèles — pas de magie, pas de marge cachée.
           </p>
           <div className="mt-14">
             <UpgradeLadder />
             <PricingTiers />
+            <CadenceMatrix />
             <WhiteGloveStrip />
           </div>
         </section>
@@ -59,7 +65,7 @@ export default function PricingPage() {
         <section className="mx-auto max-w-4xl px-5 pb-24">
           <Reveal>
             <h2 className="font-display text-2xl font-extrabold uppercase tracking-wide">
-              Straight answers
+              Les questions qu&apos;on nous pose
             </h2>
           </Reveal>
           <div className="mt-8 space-y-4">
