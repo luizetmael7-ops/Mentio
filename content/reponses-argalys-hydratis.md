@@ -1,61 +1,66 @@
-# Réponses aux deux premières marques — version acquisition
+# Réponses aux deux premières marques — acquisition
 
-**Le changement :** l'objectif n'est plus de leur envoyer une analyse par email
-(cul-de-sac : elles lisent, elles remercient, fin). Il est de les faire **entrer
-dans Mentio**. On donne assez pour être crédible, le reste vit dans leur compte.
+**Le principe :** on ne livre pas l'analyse par email. Un rapport envoyé se lit, se
+remercie, et s'arrête là. Ce qu'on envoie, c'est **le constat** — assez pour que ça
+pique. Le « pourquoi » et le « quoi faire » vivent dans le compte.
 
-Le compte gratuit est le bon appât : 1 marque, suivie chaque semaine sur ChatGPT,
-tableau de bord complet, sans carte. Elles s'installent dans l'outil, et l'upgrade
-se joue tout seul quand elles voudront les 4 modèles et le quotidien.
+**Le chemin :** constat → compte gratuit (1 marque, ChatGPT hebdo) → ils voient le
+score bouger et butent sur les limites du gratuit → Starter à 49 €/mois pour les
+4 modèles, les 50 questions et les sources à conquérir.
+
+Le prix est annoncé dès le premier message. Ça filtre ceux qui cherchent un rapport
+gratuit, et ça installe Mentio comme un produit payant — pas comme un service rendu.
 
 ---
 
 ## 1. Argalys — à Salomé
 
-**Objet :** Argalys : 0 citation sur 50 réponses (et qui prend la place)
+**Objet :** Argalys : 0 citation sur 50 réponses
 
 ```
 Bonjour Salomé,
 
-Merci pour votre réponse. Je vais droit au résultat.
+Je vais droit au résultat, il est net.
 
-Sur les 25 questions d'achat de votre rayon posées à ChatGPT et Gemini,
-Argalys n'apparaît dans aucune des 50 réponses. À votre place reviennent
-Nutri&Co (11 fois), Novoma (10), Dynveo (7), Nutripure (6).
+Sur 25 questions d'achat de votre rayon posées à ChatGPT et Gemini, Argalys
+n'apparaît dans aucune des 50 réponses. À votre place reviennent Nutri&Co
+(11 fois), Novoma (10), Dynveo (7), Nutripure (6).
 
-Sur « quelle est la meilleure marque française de compléments alimentaires ? » —
-la question qui vous concerne le plus directement — ChatGPT répond Nutergia,
-Arkopharma, PiLeJe, Densmore, et Gemini répond Dynveo, Nutri&Co, Nutripure, PiLeJe.
+Sur « quelle est la meilleure marque française de compléments alimentaires ? »,
+ChatGPT répond Nutergia, Arkopharma, PiLeJe, Densmore. Gemini répond Dynveo,
+Nutri&Co, Nutripure, PiLeJe.
 
-Un détail qui change la stratégie : sur les questions de symptôme (« je suis
-fatiguée », « immunité en hiver », « meilleur magnésium »), ChatGPT ne cite
-AUCUNE marque, il reste sur du conseil générique. Gemini, lui, en nomme. La
-bataille se joue donc sur Gemini aujourd'hui — et ChatGPT est un terrain vierge
-pour celle qui s'y installe la première.
+Vous me demandiez les questions, les résultats et les sources. Les trois sont
+dans le tableau de bord — c'est là qu'ils sont lisibles et surtout suivis dans
+le temps, un rapport figé ne vous servirait qu'une fois.
 
-Vous vouliez les questions, les résultats et les sources : tout est dans le
-tableau de bord, et je vous ouvre un compte gratuit pour ça.
-→ mentio.fr/signup (60 secondes, sans carte)
+Créez votre compte, c'est gratuit et sans carte : mentio.fr/signup
+Vous y trouvez le score d'Argalys, les questions perdues une par une, et le
+relevé qui se met à jour tout seul chaque semaine.
 
-Dites-moi juste « ok » et je paramètre moi-même votre marque, vos 5 concurrents
-et vos questions avant votre première connexion. Vous recevez ensuite le relevé
-chaque semaine, automatiquement : vous verrez bouger ce qui bouge.
+Le compte gratuit suit une marque sur ChatGPT. Si vous voulez les 4 modèles,
+les 50 questions et surtout la liste des sites à conquérir — c'est là que se
+joue la citation, pas sur votre fiche produit — c'est 49 €/mois, sans engagement.
 
-Le classement public, pour situer : mentio.fr/barometre
+Une chose que j'ai vue et qui vaut le détour : sur les questions de symptôme
+(« je suis fatiguée », « immunité en hiver »), ChatGPT ne cite AUCUNE marque.
+Gemini, si. Le terrain ChatGPT est encore vide dans votre rayon — celle qui
+s'y installe la première prend tout.
 
 Bonne journée,
 Maël
+mentio.fr/barometre — le classement public
 ```
 
 ---
 
 ## 2. Hydratis — à melaniepiaser@hydratis.co
 
-> Leur rayon (hydratation, électrolytes) n'a jamais été interrogé. On ne peut donc
-> annoncer aucun chiffre. L'honnêteté devient ici le levier d'acquisition : c'est
-> **elle** qui lance le scan, ce qui la fait entrer dans le produit.
+> Leur rayon n'a jamais été interrogé : aucun chiffre à annoncer. L'honnêteté
+> devient le levier — c'est **elle** qui lance le scan, donc elle entre dans le
+> produit d'elle-même. Pas de travail gratuit de notre côté.
 
-**Objet :** Hydratis dans les réponses des IA — le test prend 60 secondes
+**Objet :** Hydratis dans les réponses des IA — 60 secondes pour le savoir
 
 ```
 Bonjour Mélanie,
@@ -63,37 +68,38 @@ Bonjour Mélanie,
 Votre collègue m'a orienté vers vous, merci.
 
 Je mesure quelles marques ChatGPT, Gemini et Perplexity recommandent quand un
-client leur demande quoi acheter. Première édition publiée sur les compléments :
-25 questions réelles, 50 réponses. Résultat marquant — la marque la mieux placée
-du rayon n'apparaît que dans 18 % des réponses, et la majorité jamais.
+client demande quoi acheter. Sur ma première édition, compléments alimentaires,
+la marque la mieux placée du rayon n'apparaît que dans 18 % des réponses. La
+majorité des marques, jamais.
 
-Je préfère être franc : Hydratis n'apparaît dans aucune de ces réponses, mais ça
-ne prouve rien. Aucune de mes questions ne portait sur l'hydratation ou les
-électrolytes. Vous annoncer un « zéro » serait malhonnête.
+Sur Hydratis je ne peux rien affirmer : aucune de mes questions ne portait sur
+l'hydratation ou les électrolytes. Vous annoncer un chiffre serait malhonnête.
 
-Le plus rapide, c'est que vous fassiez le test vous-même :
-→ mentio.fr/score — vous tapez « Hydratis » et « hydratation, électrolytes ».
+Le plus rapide est que vous le voyiez vous-même :
+→ mentio.fr/score — « Hydratis », puis « hydratation, électrolytes ».
 60 secondes, gratuit, sans inscription. Vous obtenez votre score, les marques
 citées à votre place et le détail question par question.
 
-Si le résultat vous parle, le compte gratuit suit votre marque chaque semaine
-et vous montre les sites que les modèles consultent pour répondre — c'est là que
-se joue la citation, pas sur votre fiche produit.
-
-Le classement public : mentio.fr/barometre
+Si le résultat vous interpelle, le suivi hebdomadaire démarre à 49 €/mois :
+les 4 modèles, 50 questions, et les sites que les IA consultent pour répondre.
+Un compte gratuit permet de tester le suivi sur une marque avant de décider.
 
 Bonne journée,
 Maël
+mentio.fr/barometre — le classement public
 ```
 
 ---
 
-## Deux choses avant d'envoyer
+## Coûts
 
-**Aucune dépense engagée.** Ces deux messages ne consomment rien : Argalys s'appuie
-sur les données déjà payées, et Hydratis lance le scan elle-même depuis le site.
+**Ces deux messages n'engagent rien.** Argalys s'appuie sur les données déjà payées ;
+Hydratis lance le scan elle-même depuis le site.
 
-**Un compte gratuit coûte environ 0,13 $ par semaine** (10 questions ChatGPT le
-lundi). Le coupe-circuit plafonne l'ensemble des comptes gratuits, donc pas de
-dérive possible — mais c'est le prix de l'acquisition, et il faut le savoir avant
-d'en ouvrir beaucoup. Dis-moi si tu veux que je baisse ce plafond.
+**À valider si tu veux aller plus loin :**
+
+| Action | Coût | Statut |
+|---|---|---|
+| Scan sur mesure pour Argalys (positionnement végétal) | 0,30 $ | ⏸ j'attends ton feu vert |
+| Scan sur mesure pour Hydratis (électrolytes) | 0,30 $ | ⏸ j'attends ton feu vert |
+| Un compte gratuit ouvert par une marque | ~0,13 $/semaine | déclenché par elles |
