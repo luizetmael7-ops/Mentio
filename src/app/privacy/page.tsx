@@ -3,7 +3,7 @@ import { BrandNav } from "@/components/brand/nav";
 import { BrandFooter } from "@/components/brand/footer";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy — Mentio",
+  title: "Politique de confidentialité — Mentio",
 };
 
 export default function PrivacyPage() {
@@ -11,47 +11,48 @@ export default function PrivacyPage() {
     <div className="flex min-h-screen flex-col bg-[var(--porcelain)] text-[var(--ink)]">
       <BrandNav />
       <main className="mx-auto w-full max-w-3xl flex-1 px-5 pb-24 pt-32">
-        <p className="eyebrow">Legal</p>
+        <p className="eyebrow">Mentions légales</p>
         <h1 className="mt-3 font-display text-4xl font-black uppercase tracking-tight">
-          Privacy Policy
+          Politique de confidentialité
         </h1>
         <div className="mt-8 space-y-6 text-sm leading-relaxed text-[var(--ink-soft)]">
           <section>
-            <h2 className="font-semibold text-[var(--ink)]">What we collect</h2>
+            <h2 className="font-semibold text-[var(--ink)]">Ce que nous collectons</h2>
             <p>
-              Account data (email), the brands, competitors and prompts you configure, the readings
-              we compute for you, and the email you provide when requesting a free scan report.
-              Free scans store a salted hash of your IP for rate-limiting — never the IP itself.
-              Product analytics run on PostHog (EU cloud).
+              Les données de compte (email), les marques, concurrents et questions que vous
+              configurez, les relevés que nous calculons pour vous, et l&apos;adresse que vous
+              donnez pour recevoir un rapport de scan gratuit. Les scans gratuits enregistrent une
+              empreinte salée de votre adresse IP pour limiter les abus — jamais l&apos;adresse
+              elle-même. La mesure d&apos;usage passe par PostHog (cloud UE).
             </p>
           </section>
           <section>
-            <h2 className="font-semibold text-[var(--ink)]">What we do with it</h2>
+            <h2 className="font-semibold text-[var(--ink)]">Ce que nous en faisons</h2>
             <p>
-              Operate the service, send the emails you asked for (reports, digests, alerts — from
-              hello@mentio.fr via Resend, EU region), and improve the product. We never sell your
-              data. Aggregated, anonymized statistics (e.g. the Mentio Index) contain no personal
-              data.
+              Faire fonctionner le service, envoyer les emails que vous avez demandés (rapports,
+              résumés, alertes — depuis hello@mentio.fr via Resend, région UE), et améliorer le
+              produit. Nous ne vendons jamais vos données. Les statistiques agrégées et anonymisées
+              (le Baromètre Mentio, par exemple) ne contiennent aucune donnée personnelle.
             </p>
           </section>
           <section>
-            <h2 className="font-semibold text-[var(--ink)]">Where it lives</h2>
+            <h2 className="font-semibold text-[var(--ink)]">Où elles sont hébergées</h2>
             <p>
-              Database and auth: Supabase (EU). Hosting: Vercel. Emails: Resend (EU). Payments:
-              Stripe — we never see your card number.
+              Base de données et authentification : Supabase (UE). Hébergement : Vercel. Emails :
+              Resend (UE). Paiements : Stripe — nous ne voyons jamais votre numéro de carte.
             </p>
           </section>
           <section>
-            <h2 className="font-semibold text-[var(--ink)]">Your rights (GDPR)</h2>
+            <h2 className="font-semibold text-[var(--ink)]">Vos droits (RGPD)</h2>
             <p>
-              Access, rectification, deletion, portability: email{" "}
+              Accès, rectification, suppression, portabilité : écrivez à{" "}
               <a href="mailto:hello@mentio.fr" className="underline">
                 hello@mentio.fr
               </a>{" "}
-              and we&apos;ll handle it within 30 days. Data controller: Maël Luizet (France).
+              , nous traitons la demande sous 30 jours. Responsable du traitement : Maël Luizet (France).
             </p>
           </section>
-          <p className="text-xs">Last updated: July 2026.</p>
+          <p className="text-xs">Dernière mise à jour : juillet 2026.</p>
         </div>
       </main>
       <BrandFooter />
