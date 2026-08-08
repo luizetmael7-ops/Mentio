@@ -53,6 +53,75 @@ function clean(extraction: Extraction): Extraction {
 }
 
 /** Juge principal — OpenAI (le moins cher pour de l'extraction). */
+/**
+ * MOTEUR GRATUIT — OpenRouter, modèles ouverts.
+ *
+ * Le juge ne fait que de l'extraction structurée : il ne cherche pas sur le web,
+ * donc il n'a pas besoin du forfait de recherche qui représente ~77 % du coût d'un
+ * appel ChatGPT. C'est exactement la brique qui peut tourner sur un modèle ouvert
+ * sans rien perdre.
+ *
+ * Vérifié avant migration sur une réponse piégée (ANSES, Doctissimo, « magnésium
+ * bisglycinate », « Lactobacillus rhamnosus » mêlés à 4 vraies marques) : Nemotron
+ * a extrait exactement les 4 marques, avec les bonnes positions et sentiments.
+ *
+ * Les modèles de mesure, eux, ne sont PAS substituables : le produit vend « ce que
+ * ChatGPT répond à vos clients ». Mesurer un modèle que personne n'utilise viderait
+ * la promesse de son sens.
+ */
+const OPENROUTER_MODELS = [
+  process.env.OPENROUTER_JUDGE_MODEL ?? "nvidia/nemotron-3-ultra-550b-a55b:free",
+  "nvidia/nemotron-3-super-120b-a12b:free",
+  "nvidia/nemotron-3-nano-30b-a3b:free",
+];
+
+async function judgeWithOpenRouter(rawAnswer: string) {
+  let lastError: unknown;
+  for (const model of OPENROUTER_MODELS) {
+    try {
+      const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+          "Content-Type": "application/json",
+          "HTTP-Referer": "https://mentio.fr",
+          "X-Title": "Mentio",
+        },
+        body: JSON.stringify({
+          model,
+          messages: [
+            { role: "system", content: `${SYSTEM}\n\nRéponds UNIQUEMENT en JSON : {"brands":[{"name":"...","position":1,"sentiment":"positive|neutral|negative"}]}` },
+            { role: "user", content: rawAnswer },
+          ],
+          response_format: { type: "json_object" },
+          temperature: 0,
+        }),
+      });
+      if (!res.ok) throw new Error(`${model} : HTTP ${res.status}`);
+      const json = (await res.json()) as {
+        choices?: Array<{ message?: { content?: string } }>;
+        error?: { message?: string };
+      };
+      if (json.error) throw new Error(`${model} : ${json.error.message}`);
+      const content = json.choices?.[0]?.message?.content;
+      if (!content) throw new Error(`${model} : réponse vide`);
+
+      // Un modèle ouvert entoure parfois le JSON de texte : on isole l'objet.
+      const start = content.indexOf("{");
+      const end = content.lastIndexOf("}");
+      if (start === -1 || end === -1) throw new Error(`${model} : pas de JSON`);
+      const parsed = ExtractionSchema.parse(JSON.parse(content.slice(start, end + 1)));
+
+      // Palier gratuit : aucun token facturé.
+      return { extraction: clean(parsed), costUsd: 0 };
+    } catch (error) {
+      lastError = error;
+      console.warn(`Juge ouvert indisponible (${(error as Error).message.slice(0, 70)}) → suivant`);
+    }
+  }
+  throw lastError instanceof Error ? lastError : new Error("Juge OpenRouter indisponible");
+}
+
 async function judgeWithOpenAI(rawAnswer: string) {
   const completion = await client().chat.completions.parse({
     model: JUDGE_MODEL,
@@ -101,8 +170,19 @@ async function judgeWithAnthropic(rawAnswer: string) {
 }
 
 export async function judgeAnswer(rawAnswer: string): Promise<{ extraction: Extraction; costUsd: number }> {
+  const openRouterConfigured = Boolean(process.env.OPENROUTER_API_KEY);
   const openAiConfigured = Boolean(process.env.OPENAI_API_KEY);
   const anthropicConfigured = Boolean(process.env.ANTHROPIC_API_KEY);
+
+  // Le gratuit d'abord. Les moteurs payants ne servent que de filet.
+  if (openRouterConfigured) {
+    try {
+      return await judgeWithOpenRouter(rawAnswer);
+    } catch (error) {
+      if (!openAiConfigured && !anthropicConfigured) throw error;
+      console.warn("Juge gratuit indisponible → bascule sur un moteur payant");
+    }
+  }
 
   if (openAiConfigured) {
     try {
@@ -114,7 +194,7 @@ export async function judgeAnswer(rawAnswer: string): Promise<{ extraction: Extr
       );
     }
   }
-  if (!anthropicConfigured) throw new Error("Aucun juge configuré (OPENAI_API_KEY / ANTHROPIC_API_KEY)");
+  if (!anthropicConfigured) throw new Error("Aucun juge configuré (OPENROUTER_API_KEY / OPENAI_API_KEY / ANTHROPIC_API_KEY)");
   return judgeWithAnthropic(rawAnswer);
 }
 
