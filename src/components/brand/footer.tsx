@@ -11,6 +11,7 @@ const COPY = {
     login: "Connexion",
     sources: "Sources",
     scale: "Le barème",
+    method: "Méthodologie",
     contact: "Contact",
     terms: "CGU",
     privacy: "Confidentialité",
@@ -27,6 +28,7 @@ const COPY = {
     login: "Log in",
     sources: "Sources",
     scale: "Le barème",
+    method: "Méthodologie",
     contact: "Contact",
     terms: "Terms",
     privacy: "Privacy",
@@ -61,6 +63,9 @@ export function BrandFooter({ locale = "fr" }: { locale?: "fr" | "en" }) {
           </Link>
           <Link href="/score-mentio" className="transition-colors hover:text-white">
             {t.scale}
+          </Link>
+          <Link href="/methodologie" className="transition-colors hover:text-white">
+            {t.method}
           </Link>
           <Link href="/pricing" className="transition-colors hover:text-white">
             {t.pricing}

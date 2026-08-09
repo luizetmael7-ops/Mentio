@@ -9,6 +9,7 @@ import { Reveal } from "@/components/brand/reveal";
 import { RankingTable, type RankingRow } from "@/components/brand/ranking-table";
 import { modelName } from "@/lib/models";
 import { getEditions, formatEditionDate, brandSlug, brandScore } from "@/lib/index-edition";
+import { movementIsSignificant } from "@/lib/measurement";
 
 export const metadata: Metadata = {
   title: "Le Baromètre Mentio — les marques que les IA recommandent",
@@ -57,18 +58,32 @@ export default async function BarometrePage() {
       ? Math.round((brands.slice(0, 3).reduce((sum, b) => sum + b.total, 0) / totalMentions) * 100)
       : 0;
 
-  // Mouvement vs édition précédente (le vrai intérêt d'un baromètre longitudinal)
+  // Mouvement vs édition précédente. On ne publie un déplacement que s'il sort du
+  // bruit : sinon on affiche « stable ». Quitte à être ennuyeux, jamais faux.
   const rankBefore = new Map<string, number>();
-  (previous?.brands ?? []).forEach((b, i) => rankBefore.set(brandSlug(b.name), i));
+  const measureBefore = new Map<string, { total: number; ci95: number }>();
+  (previous?.brands ?? []).forEach((b, i) => {
+    rankBefore.set(brandSlug(b.name), i);
+    measureBefore.set(brandSlug(b.name), { total: b.total, ci95: b.ci95 ?? 0 });
+  });
 
   const rows: RankingRow[] = brands.slice(0, 50).map((brand, i) => {
-    const before = rankBefore.get(brandSlug(brand.name));
+    const slug = brandSlug(brand.name);
+    const before = rankBefore.get(slug);
+    const prior = measureBefore.get(slug);
+    const rawDelta = before === undefined ? null : before - i;
+    // Éditions anciennes sans IC : on garde le comportement historique.
+    const significant =
+      rawDelta === null ||
+      !prior ||
+      brand.ci95 === undefined ||
+      movementIsSignificant({ total: brand.total, ci95: brand.ci95 }, prior);
     return {
       name: brand.name,
       total: brand.total,
       top1: brand.top1,
       score: brandScore(brand, latest.runs),
-      delta: before === undefined ? null : before - i,
+      delta: significant ? rawDelta : 0,
     };
   });
 
@@ -243,6 +258,13 @@ export default async function BarometrePage() {
             <h2 className="font-display text-xl font-extrabold uppercase tracking-wide">
               Méthodologie
             </h2>
+            <p className="mt-2 text-sm text-[var(--ink-soft)]">
+              Le détail complet, échantillonnage et barres d&apos;erreur compris, est sur{" "}
+              <Link href="/methodologie" className="underline">
+                la page méthodologie
+              </Link>
+              .
+            </p>
             <ul className="mt-4 space-y-2 text-sm leading-relaxed text-[var(--ink-soft)]">
               <li>
                 <strong className="text-[var(--ink)]">Les mêmes questions chaque semaine.</strong>{" "}

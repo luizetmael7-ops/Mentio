@@ -47,6 +47,7 @@ export async function llmsTxt(): Promise<string> {
     `- [Scan gratuit](${BASE}/score) — mesure d'une marque sur sa catégorie, sans inscription`,
     `- [Le Score Mentio](${BASE}/score-mentio) — définition complète du barème, calcul et répartition réelle`,
     `- [Les sources que les IA lisent](${BASE}/sources) — domaines réellement consultés pour répondre`,
+    `- [Méthodologie complète](${BASE}/methodologie) — échantillonnage, barres d'erreur, limites`,
     `- [Contact et droit de réponse](${BASE}/contact)`,
     `- [Données complètes en un fichier](${BASE}/llms-full.txt)`,
     `- API publique en lecture : ${BASE}/api/v1/barometre et ${BASE}/api/v1/marques/{slug}`,

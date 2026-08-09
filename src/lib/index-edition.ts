@@ -17,6 +17,8 @@ export interface EditionBrand {
   name: string;
   total: number;
   top1: number;
+  /** Demi-largeur de l'intervalle de confiance à 95 %, en citations */
+  ci95?: number;
   /** Position moyenne dans les réponses où la marque est citée */
   avgPosition?: number;
   /** Nombre de citations par modèle */
@@ -30,9 +32,19 @@ export interface EditionAnswer {
   sources: string[];
 }
 
+export interface Sampling {
+  method: string;
+  basePasses: number;
+  contestedPasses: number;
+  contestedQuestions: string[];
+  totalCalls: number;
+}
+
 export interface Edition {
   date: string;
   runs: number;
+  /** Comment l'édition a été échantillonnée — absent sur les éditions antérieures */
+  sampling?: Sampling;
   /** Les modèles réellement interrogés pour CETTE édition (pas ceux du produit) */
   models: ModelKey[];
   brands: EditionBrand[];
@@ -49,6 +61,7 @@ interface EditionRow {
     topBrands?: EditionBrand[];
     topSources?: Array<{ domain: string; count: number }>;
     answers?: EditionAnswer[];
+    sampling?: Sampling;
   } | null;
 }
 
@@ -56,6 +69,7 @@ function toEdition(row: EditionRow): Edition {
   return {
     date: row.edition_date,
     runs: row.data?.runs ?? 0,
+    sampling: row.data?.sampling,
     models: row.data?.models ?? [],
     brands: row.data?.topBrands ?? [],
     sources: row.data?.topSources ?? [],
