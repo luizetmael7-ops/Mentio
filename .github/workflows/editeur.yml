@@ -1,0 +1,66 @@
+# L'ÉDITEUR — production bimensuelle du Baromètre.
+#
+# Le workflow OUVRE une pull request, il ne merge jamais. On publie un classement
+# nominatif de marques réelles : une erreur automatisée coûte la crédibilité du
+# Baromètre. Un humain relit, un humain merge.
+name: Éditeur — Baromètre
+
+on:
+  schedule:
+    # 1er et 15 de chaque mois, 6h UTC. Bimensuel : le corpus grossit sans
+    # que la facture suive.
+    - cron: "0 6 1,15 * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  # Deux éditions en parallèle produiraient deux classements concurrents.
+  group: editeur
+  cancel-in-progress: false
+
+jobs:
+  edition:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Installer Claude Code
+        run: npm i -g @anthropic-ai/claude-code
+
+      - name: Lancer l'Éditeur
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          INNGEST_EVENT_KEY: ${{ secrets.INNGEST_EVENT_KEY }}
+        run: ./scripts/agent-run.sh editeur
+
+      - name: Ouvrir la pull request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          branch: agent/edition-${{ github.run_id }}
+          title: "Baromètre — édition du ${{ github.run_number }}"
+          body: |
+            Édition produite par l'Éditeur.
+
+            **À vérifier avant de merger :**
+            - [ ] aucune marque n'a bougé de plus de 10 places sans explication
+            - [ ] le commentaire ne porte aucun jugement de valeur
+            - [ ] les intervalles de confiance sont présents
+            - [ ] le coût du run est dans `ops/logs/`
+
+            Ne pas merger sans avoir lu le classement en entier.
+          labels: barometre, agent
+          delete-branch: true

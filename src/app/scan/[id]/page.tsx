@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { submitLead } from "@/lib/actions/lead";
+import { tierOf } from "@/lib/spectrum";
 import { modelLabel } from "@/lib/models-meta";
 import { ScanPoller } from "@/components/scan-poller";
 import { ScanProgress } from "@/components/scan-progress";
@@ -74,13 +75,20 @@ export default async function ScanPage({ params }: { params: Promise<{ id: strin
       <div className="grid gap-4 sm:grid-cols-2">
         <Card className="text-center">
           <CardHeader>
-            <CardDescription>Score de visibilité IA</CardDescription>
-            <CardTitle className="text-5xl tabular-nums">
-              {teaser.score}
-              <span className="text-lg font-normal text-muted-foreground"> / 100</span>
+            <CardDescription>Votre palier</CardDescription>
+            {/* Scan gratuit DÉGRADÉ : le palier, un concurrent et l'écart. Le chiffre
+                exact et le détail sont derrière l'email. On ne vend pas le nombre —
+                on vend la fin de l'inconfort qu'il crée. */}
+            <CardTitle
+              className="text-4xl uppercase"
+              style={{ color: tierOf(teaser.score).hex }}
+            >
+              {tierOf(teaser.score).label}
             </CardTitle>
             <CardDescription>
-              {`Citée dans ${teaser.citedCount} réponse${teaser.citedCount > 1 ? "s" : ""} sur ${teaser.runCount}`}
+              {unlocked
+                ? `Score ${teaser.score}/100 — citée dans ${teaser.citedCount} réponse${teaser.citedCount > 1 ? "s" : ""} sur ${teaser.runCount}`
+                : tierOf(teaser.score).meaning}
             </CardDescription>
           </CardHeader>
         </Card>
@@ -91,7 +99,11 @@ export default async function ScanPage({ params }: { params: Promise<{ id: strin
               <>
                 <CardTitle className="text-2xl">{teaser.shock.competitor}</CardTitle>
                 <CardDescription>
-                  {`est citée ${teaser.shock.competitorCount} fois par les IA sur ces mêmes questions${teaser.shock.targetCount === 0 ? " — et vous, zéro." : "."}`}
+                  {`est citée ${teaser.shock.competitorCount} fois sur ces mêmes questions${
+                    teaser.shock.targetCount === 0
+                      ? " — et vous, zéro."
+                      : `, contre ${teaser.shock.targetCount} pour vous.`
+                  }`}
                 </CardDescription>
               </>
             ) : (
@@ -113,7 +125,7 @@ export default async function ScanPage({ params }: { params: Promise<{ id: strin
             </div>
           ))}
           <div className="ml-auto">
-            <ShareReading brandName={scan.brand_name} score={teaser.score} />
+            {unlocked && <ShareReading brandName={scan.brand_name} score={teaser.score} />}
           </div>
         </CardContent>
       </Card>
@@ -121,10 +133,10 @@ export default async function ScanPage({ params }: { params: Promise<{ id: strin
       {!unlocked ? (
         <Card className="border-2">
           <CardHeader>
-            <CardTitle>Recevoir le rapport détaillé</CardTitle>
+            <CardTitle>Voir votre score exact et le détail</CardTitle>
             <CardDescription>
-              Le détail question par question : qui est cité, à quelle position, sur quel modèle —
-              et les marques qui prennent votre place.
+              Votre score sur 100, le détail question par question, les marques citées à votre
+              place et les sites que les IA lisent pour répondre.
             </CardDescription>
           </CardHeader>
           <CardContent>
