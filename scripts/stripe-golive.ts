@@ -15,7 +15,7 @@
 import Stripe from "stripe";
 import { PLAN_LIMITS, type Plan } from "../src/lib/plans";
 
-const PAID_PLANS: Plan[] = ["starter", "growth", "agency"];
+const PAID_PLANS: Plan[] = ["brand", "agency", "agencyplus"];
 const WEBHOOK_URL = "https://mentio.fr/api/stripe/webhook";
 // Exactement les événements traités par app/api/stripe/webhook/route.ts
 const WEBHOOK_EVENTS: Stripe.WebhookEndpointCreateParams.EnabledEvent[] = [

@@ -132,10 +132,10 @@ export function CadenceMatrix() {
 /** L'échelle d'upgrade : LA différence clé entre chaque palier, en une ligne. */
 export function UpgradeLadder() {
   const steps: Array<[string, string]> = [
-    ["Free", "1 IA · 5 questions · hebdo"],
-    ["Starter", "les 4 IA · 50 questions"],
-    ["Growth", "relevés quotidiens · 3 marques · alertes"],
-    ["Agency", "10 marques · service sur mesure · questions personnalisées"],
+    ["Free", "le palier et un concurrent"],
+    ["Brand", "les 4 IA · 50 questions · l'action du jour"],
+    ["Agence", "10 marques · rapports en marque blanche"],
+    ["Agence+", "30 marques · API · questions sur mesure"],
   ];
   return (
     <div className="mb-10 flex flex-col items-stretch gap-2 sm:flex-row sm:items-center">
@@ -207,9 +207,9 @@ export function PricingTiers() {
       <div className="grid gap-x-4 gap-y-7 md:grid-cols-2 lg:grid-cols-4">
         {(Object.entries(PLAN_LIMITS) as Array<[Plan, (typeof PLAN_LIMITS)["free"]]>).map(
           ([key, plan]) => {
-            const isAgency = key === "agency";
-            const isGrowth = key === "growth";
-            const isStarter = key === "starter";
+            const isAgency = key === "agencyplus";
+            const isGrowth = key === "agency";
+            const isStarter = key === "brand";
             const isFree = plan.priceMonthlyEur === 0;
             // Annuel = 10 mois payés pour 12 → on affiche l'équivalent mensuel
             const displayPrice = annual
@@ -267,7 +267,7 @@ export function PricingTiers() {
                 {/* Hauteur réservée sur TOUTES les cartes : sans ça, la phrase de Starter
                     décalait ses lignes de spécifications par rapport aux autres colonnes. */}
                 <p className="mt-1 h-8 text-xs font-medium leading-tight text-[var(--jade)]">
-                  {isStarter ? "Tout ce qu'il faut pour savoir où vous en êtes." : ""}
+                  {isStarter ? "Pour une marque qui veut entrer dans les réponses." : ""}
                 </p>
                 <dl
                   className={`mt-4 space-y-1.5 text-sm ${isAgency ? "text-white/80" : "text-[var(--ink-soft)]"}`}

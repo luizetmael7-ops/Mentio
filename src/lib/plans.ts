@@ -6,7 +6,7 @@ import type { ModelKey } from "@/lib/llm/types";
  * quotidien sur les plans hauts, les plus chers (Claude, Perplexity) en hebdo —
  * c'est ce mix qui protège la marge (~55-80 % selon palier).
  */
-export type Plan = "free" | "starter" | "growth" | "agency";
+export type Plan = "free" | "brand" | "agency" | "agencyplus";
 export type Cadence = "weekly" | "daily";
 
 export interface PlanLimits {
@@ -32,55 +32,51 @@ export const PLAN_LIMITS: Record<Plan, PlanLimits> = {
     competitors: 2,
     modelCadence: { chatgpt: "weekly" },
     cadenceLabel: "Hebdomadaire · ChatGPT",
-    features: [
-      "Votre score de visibilité IA",
-      "Tableau de bord complet",
-      "Sans carte bancaire",
-    ],
+    features: ["Votre palier et votre rang", "Un concurrent cité à votre place", "Sans carte bancaire"],
   },
-  starter: {
-    label: "Starter",
+  brand: {
+    label: "Brand",
     priceMonthlyEur: 49,
     brands: 1,
-    promptsPerBrand: 50,
-    competitors: 5,
-    modelCadence: { chatgpt: "weekly", gemini: "weekly", claude: "weekly", perplexity: "weekly" },
-    cadenceLabel: "Hebdomadaire · 4 modèles",
-    features: [
-      "Position et ton, modèle par modèle",
-      "Les sources que les IA citent vraiment",
-      "Résumé par email chaque semaine",
-      "Mise en route faite par nous",
-    ],
-  },
-  growth: {
-    label: "Growth",
-    priceMonthlyEur: 199,
-    brands: 3,
     promptsPerBrand: 50,
     competitors: 5,
     modelCadence: { chatgpt: "daily", gemini: "daily", claude: "weekly", perplexity: "weekly" },
     cadenceLabel: "ChatGPT + Gemini chaque jour · Claude + Perplexity chaque semaine",
     features: [
-      "Historique illimité, semaine après semaine",
+      "Score complet, modèle par modèle",
+      "Les sites que les IA lisent pour répondre",
+      "L'action du jour : une seule chose à faire",
       "Alertes en cas de chute ou de dépassement",
-      "Sources à conquérir : où se faire citer",
     ],
   },
   agency: {
-    label: "Agency",
-    priceMonthlyEur: 799,
+    label: "Agence",
+    priceMonthlyEur: 149,
     brands: 10,
+    promptsPerBrand: 50,
+    competitors: 5,
+    modelCadence: { chatgpt: "daily", gemini: "daily", claude: "weekly", perplexity: "weekly" },
+    cadenceLabel: "ChatGPT + Gemini chaque jour · Claude + Perplexity chaque semaine",
+    features: [
+      "Rapports en marque blanche, illimités",
+      "Votre logo et vos couleurs sur chaque rapport",
+      "10 marques suivies en parallèle",
+      "Historique complet, semaine après semaine",
+    ],
+  },
+  agencyplus: {
+    label: "Agence+",
+    priceMonthlyEur: 349,
+    brands: 30,
     promptsPerBrand: 50,
     competitors: 10,
     modelCadence: { chatgpt: "daily", gemini: "daily", claude: "weekly", perplexity: "weekly" },
     cadenceLabel: "ChatGPT + Gemini chaque jour · Claude + Perplexity chaque semaine",
     features: [
-      "Rapports partageables en marque blanche (bientôt)",
-      "Accès API (bientôt)",
-      "Bibliothèque de questions sur mesure pour votre secteur",
+      "30 marques suivies",
+      "Accès API pour vos propres outils",
+      "Bibliothèque de questions sur mesure",
       "Mise en route dédiée et support prioritaire",
-      "Vue portefeuille multi-marques (bientôt)",
     ],
   },
 };

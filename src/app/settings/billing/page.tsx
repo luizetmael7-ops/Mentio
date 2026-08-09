@@ -38,7 +38,7 @@ export default async function BillingPage() {
       </header>
 
       <div className="grid gap-4 sm:grid-cols-3">
-        {(["starter", "growth", "agency"] as const).map((plan) => {
+        {(["brand", "agency", "agencyplus"] as const).map((plan) => {
           const limits = PLAN_LIMITS[plan];
           return (
             <Card key={plan} className={plan === currentPlan ? "border-2 border-primary" : ""}>

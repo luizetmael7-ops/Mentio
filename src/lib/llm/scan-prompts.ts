@@ -26,6 +26,58 @@ function client(): OpenAI {
   return _client;
 }
 
+/**
+ * MOTEUR GRATUIT — même logique que le juge : écrire des questions ne demande
+ * aucune recherche web, donc aucun forfait. C'est le second poste qui passe à zéro.
+ */
+async function generateWithOpenRouter(industry: string, count: number): Promise<string[]> {
+  const models = [
+    process.env.OPENROUTER_JUDGE_MODEL ?? "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "nvidia/nemotron-3-super-120b-a12b:free",
+    "nvidia/nemotron-3-nano-30b-a3b:free",
+  ];
+  let lastError: unknown;
+  for (const model of models) {
+    try {
+      const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+          "Content-Type": "application/json",
+          "HTTP-Referer": "https://mentio.fr",
+          "X-Title": "Mentio",
+        },
+        body: JSON.stringify({
+          model,
+          messages: [
+            { role: "system", content: `${SYSTEM}\n\nRéponds UNIQUEMENT en JSON : {"questions":["…"]}` },
+            { role: "user", content: `Catégorie : ${industry}. Génère exactement ${count} questions.` },
+          ],
+          response_format: { type: "json_object" },
+          temperature: 0.4,
+        }),
+      });
+      if (!res.ok) throw new Error(`${model} : HTTP ${res.status}`);
+      const json = (await res.json()) as {
+        choices?: Array<{ message?: { content?: string } }>;
+        error?: { message?: string };
+      };
+      if (json.error) throw new Error(json.error.message);
+      const content = json.choices?.[0]?.message?.content ?? "";
+      const start = content.indexOf("{");
+      const end = content.lastIndexOf("}");
+      if (start === -1 || end === -1) throw new Error(`${model} : pas de JSON`);
+      const parsed = QuestionsSchema.parse(JSON.parse(content.slice(start, end + 1)));
+      if (parsed.questions.length === 0) throw new Error(`${model} : aucune question`);
+      return parsed.questions;
+    } catch (error) {
+      lastError = error;
+      console.warn(`Générateur gratuit indisponible (${(error as Error).message.slice(0, 60)}) → suivant`);
+    }
+  }
+  throw lastError instanceof Error ? lastError : new Error("Générateur OpenRouter indisponible");
+}
+
 async function generateWithOpenAI(industry: string, count: number): Promise<string[]> {
   const completion = await client().chat.completions.parse({
     model: GENERATOR_MODEL,
@@ -55,9 +107,11 @@ async function generateWithAnthropic(industry: string, count: number): Promise<s
 
 export async function generateScanPrompts(industry: string, count = 10): Promise<string[]> {
   const attempts: Array<() => Promise<string[]>> = [];
+  // Gratuit d'abord ; les moteurs payants ne sont qu'un filet.
+  if (process.env.OPENROUTER_API_KEY) attempts.push(() => generateWithOpenRouter(industry, count));
   if (process.env.OPENAI_API_KEY) attempts.push(() => generateWithOpenAI(industry, count));
   if (process.env.ANTHROPIC_API_KEY) attempts.push(() => generateWithAnthropic(industry, count));
-  if (attempts.length === 0) throw new Error("Aucun générateur configuré (OPENAI_API_KEY / ANTHROPIC_API_KEY)");
+  if (attempts.length === 0) throw new Error("Aucun générateur configuré (OPENROUTER_API_KEY / OPENAI_API_KEY / ANTHROPIC_API_KEY)");
 
   let lastError: unknown;
   for (const attempt of attempts) {

@@ -9,7 +9,7 @@ config({ path: ".env.local" });
 import Stripe from "stripe";
 import { PLAN_LIMITS, type Plan } from "../src/lib/plans";
 
-const PAID_PLANS: Plan[] = ["starter", "growth", "agency"];
+const PAID_PLANS: Plan[] = ["brand", "agency", "agencyplus"];
 
 async function main() {
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
