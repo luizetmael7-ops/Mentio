@@ -54,6 +54,12 @@ export interface BrandReport {
   firstPlaces: number;
   ci95?: number;
   editionDate: string;
+  /**
+   * Date de la prochaine mesure. C'est la moitié « durable » de la promesse :
+   * un audit se paie une fois, une mesure qui revient chaque semaine avec les
+   * mêmes questions se suit — et c'est ce qui se facture par abonnement.
+   */
+  nextMeasure: string;
   models: string[];
   /** Évolution du score depuis l'édition précédente, si elle est significative */
   scoreDelta: number | null;
@@ -63,6 +69,13 @@ export interface BrandReport {
   sources: ReportSource[];
   /** Les trois actions à mener, dans l'ordre — c'est ce qui justifie l'abonnement */
   actions: Array<{ title: string; detail: string }>;
+}
+
+/** Le Baromètre reparaît chaque semaine, aux mêmes questions. */
+function nextMeasureDate(editionDate: string): string {
+  const d = new Date(`${editionDate}T00:00:00Z`);
+  d.setUTCDate(d.getUTCDate() + 7);
+  return d.toISOString().slice(0, 10);
 }
 
 function findBrand(edition: Edition, slug: string): { brand: EditionBrand; rank: number } | null {
@@ -169,6 +182,22 @@ export async function buildReport(slug: string): Promise<BrandReport | null> {
     });
   }
 
+  // Garde-fou : un rapport sans action est un score, et un score se screenshote une
+  // fois puis on résilie. Ces replis restent ancrés dans les données mesurées — on
+  // n'invente jamais un conseil, on en déduit un depuis ce qu'on a relevé.
+  if (actions.length < 3 && rivals[0]) {
+    actions.push({
+      title: `Se positionner face à ${rivals[0].name}`,
+      detail: `${rivals[0].name} apparaît dans ${rivals[0].citations} réponses où ${brand.name} est absente${rivals[0].firstPlaces > 0 ? `, dont ${rivals[0].firstPlaces} en première position` : ""}. Un comparatif honnête publié sur le site, et repris par les sources du secteur, est le format que les modèles citent le plus volontiers.`,
+    });
+  }
+  if (actions.length < 3) {
+    actions.push({
+      title: `Couvrir les questions d'achat non traitées`,
+      detail: `${brand.name} ressort sur ${brand.total} des ${edition.runs} réponses relevées. Les ${Math.max(edition.runs - brand.total, 0)} restantes sont autant de questions où un concurrent répond à sa place. Le détail question par question est ci-dessous.`,
+    });
+  }
+
   return {
     name: brand.name,
     slug,
@@ -181,6 +210,7 @@ export async function buildReport(slug: string): Promise<BrandReport | null> {
     firstPlaces: brand.top1,
     ci95: brand.ci95,
     editionDate: edition.date,
+    nextMeasure: nextMeasureDate(edition.date),
     models: edition.models,
     scoreDelta,
     perModel,
