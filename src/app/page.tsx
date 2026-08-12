@@ -52,14 +52,14 @@ export default async function LandingPage({
           <div>
             <p className="eyebrow mb-5">Mentio — la perception, mesurée</p>
             <h1 className="font-display text-4xl font-black uppercase leading-[0.98] tracking-tight sm:text-6xl">
-              L&apos;IA cite trois marques.
+              Quand l&apos;IA recommande,
               <br />
               <span className="text-[var(--spectrum-ash)]">
-                La vôtre en fait partie<span className="text-[var(--poppy)]"> ?</span>
+                vous êtes cité<span className="text-[var(--poppy)]"> ?</span>
               </span>
             </h1>
             <p className="mt-6 max-w-lg text-lg leading-relaxed text-[var(--ink-soft)]">
-              {`Vos clients demandent à ${modelsSentence(models)} ce qu'ils doivent acheter. Mentio pose ces questions chaque semaine, compte les marques citées, et vous montre où agir pour entrer dans les réponses.`}
+              {`Chaque semaine, Mentio pose à ${modelsSentence(models)} les questions que vos clients leur posent. Vous voyez quelles marques sortent, à quelle fréquence, et ce qu'il faut corriger pour en faire partie.`}
             </p>
 
             {/* Deux rangées : à une seule, le champ marque se faisait écraser par le bouton */}
