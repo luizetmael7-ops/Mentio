@@ -1,4 +1,4 @@
-import { getEditions, brandSlug, brandScore } from "@/lib/index-edition";
+import { getEditionsForBrand, brandSlug, brandScore } from "@/lib/index-edition";
 import { tierOf } from "@/lib/spectrum";
 
 export const revalidate = 3600;
@@ -19,7 +19,7 @@ function escapeXml(value: string): string {
 
 export async function GET(_request: Request, { params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const editions = await getEditions(12);
+  const editions = await getEditionsForBrand(slug, 12);
 
   const found = editions
     .map((edition) => {

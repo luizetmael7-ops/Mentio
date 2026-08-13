@@ -11,7 +11,7 @@ import { activeModels, modelsSentenceEn, modelName } from "@/lib/models";
 import { Reveal } from "@/components/brand/reveal";
 import { PLAN_LIMITS, checkoutHref, type Plan } from "@/lib/plans";
 import { buildReport } from "@/lib/report";
-import { getLatestEdition, brandSlug } from "@/lib/index-edition";
+import { getLatestEdition, brandSlug, citationCount } from "@/lib/index-edition";
 
 export const metadata: Metadata = {
   title: "Mentio — do the AIs recommend you?",
@@ -189,8 +189,8 @@ export default async function LandingPageEn({
             {edition && leader && (
               <p className="mt-7 max-w-2xl text-white/70">
                 {`${edition.runs} real buying questions, asked on ${editionDate}. The top brand was named `}
-                <span className="font-metric text-white">{`${leader.total} times`}</span>
-                {`. The last one in the ranking: ${edition.brands[edition.brands.length - 1]?.total}. Everyone else: zero.`}
+                <span className="font-metric text-white">{`${citationCount(leader.total)} times`}</span>
+                {`. The last one in the ranking: ${citationCount(edition.brands[edition.brands.length - 1]?.total ?? 0)}. Everyone else: zero.`}
               </p>
             )}
           </Reveal>
@@ -259,7 +259,7 @@ export default async function LandingPageEn({
                 {leader && (
                   <p className="border-b border-[var(--line)] bg-[var(--porcelain)]/60 px-5 py-3 text-xs text-[var(--ink-soft)] sm:px-7">
                     {`Reading row one: ${leader.name} is named in `}
-                    <span className="font-metric text-[var(--ink)]">{`${leader.total} of ${edition.runs} answers`}</span>
+                    <span className="font-metric text-[var(--ink)]">{`${citationCount(leader.total)} of ${edition.runs} answers`}</span>
                     {leader.top1 > 0 ? `, first ${leader.top1} times.` : ", never first."}
                   </p>
                 )}
@@ -297,7 +297,7 @@ export default async function LandingPageEn({
                           </span>
                         )}
                         <span className="font-metric w-16 shrink-0 text-right text-sm tabular-nums">
-                          {brand.total}
+                          {citationCount(brand.total)}
                           <span className="text-[var(--ink-soft)]">/{edition.runs}</span>
                         </span>
                       </li>

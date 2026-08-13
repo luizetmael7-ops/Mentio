@@ -6,7 +6,7 @@ import { BrandFooter } from "@/components/brand/footer";
 import { TierScale } from "@/components/brand/tier";
 import { PrintButton } from "@/components/brand/print-button";
 import { modelName } from "@/lib/models";
-import { formatEditionDate, brandSlug } from "@/lib/index-edition";
+import { formatEditionDate, brandSlug, citationCount } from "@/lib/index-edition";
 import { buildReport, parseBranding } from "@/lib/report";
 import { getEditions } from "@/lib/index-edition";
 
@@ -127,7 +127,7 @@ export default async function RapportPage({
             <dl className="mt-5 grid grid-cols-2 gap-4 sm:grid-cols-4">
               {[
                 { t: "Rang", v: `${report.rank}${report.rank === 1 ? "re" : "e"}/${report.totalBrands}` },
-                { t: "Citations", v: `${report.citations}/${report.runs}` },
+                { t: "Citations", v: `${citationCount(report.citations)}/${report.runs}` },
                 { t: "1re position", v: String(report.firstPlaces) },
                 {
                   t: "Évolution",
@@ -232,7 +232,7 @@ export default async function RapportPage({
                     </span>
                   )}
                   <span className="font-metric w-12 shrink-0 text-right text-sm tabular-nums">
-                    {r.citations}×
+                    {citationCount(r.citations)}×
                   </span>
                 </li>
               ))}

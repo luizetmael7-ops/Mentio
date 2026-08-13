@@ -1,5 +1,5 @@
 import { ImageResponse } from "next/og";
-import { getEditions, brandSlug, brandScore } from "@/lib/index-edition";
+import { getEditionsForBrand, brandSlug, brandScore, citationCount } from "@/lib/index-edition";
 import { tierOf } from "@/lib/spectrum";
 
 export const alt = "Score de visibilité IA — Baromètre Mentio";
@@ -14,7 +14,7 @@ export const revalidate = 3600;
  */
 export default async function OgImage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const editions = await getEditions(12);
+  const editions = await getEditionsForBrand(slug, 12);
 
   const found = editions
     .map((edition) => {
@@ -114,7 +114,7 @@ export default async function OgImage({ params }: { params: Promise<{ slug: stri
             </div>
             <div style={{ fontSize: 28, color: "#544F60", marginTop: 24, lineHeight: 1.4 }}>
               {found
-                ? `Cité dans ${found.brand.total} réponses d'IA sur ${found.edition.runs} questions d'achat de sa catégorie.`
+                ? `Cité dans ${citationCount(found.brand.total)} réponses d'IA sur ${found.edition.runs} questions d'achat de sa catégorie.`
                 : "Marque non détectée dans les éditions publiées."}
             </div>
             {found && (

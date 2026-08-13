@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
-import { getEditions, brandSlug } from "@/lib/index-edition";
+import { getEditions, brandSlug, publishedVerticals } from "@/lib/index-edition";
+import { verticalByKey } from "@/lib/verticals";
 
 const BASE = "https://mentio.fr";
 
@@ -24,6 +25,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE}/terms`, changeFrequency: "yearly", priority: 0.2 },
     { url: `${BASE}/privacy`, changeFrequency: "yearly", priority: 0.2 },
   ];
+
+  // Les Baromètres sectoriels publiés (la beauté garde son URL nue /barometre)
+  const sectors: MetadataRoute.Sitemap = (await publishedVerticals())
+    .map((key) => verticalByKey(key))
+    .filter((v) => v !== null && v.slug !== "beaute-complements")
+    .map((v) => ({
+      url: `${BASE}/barometre/${v!.slug}`,
+      lastModified,
+      changeFrequency: "weekly" as const,
+      priority: 0.8,
+    }));
 
   // Une entrée par marque détectée, toutes éditions confondues
   const slugs = new Set<string>();
@@ -51,5 +63,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   }
 
-  return [...fixed, ...brands, ...versus];
+  return [...fixed, ...sectors, ...brands, ...versus];
 }

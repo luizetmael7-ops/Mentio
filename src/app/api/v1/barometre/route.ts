@@ -1,4 +1,5 @@
-import { getEditions, brandSlug, brandScore } from "@/lib/index-edition";
+import { getEditions, brandSlug, brandScore, DEFAULT_VERTICAL } from "@/lib/index-edition";
+import { verticalBySlug, verticalByKey } from "@/lib/verticals";
 import { tierOf } from "@/lib/spectrum";
 
 export const revalidate = 3600;
@@ -9,13 +10,22 @@ export const revalidate = 3600;
  * Le détail par marque est sur /api/v1/marques/{slug}.
  */
 export async function GET(request: Request) {
-  const editions = await getEditions(2);
+  const url = new URL(request.url);
+  // ?vertical=agences-geo (segment d'URL) ou agences_geo (clé en base) : les deux
+  // circulent, refuser l'une des deux ne ferait qu'égarer l'appelant.
+  const asked = url.searchParams.get("vertical");
+  const info = asked ? (verticalBySlug(asked) ?? verticalByKey(asked)) : null;
+  if (asked && !info) {
+    return Response.json({ error: `Verticale inconnue : ${asked}` }, { status: 404 });
+  }
+  const vertical = info?.key ?? DEFAULT_VERTICAL;
+
+  const editions = await getEditions(2, vertical);
   const latest = editions[0];
   if (!latest) {
     return Response.json({ error: "Aucune édition publiée." }, { status: 404 });
   }
 
-  const url = new URL(request.url);
   const limit = Math.min(Number(url.searchParams.get("limit") ?? 50) || 50, 50);
 
   const rankBefore = new Map<string, number>();
@@ -25,7 +35,7 @@ export async function GET(request: Request) {
     {
       edition: {
         date: latest.date,
-        vertical: "beaute_complements",
+        vertical,
         runs: latest.runs,
         models: latest.models,
       },

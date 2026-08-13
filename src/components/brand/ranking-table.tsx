@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { Search } from "lucide-react";
 import { tierOf } from "@/lib/spectrum";
-import { brandSlug } from "@/lib/index-edition";
+import { brandSlug, citationCount } from "@/lib/index-edition";
 
 export interface RankingRow {
   name: string;
@@ -132,7 +132,7 @@ export function RankingTable({
                     </span>
                   )}
                   <span className="font-metric w-16 shrink-0 text-right text-sm tabular-nums">
-                    {row.total}
+                    {citationCount(row.total)}
                     <span className="text-[var(--ink-soft)]">/{runs}</span>
                   </span>
                 </Link>

@@ -12,7 +12,7 @@ import { UpgradeLadder } from "@/components/brand/pricing-tiers";
 import { Reveal } from "@/components/brand/reveal";
 import { PLAN_LIMITS } from "@/lib/plans";
 import { buildReport } from "@/lib/report";
-import { getLatestEdition, formatEditionDate, brandSlug } from "@/lib/index-edition";
+import { getLatestEdition, formatEditionDate, brandSlug, citationCount } from "@/lib/index-edition";
 
 export const metadata: Metadata = {
   title: "Mentio — les IA recommandent-elles votre marque ?",
@@ -150,8 +150,8 @@ export default async function LandingPage({
             {edition && leader && (
               <p className="mt-7 max-w-2xl text-white/70">
                 {`Sur ${edition.runs} vraies questions d'achat posées le ${formatEditionDate(edition.date)}, la marque la plus citée revient `}
-                <span className="font-metric text-white">{`${leader.total} fois`}</span>
-                {`. La dernière du classement : ${edition.brands[edition.brands.length - 1]?.total}. Les autres, zéro.`}
+                <span className="font-metric text-white">{`${citationCount(leader.total)} fois`}</span>
+                {`. La dernière du classement : ${citationCount(edition.brands[edition.brands.length - 1]?.total ?? 0)}. Les autres, zéro.`}
               </p>
             )}
           </Reveal>
@@ -231,7 +231,7 @@ export default async function LandingPage({
                 {leader && (
                   <p className="border-b border-[var(--line)] bg-[var(--porcelain)]/60 px-5 py-3 text-xs text-[var(--ink-soft)] sm:px-7">
                     {`Lire la première ligne : ${leader.name} est citée dans `}
-                    <span className="font-metric text-[var(--ink)]">{`${leader.total} réponses sur ${edition.runs}`}</span>
+                    <span className="font-metric text-[var(--ink)]">{`${citationCount(leader.total)} réponses sur ${edition.runs}`}</span>
                     {leader.top1 > 0
                       ? `, dont ${leader.top1} fois en première position.`
                       : ", jamais en première position."}
@@ -271,7 +271,7 @@ export default async function LandingPage({
                           </span>
                         )}
                         <span className="font-metric w-16 shrink-0 text-right text-sm tabular-nums">
-                          {brand.total}
+                          {citationCount(brand.total)}
                           <span className="text-[var(--ink-soft)]">/{edition.runs}</span>
                         </span>
                       </li>

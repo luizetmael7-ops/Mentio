@@ -1,5 +1,5 @@
 import {
-  getEditions,
+  getEditionsForBrand,
   brandSlug,
   brandScore,
   type Edition,
@@ -87,7 +87,11 @@ function findBrand(edition: Edition, slug: string): { brand: EditionBrand; rank:
 }
 
 export async function buildReport(slug: string): Promise<BrandReport | null> {
-  const editions = await getEditions(12);
+  // La marque est cherchée dans TOUTES les verticales : un lien d'outreach pointe
+  // aussi bien vers une marque de beauté que vers une agence GEO. On reste ensuite
+  // à l'intérieur de sa verticale — l'édition « précédente » doit être celle du
+  // même Baromètre, sinon l'évolution de score compare deux marchés.
+  const editions = await getEditionsForBrand(slug, 12);
   const found = editions
     .map((edition) => {
       const hit = findBrand(edition, slug);

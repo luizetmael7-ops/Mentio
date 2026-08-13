@@ -10,7 +10,8 @@ import { modelName } from "@/lib/models";
 import { ClaimBrand } from "@/components/brand/claim-brand";
 import { BadgeEmbed } from "@/components/brand/badge-embed";
 import {
-  getEditions,
+  getEditionsByVertical,
+  getEditionsForBrand,
   formatEditionDate,
   brandSlug,
   brandScore,
@@ -22,10 +23,13 @@ export const revalidate = 3600;
 
 /** Le classement est public : toute marque détectée a sa page. */
 export async function generateStaticParams() {
-  const editions = await getEditions(12);
+  // Toutes les verticales : chaque Baromètre publié apporte ses marques.
+  const byVertical = await getEditionsByVertical(12);
   const slugs = new Set<string>();
-  for (const edition of editions) {
-    for (const brand of edition.brands) slugs.add(brandSlug(brand.name));
+  for (const editions of byVertical.values()) {
+    for (const edition of editions) {
+      for (const brand of edition.brands) slugs.add(brandSlug(brand.name));
+    }
   }
   return [...slugs].map((slug) => ({ slug }));
 }
@@ -43,7 +47,7 @@ function findBrand(edition: Edition | undefined, slug: string): Found | null {
 }
 
 async function load(slug: string) {
-  const editions = await getEditions(12);
+  const editions = await getEditionsForBrand(slug, 12);
   const latest = findBrand(editions[0], slug);
   const previous = findBrand(editions[1], slug);
   // La marque peut n'apparaître que dans une édition plus ancienne

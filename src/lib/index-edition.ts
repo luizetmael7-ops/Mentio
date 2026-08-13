@@ -42,6 +42,8 @@ export interface Sampling {
 
 export interface Edition {
   date: string;
+  /** La verticale mesurée — plusieurs Baromètres cohabitent désormais */
+  vertical: string;
   runs: number;
   /** Comment l'édition a été échantillonnée — absent sur les éditions antérieures */
   sampling?: Sampling;
@@ -55,6 +57,7 @@ export interface Edition {
 
 interface EditionRow {
   edition_date: string;
+  vertical?: string;
   data: {
     runs?: number;
     models?: ModelKey[];
@@ -68,6 +71,7 @@ interface EditionRow {
 function toEdition(row: EditionRow): Edition {
   return {
     date: row.edition_date,
+    vertical: row.vertical ?? DEFAULT_VERTICAL,
     runs: row.data?.runs ?? 0,
     sampling: row.data?.sampling,
     models: row.data?.models ?? [],
@@ -84,12 +88,12 @@ function toEdition(row: EditionRow): Edition {
  */
 export const DEFAULT_VERTICAL = "beaute_complements";
 
-/** Les dernières éditions publiables, la plus récente d'abord. */
+/** Les dernières éditions publiables d'une verticale, la plus récente d'abord. */
 export async function getEditions(limit = 6, vertical = DEFAULT_VERTICAL): Promise<Edition[]> {
   try {
     const { data } = await supabaseAdmin()
       .from("index_editions")
-      .select("edition_date, data")
+      .select("edition_date, vertical, data")
       .eq("vertical", vertical)
       .order("edition_date", { ascending: false })
       .limit(limit);
@@ -100,6 +104,62 @@ export async function getEditions(limit = 6, vertical = DEFAULT_VERTICAL): Promi
   } catch {
     return [];
   }
+}
+
+/**
+ * Toutes les verticales confondues, groupées par verticale et triées du plus
+ * récent au plus ancien à l'intérieur de chaque groupe.
+ *
+ * Sert aux surfaces qui cherchent UNE marque sans savoir dans quel Baromètre
+ * elle figure : /rapport/[slug] et /marques/[slug]. Le groupement est ce qui
+ * compte — comparer une édition beauté à l'édition agences de la semaine
+ * précédente produirait une évolution de score inventée.
+ */
+export async function getEditionsByVertical(
+  limitPerVertical = 12
+): Promise<Map<string, Edition[]>> {
+  try {
+    const { data } = await supabaseAdmin()
+      .from("index_editions")
+      .select("edition_date, vertical, data")
+      .order("edition_date", { ascending: false })
+      .limit(limitPerVertical * 6);
+    const grouped = new Map<string, Edition[]>();
+    for (const edition of ((data ?? []) as EditionRow[]).map(toEdition)) {
+      if (edition.runs === 0 || edition.brands.length === 0) continue;
+      const list = grouped.get(edition.vertical) ?? [];
+      if (list.length < limitPerVertical) list.push(edition);
+      grouped.set(edition.vertical, list);
+    }
+    return grouped;
+  } catch {
+    return new Map();
+  }
+}
+
+/** Les verticales qui ont au moins une édition publiable. */
+export async function publishedVerticals(): Promise<string[]> {
+  return [...(await getEditionsByVertical(1)).keys()];
+}
+
+/**
+ * L'historique de la verticale où figure cette marque.
+ *
+ * Toutes les surfaces « une marque » passent par ici — page marque, rapport,
+ * image OG, badge, API, jumeau Markdown — pour que le lien collé dans un email
+ * fonctionne quelle que soit l'édition d'origine. Renvoie une liste vide si la
+ * marque n'est classée nulle part : c'est ce qui doit produire un 404 propre,
+ * jamais une page vide.
+ */
+export async function getEditionsForBrand(
+  slug: string,
+  limitPerVertical = 12
+): Promise<Edition[]> {
+  const byVertical = await getEditionsByVertical(limitPerVertical);
+  for (const list of byVertical.values()) {
+    if (list.some((e) => e.brands.some((b) => brandSlug(b.name) === slug))) return list;
+  }
+  return [];
 }
 
 export async function getLatestEdition(): Promise<Edition | null> {
@@ -138,4 +198,20 @@ export function brandSlug(name: string): string {
 /** Le score Mentio d'une marque sur une édition : sa part des réponses, sur 100. */
 export function brandScore(brand: EditionBrand, runs: number): number {
   return runs > 0 ? Math.round((brand.total / runs) * 100) : 0;
+}
+
+/**
+ * Le nombre de citations, tel qu'on l'AFFICHE.
+ *
+ * `total` est une somme de taux : une question rejouée cinq fois compte pour un,
+ * pondérée par la part de passages qui ont cité la marque. Le calcul est juste,
+ * mais il produit « 34.4 » — et la légende juste au-dessus dit « citée dans 18
+ * réponses sur 100 ». Une réponse et demie, ça n'existe pas pour un lecteur.
+ *
+ * On arrondit donc à l'affichage, jamais en base : l'API, les intervalles de
+ * confiance et les comparaisons d'édition continuent de travailler sur la valeur
+ * exacte. Le rang, lui, ne bouge pas — c'est l'ordre qui est publié, pas l'entier.
+ */
+export function citationCount(total: number): number {
+  return Math.round(total);
 }

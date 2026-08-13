@@ -113,15 +113,22 @@ export default async function ScanPage({ params }: { params: Promise<{ id: strin
         </Card>
       </div>
 
+      {/* Modèle par modèle — les COMPTES restent derrière l'email.
+          Verrouillé, ce bloc affichait « citée 2/5 » par IA : de quoi reconstituer
+          le score exact que le palier est justement censé remplacer. On garde les
+          noms des modèles, qui prouvent qu'on a réellement interrogé ChatGPT et
+          Gemini, et rien de plus. */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Modèle par modèle</CardTitle>
+          <CardTitle className="text-base">
+            {unlocked ? "Modèle par modèle" : "Les IA interrogées"}
+          </CardTitle>
         </CardHeader>
         <CardContent className="flex flex-wrap items-center gap-4">
           {teaser.perModel.map((m) => (
             <div key={m.model} className="text-sm">
               <Badge variant="secondary">{modelLabel(m.model)}</Badge>{" "}
-              {`citée ${m.citedCount}/${m.runCount}`}
+              {unlocked ? `citée ${m.citedCount}/${m.runCount}` : `${m.runCount} questions posées`}
             </div>
           ))}
           <div className="ml-auto">

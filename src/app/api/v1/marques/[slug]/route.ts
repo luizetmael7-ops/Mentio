@@ -1,4 +1,4 @@
-import { getEditions, brandSlug, brandScore } from "@/lib/index-edition";
+import { getEditionsForBrand, brandSlug, brandScore } from "@/lib/index-edition";
 import { tierOf } from "@/lib/spectrum";
 
 export const revalidate = 3600;
@@ -6,7 +6,7 @@ export const revalidate = 3600;
 /** API publique en lecture — le détail d'une marque, historique compris. */
 export async function GET(_request: Request, { params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const editions = await getEditions(12);
+  const editions = await getEditionsForBrand(slug, 12);
 
   // Historique : la marque, édition par édition
   const history = editions
