@@ -7,6 +7,7 @@ const COPY = {
     nav: "Pied de page",
     scan: "Scan gratuit",
     index: "Le Baromètre",
+    agencies: "Agences",
     pricing: "Tarifs",
     login: "Connexion",
     sources: "Sources",
@@ -24,6 +25,7 @@ const COPY = {
     nav: "Footer",
     scan: "Free scan",
     index: "The Index",
+    agencies: "Agencies",
     pricing: "Pricing",
     login: "Log in",
     sources: "Sources",
@@ -57,6 +59,9 @@ export function BrandFooter({ locale = "fr" }: { locale?: "fr" | "en" }) {
           </Link>
           <Link href="/barometre" className="transition-colors hover:text-white">
             {t.index}
+          </Link>
+          <Link href="/agences" className="transition-colors hover:text-white">
+            {t.agencies}
           </Link>
           <Link href="/sources" className="transition-colors hover:text-white">
             {t.sources}

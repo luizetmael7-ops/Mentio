@@ -8,15 +8,10 @@ import { ReadingSwatch } from "@/components/brand/reading-swatch";
 import { TierScale } from "@/components/brand/tier";
 import { tierOf } from "@/lib/spectrum";
 import { activeModels, modelsSentence, modelName } from "@/lib/models";
-import {
-  PricingTiers,
-  WhiteGloveStrip,
-  UpgradeLadder,
-  CadenceMatrix,
-} from "@/components/brand/pricing-tiers";
-import { AutopilotStrip } from "@/components/brand/autopilot-strip";
-import { ClimbLoop } from "@/components/brand/climb-loop";
+import { UpgradeLadder } from "@/components/brand/pricing-tiers";
 import { Reveal } from "@/components/brand/reveal";
+import { PLAN_LIMITS } from "@/lib/plans";
+import { buildReport } from "@/lib/report";
 import { getLatestEdition, formatEditionDate, brandSlug } from "@/lib/index-edition";
 
 export const metadata: Metadata = {
@@ -33,6 +28,18 @@ export const metadata: Metadata = {
 // L'édition ne bouge qu'une fois par semaine : une heure de cache suffit.
 export const revalidate = 3600;
 
+/**
+ * La landing.
+ *
+ * Six sections, pas une de plus, et chacune répond à une question que le visiteur
+ * se pose dans cet ordre : c'est quoi → pourquoi ça me concerne → comment ça marche
+ * → prouvez-le → et si je suis une agence → combien.
+ *
+ * Ce qui a été retiré et pourquoi : la mécanique du produit était racontée TROIS
+ * fois (les trois étapes, une frise animée, une boucle en quatre temps) et la grille
+ * tarifaire complète était recopiée de /pricing. Répéter un message simple trois
+ * fois ne le rend pas plus clair — il le fait passer pour compliqué.
+ */
 export default async function LandingPage({
   searchParams,
 }: {
@@ -41,25 +48,31 @@ export default async function LandingPage({
   const { error } = await searchParams;
   const edition = await getLatestEdition();
   const models = activeModels();
+  const leader = edition?.brands[0];
+  // La moitié « solution » de la promesse, montrée plutôt qu'annoncée : une action
+  // réelle, extraite du rapport d'une marque réelle. Zéro appel LLM — le rapport se
+  // déduit des mesures déjà stockées.
+  const sampleAction = leader ? (await buildReport(brandSlug(leader.name)))?.actions[0] : null;
 
   return (
     <div className="flex min-h-screen flex-col bg-[var(--porcelain)] text-[var(--ink)]">
       <BrandNav />
 
       <main id="top" className="flex-1">
-        {/* ---------- 1. HÉROS ---------- */}
+        {/* ---------- 1. HÉROS — ce que fait Mentio, en une phrase ---------- */}
         <section className="mx-auto grid max-w-6xl gap-14 px-5 pb-20 pt-32 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:pt-36">
           <div>
             <p className="eyebrow mb-5">Mentio — la perception, mesurée</p>
             <h1 className="font-display text-4xl font-black uppercase leading-[0.98] tracking-tight sm:text-6xl">
-              Quand l&apos;IA recommande,
+              Quand l&apos;IA conseille
               <br />
-              <span className="text-[var(--spectrum-ash)]">
-                vous êtes cité<span className="text-[var(--poppy)]"> ?</span>
-              </span>
+              une marque
+              <span className="text-[var(--spectrum-ash)]">, est-ce</span>
+              <br />
+              la vôtre<span className="text-[var(--poppy)]"> ?</span>
             </h1>
             <p className="mt-6 max-w-lg text-lg leading-relaxed text-[var(--ink-soft)]">
-              {`Chaque semaine, Mentio pose à ${modelsSentence(models)} les questions que vos clients leur posent. Vous voyez quelles marques sortent, à quelle fréquence, et ce qu'il faut corriger pour en faire partie.`}
+              {`Chaque semaine, Mentio pose à ${modelsSentence(models)} les questions d'achat que vos clients leur posent, compte les marques citées, et vous dit quoi corriger pour en faire partie.`}
             </p>
 
             {/* Deux rangées : à une seule, le champ marque se faisait écraser par le bouton */}
@@ -103,19 +116,22 @@ export default async function LandingPage({
                 Limite de 3 scans par jour atteinte — revenez demain ou créez un compte gratuit.
               </p>
             )}
+            {/* Le périmètre exact du scan gratuit, ici et pas ailleurs : le relevé
+                complet (50 questions, 4 IA) est le produit payant, et laisser croire
+                l'inverse à trois lignes du bouton est le meilleur moyen de décevoir. */}
             <p className="mt-3 font-metric text-xs text-[var(--ink-soft)]">
-              Gratuit · 60 s · sans carte bancaire
+              Gratuit · 10 questions posées en direct · 60 s · sans carte bancaire
             </p>
           </div>
 
           <ReadingSwatch
-            title="Relevé du jour — votre marque"
+            title="Le relevé hebdomadaire"
             readings={models.map((model, i) => ({
               model: model.name,
               // Exemple illustratif : un relevé typique, un modèle par pastille
               value: [12, 54, 37, 88][i] ?? 40,
             }))}
-            caption="Exemple de relevé"
+            caption="Exemple — une pastille par IA, votre score sur 100"
           />
         </section>
 
@@ -131,13 +147,11 @@ export default async function LandingPage({
               Et l&apos;IA répond{" "}
               <span className="text-[var(--spectrum-ash)]">sans vous</span>.
             </p>
-            {edition && (
+            {edition && leader && (
               <p className="mt-7 max-w-2xl text-white/70">
-                Sur {edition.runs} vraies questions d&apos;achat posées le{" "}
-                {formatEditionDate(edition.date)}, la marque la plus citée revient{" "}
-                <span className="font-metric text-white">{edition.brands[0]?.total} fois</span>. La
-                dernière du classement : {edition.brands[edition.brands.length - 1]?.total}. Les
-                autres, zéro.
+                {`Sur ${edition.runs} vraies questions d'achat posées le ${formatEditionDate(edition.date)}, la marque la plus citée revient `}
+                <span className="font-metric text-white">{`${leader.total} fois`}</span>
+                {`. La dernière du classement : ${edition.brands[edition.brands.length - 1]?.total}. Les autres, zéro.`}
               </p>
             )}
           </Reveal>
@@ -181,16 +195,21 @@ export default async function LandingPage({
               </Reveal>
             ))}
           </ol>
-          <Reveal className="mt-6">
-            <AutopilotStrip />
+          <Reveal className="mt-4">
+            <p className="rounded-2xl border border-[var(--line)] bg-white px-5 py-4 text-sm text-[var(--ink-soft)]">
+              <strong className="text-[var(--ink)]">Vous ne configurez rien.</strong> Nous écrivons
+              vos questions et ajoutons vos concurrents ; le premier relevé est déjà juste. Le scan
+              gratuit ci-dessus en est la version courte : 10 questions posées en direct, sur les
+              deux IA les plus consultées.
+            </p>
           </Reveal>
         </section>
 
-        {/* ---------- 4. PREUVE : L'INDEX EN DIRECT ---------- */}
+        {/* ---------- 4. LA PREUVE — l'Index, le barème, les sources ---------- */}
         {edition && (
           <section className="mx-auto max-w-6xl px-5 py-16">
             <Reveal>
-              <p className="eyebrow">L&apos;Index Mentio</p>
+              <p className="eyebrow">La preuve</p>
               <h2 className="mt-3 font-display text-3xl font-extrabold uppercase tracking-wide sm:text-4xl">
                 Les marques citées <span className="text-[var(--poppy)]">aujourd&apos;hui</span>
               </h2>
@@ -206,13 +225,18 @@ export default async function LandingPage({
             </Reveal>
             <Reveal>
               <div className="mt-8 overflow-hidden rounded-3xl border border-[var(--line)] bg-white">
-                {/* Légende — sans elle, « 18/100 » et « 1re réponse 12× » ne veulent rien dire */}
-                <p className="border-b border-[var(--line)] bg-[var(--porcelain)]/60 px-5 py-3 text-xs text-[var(--ink-soft)] sm:px-7">
-                  <span className="font-metric text-[var(--ink)]">18/100</span> = citée dans 18
-                  réponses sur {edition.runs}. ·{" "}
-                  <span className="font-metric text-[var(--ink)]">1re × 12</span> = arrivée 12 fois
-                  en première position.
-                </p>
+                {/* Légende — sans elle, les deux colonnes de droite ne veulent rien dire.
+                    On la construit sur la 1re ligne réelle plutôt que sur un exemple
+                    inventé : le lecteur retrouve le chiffre juste en dessous. */}
+                {leader && (
+                  <p className="border-b border-[var(--line)] bg-[var(--porcelain)]/60 px-5 py-3 text-xs text-[var(--ink-soft)] sm:px-7">
+                    {`Lire la première ligne : ${leader.name} est citée dans `}
+                    <span className="font-metric text-[var(--ink)]">{`${leader.total} réponses sur ${edition.runs}`}</span>
+                    {leader.top1 > 0
+                      ? `, dont ${leader.top1} fois en première position.`
+                      : ", jamais en première position."}
+                  </p>
+                )}
                 <ol>
                   {edition.brands.slice(0, 5).map((brand, i) => {
                     const score = Math.round((brand.total / edition.runs) * 100);
@@ -267,159 +291,173 @@ export default async function LandingPage({
                 </div>
               </div>
             </Reveal>
+
+            {/* Le barème — la clé de lecture du tableau ci-dessus */}
             <Reveal className="mt-6">
               <div className="rounded-2xl border border-[var(--line)] bg-white p-5 sm:p-6">
                 <p className="eyebrow mb-1">Le barème Mentio</p>
                 <p className="mb-4 text-sm text-[var(--ink-soft)]">
-                  Cinq paliers, un score sur 100. Regardez bien la colonne : la marque la mieux
-                  placée de France plafonne à <strong className="text-[var(--ink)]">Aperçue</strong>,
-                  et personne n&apos;atteint <strong className="text-[var(--ink)]">Prescrite</strong>
-                  . Le terrain est vide — c&apos;est précisément maintenant qu&apos;on le prend.
+                  {leader
+                    ? `Cinq paliers, un score sur 100. La marque la mieux placée de France plafonne aujourd'hui à ${tierOf(Math.round((leader.total / edition.runs) * 100)).label}, et personne n'atteint Prescrite : le terrain est vide.`
+                    : "Cinq paliers, un score sur 100 — la même échelle pour toutes les marques."}{" "}
+                  <Link
+                    href="/score-mentio"
+                    className="font-medium text-[var(--ink)] underline decoration-[var(--line)] underline-offset-4"
+                  >
+                    La définition complète
+                  </Link>
                 </p>
                 <TierScale />
               </div>
             </Reveal>
-          </section>
-        )}
 
-        {/* ---------- 5. LE LEVIER DIFFÉRENCIANT ---------- */}
-        {edition && edition.sources.length > 0 && (
-          <section className="mx-auto max-w-6xl px-5 py-16">
-            <Reveal>
-              <div className="rounded-3xl bg-[var(--plum)] p-7 text-white sm:p-10">
-                <p className="eyebrow !text-white/50">Le levier</p>
-                <h2 className="mt-3 max-w-2xl font-display text-2xl font-extrabold uppercase tracking-wide sm:text-3xl">
-                  Les IA lisent ces pages — pas la vôtre
-                </h2>
-                <p className="mt-4 max-w-2xl text-white/70">
-                  Voici les sites que les modèles ont réellement consultés pour répondre, sur
-                  l&apos;édition du {formatEditionDate(edition.date)}. Y être cité est le geste le
-                  plus rentable en visibilité IA. Mentio suit les vôtres chaque semaine et vous dit
-                  lesquels viser.
-                </p>
-                <ul className="mt-7 grid gap-2 sm:grid-cols-2">
-                  {edition.sources.slice(0, 8).map((source, i) => (
-                    <li
-                      key={source.domain}
-                      className="flex items-center justify-between gap-3 rounded-xl bg-white/5 px-4 py-2.5 text-sm"
-                    >
-                      <span className="flex min-w-0 items-center gap-2.5">
-                        <span className="font-metric text-[0.65rem] tabular-nums text-white/40">
-                          {String(i + 1).padStart(2, "0")}
+            {/* Le levier — les sources, et ce qu'on en fait */}
+            {edition.sources.length > 0 && (
+              <Reveal className="mt-6">
+                <div className="rounded-3xl bg-[var(--plum)] p-7 text-white sm:p-10">
+                  <p className="eyebrow !text-white/50">Le levier</p>
+                  <h2 className="mt-3 max-w-2xl font-display text-2xl font-extrabold uppercase tracking-wide sm:text-3xl">
+                    Les IA lisent ces pages — pas la vôtre
+                  </h2>
+                  <p className="mt-4 max-w-2xl text-white/70">
+                    {`Les sites que les modèles ont réellement consultés pour répondre, sur l'édition du ${formatEditionDate(edition.date)}. Y être cité est le geste le plus rentable en visibilité IA : mesurer ne fait pas monter un score, agir sur ces pages-là, oui. Mentio suit les vôtres chaque semaine et vous dit lesquelles viser.`}
+                  </p>
+                  <ul className="mt-7 grid gap-2 sm:grid-cols-2">
+                    {edition.sources.slice(0, 8).map((source, i) => (
+                      <li
+                        key={source.domain}
+                        className="flex items-center justify-between gap-3 rounded-xl bg-white/5 px-4 py-2.5 text-sm"
+                      >
+                        <span className="flex min-w-0 items-center gap-2.5">
+                          <span className="font-metric text-[0.65rem] tabular-nums text-white/40">
+                            {String(i + 1).padStart(2, "0")}
+                          </span>
+                          <span className="truncate">{source.domain}</span>
                         </span>
-                        <span className="truncate">{source.domain}</span>
-                      </span>
-                      <span className="font-metric shrink-0 text-xs tabular-nums text-white/60">
-                        {source.count}×
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </Reveal>
-            <Reveal className="mt-4">
-              <ClimbLoop />
-            </Reveal>
+                        <span className="font-metric shrink-0 text-xs tabular-nums text-white/60">
+                          {source.count}×
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </Reveal>
+            )}
+
+            {/* Ce que ça donne — une action réelle, mot pour mot */}
+            {sampleAction && leader && (
+              <Reveal className="mt-6">
+                <div className="rounded-2xl border border-[var(--line)] bg-white p-6 sm:p-7">
+                  <p className="eyebrow mb-3">Et concrètement, on vous dit quoi ?</p>
+                  <p className="font-display text-lg font-extrabold uppercase tracking-wide">
+                    {sampleAction.title}
+                  </p>
+                  <p className="mt-2 max-w-2xl text-sm leading-relaxed text-[var(--ink-soft)]">
+                    {sampleAction.detail}
+                  </p>
+                  <p className="mt-4 font-metric text-xs text-[var(--ink-soft)]">
+                    {`Première action du rapport de ${leader.name}, telle quelle. `}
+                    <Link
+                      href={`/rapport/${brandSlug(leader.name)}`}
+                      className="text-[var(--ink)] underline decoration-[var(--line)] underline-offset-4"
+                    >
+                      Voir le rapport entier →
+                    </Link>
+                  </p>
+                </div>
+              </Reveal>
+            )}
           </section>
         )}
 
-        {/* CTA primaire de mi-parcours — le même, la 2ᵉ des 3 fois */}
-        <section className="px-5 py-4">
-          <Reveal className="mx-auto flex max-w-4xl flex-col items-center gap-4 rounded-2xl border border-[var(--line)] bg-white px-6 py-7 text-center sm:flex-row sm:justify-between sm:text-left">
-            <p className="max-w-md text-[var(--ink-soft)]">
-              Et votre marque, elle sort où dans ces réponses ?
-            </p>
-            <Link
-              href="/score"
-              className="inline-flex shrink-0 items-center gap-2 rounded-full bg-[var(--poppy)] px-6 py-2.5 font-semibold text-white transition-transform hover:scale-[1.03]"
-            >
-              Obtenir mon score gratuit <ArrowRight aria-hidden className="size-4" />
-            </Link>
-          </Reveal>
-        </section>
-
-        {/* ---------- 6. MÉTHODOLOGIE ---------- */}
-        <section className="mx-auto max-w-3xl px-5 py-16">
+        {/* ---------- 5. LES AGENCES ---------- */}
+        <section className="mx-auto max-w-6xl px-5 py-16">
           <Reveal>
-            <p className="eyebrow">Méthodologie</p>
-            <h2 className="mt-3 font-display text-2xl font-extrabold uppercase tracking-wide sm:text-3xl">
-              Ce qu'il y a derrière le score
-            </h2>
-            <ul className="mt-6 space-y-3 text-sm leading-relaxed text-[var(--ink-soft)]">
-              <li>
-                <strong className="text-[var(--ink)]">Les mêmes questions chaque semaine.</strong>{" "}
-                Une liste fixe de 50 questions d&apos;intention d&apos;achat, pour que deux éditions
-                soient comparables dans le temps.
-              </li>
-              <li>
-                <strong className="text-[var(--ink)]">
-                  APIs officielles, recherche web activée.
-                </strong>{" "}
-                Un bon reflet de ce que voit un client — jamais de scraping des applications grand
-                public.
-              </li>
-              <li>
-                <strong className="text-[var(--ink)]">Marques extraites automatiquement.</strong> Un
-                modèle lit chaque réponse et relève les marques commerciales citées, leur position
-                et le ton. Institutions, médias et ingrédients sont écartés.
-              </li>
-              <li>
-                <strong className="text-[var(--ink)]">Personne ne paie pour être ici.</strong> Le
-                classement est la mesure — c&apos;est tout l&apos;intérêt. Toute marque classée a un
-                droit de réponse.
-              </li>
-            </ul>
+            <div className="grid gap-8 rounded-3xl border-2 border-[var(--ink)] bg-white p-7 sm:p-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
+              <div>
+                <p className="eyebrow">Vous êtes une agence ?</p>
+                <h2 className="mt-3 font-display text-2xl font-extrabold uppercase tracking-wide sm:text-3xl">
+                  Le rapport qui vend
+                  <br />
+                  votre retainer GEO
+                </h2>
+                <p className="mt-4 max-w-lg text-[var(--ink-soft)]">
+                  {`Un lien partageable à vos couleurs, généré depuis un nom de marque : score, palier, concurrents cités à sa place, questions perdues, sites à conquérir, et les trois actions à mener. Vous le posez devant un prospect, il fait le travail à votre place. Jusqu'à ${PLAN_LIMITS.agencyplus.brands} marques suivies en parallèle.`}
+                </p>
+                <div className="mt-7 flex flex-wrap items-center gap-4">
+                  <Link
+                    href="/agences"
+                    className="inline-flex items-center gap-2 rounded-full bg-[var(--ink)] px-6 py-2.5 font-semibold text-white transition-transform hover:scale-[1.03]"
+                  >
+                    Ce que Mentio fait pour une agence{" "}
+                    <ArrowRight aria-hidden className="size-4" />
+                  </Link>
+                  <p className="font-metric text-xs text-[var(--ink-soft)]">
+                    {`À partir de ${PLAN_LIMITS.agency.priceMonthlyEur} € / mois`}
+                  </p>
+                </div>
+              </div>
+              <ul className="space-y-2.5 rounded-2xl bg-[var(--porcelain)]/70 p-6 text-sm text-[var(--ink-soft)]">
+                {[
+                  "Rapports en marque blanche, illimités",
+                  `${PLAN_LIMITS.agency.brands} marques suivies dès la formule Agence`,
+                  "Votre logo et vos couleurs sur chaque rapport",
+                  "Historique complet, semaine après semaine",
+                  "Accès API sur Agence+",
+                ].map((item) => (
+                  <li key={item} className="flex items-start gap-2">
+                    <span
+                      aria-hidden
+                      className="mt-1.5 size-1.5 shrink-0 rounded-full bg-[var(--poppy)]"
+                    />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
           </Reveal>
         </section>
 
-        {/* ---------- 7. PRIX ---------- */}
+        {/* ---------- 6. TARIFS — le renvoi, la grille vit sur /pricing ---------- */}
         <section className="mx-auto max-w-6xl px-5 py-16">
           <Reveal>
             <p className="eyebrow">Tarifs</p>
             <h2 className="mt-3 font-display text-3xl font-extrabold uppercase tracking-wide sm:text-4xl">
               Commencez gratuitement<span className="text-[var(--poppy)]">.</span>
             </h2>
-            <p className="mt-3 text-[var(--ink-soft)]">
-              Annuel : deux mois offerts. Sans engagement, résiliable en deux clics.
+            <p className="mt-3 max-w-2xl text-[var(--ink-soft)]">
+              {`Quatre formules, de 0 à ${PLAN_LIMITS.agencyplus.priceMonthlyEur} € par mois. Prix publics, jamais de devis. Annuel : deux mois offerts. Sans engagement, résiliable en deux clics.`}
             </p>
-            <ul className="mt-5 flex flex-wrap gap-x-5 gap-y-1.5 font-metric text-[0.7rem] uppercase tracking-wider text-[var(--ink-soft)]">
-              {[
-                "Prix publics, jamais de devis",
-                "Sans engagement",
-                "Résiliation en deux clics",
-                "Vos données exportables",
-              ].map((item) => (
-                <li key={item} className="flex items-center gap-1.5">
-                  <span aria-hidden className="size-1 rounded-full bg-[var(--poppy)]" />
-                  {item}
-                </li>
-              ))}
-            </ul>
           </Reveal>
-          <div className="mt-12">
+          <Reveal className="mt-8">
             <UpgradeLadder />
-            <PricingTiers />
-            <CadenceMatrix />
-            <WhiteGloveStrip />
-          </div>
+          </Reveal>
+          <Reveal>
+            <Link
+              href="/pricing"
+              className="font-medium text-[var(--ink)] underline decoration-[var(--line)] underline-offset-4 transition-colors hover:decoration-[var(--ink)]"
+            >
+              Voir le détail des formules et la fréquence des relevés →
+            </Link>
+          </Reveal>
         </section>
 
-        {/* ---------- 8. LE FONDATEUR ---------- */}
+        {/* ---------- 7. CE QUI REND LE CHIFFRE CRÉDIBLE ---------- */}
         <section className="mx-auto max-w-3xl px-5 py-16">
           <Reveal>
             <div className="rounded-3xl border border-[var(--line)] bg-white p-7 sm:p-9">
-              <p className="eyebrow">Un baromètre indépendant</p>
+              <p className="eyebrow">Ce qui rend le chiffre crédible</p>
               <p className="mt-4 text-lg leading-relaxed">
-                Mentio est un produit indépendant, développé en France. Personne n&apos;achète sa
-                place au classement, aucune marque ne sponsorise une édition, et la méthode est
-                publiée en entier — vous pouvez la contester chiffre par chiffre.
+                Mentio est un baromètre indépendant, développé en France. Personne n&apos;achète sa
+                place au classement, et la méthode est publiée en entier — vous pouvez la contester
+                chiffre par chiffre.
               </p>
               <ul className="mt-6 grid gap-2.5 text-sm text-[var(--ink-soft)] sm:grid-cols-2">
                 {[
-                  "Aucun placement payant, jamais",
-                  "Méthodologie publique et datée",
-                  "Droit de réponse pour toute marque classée",
-                  "Données exportables et API ouverte",
+                  "Les mêmes 50 questions chaque semaine, pour que deux éditions soient comparables",
+                  "APIs officielles avec recherche web — jamais de scraping des applications",
+                  "Aucun mouvement de rang publié sous le seuil de bruit",
+                  "Aucun placement payant, jamais, sous aucune forme",
                 ].map((item) => (
                   <li key={item} className="flex items-start gap-2">
                     <span
@@ -431,12 +469,19 @@ export default async function LandingPage({
                 ))}
               </ul>
               <p className="mt-6 text-sm text-[var(--ink-soft)]">
-                Un doute sur un chiffre, une marque à corriger, une réclamation ?{" "}
+                <Link
+                  href="/methodologie"
+                  className="font-medium text-[var(--ink)] underline decoration-[var(--line)] underline-offset-4"
+                >
+                  La méthodologie complète
+                </Link>{" "}
+                — échantillonnage, barres d&apos;erreur et limites de la mesure. Un doute sur un
+                chiffre, une marque à corriger ?{" "}
                 <Link
                   href="/contact"
                   className="font-medium text-[var(--ink)] underline decoration-[var(--line)] underline-offset-4"
                 >
-                  Écrivez-nous
+                  Droit de réponse
                 </Link>{" "}
                 — chaque message est lu.
               </p>
@@ -444,7 +489,7 @@ export default async function LandingPage({
           </Reveal>
         </section>
 
-        {/* ---------- 9. CTA FINAL ---------- */}
+        {/* ---------- 8. CTA FINAL ---------- */}
         <section className="px-5 pb-24 pt-4">
           <Reveal className="mx-auto max-w-4xl">
             <div className="rounded-[2rem] border-2 border-[var(--ink)] bg-white p-10 text-center sm:p-14">

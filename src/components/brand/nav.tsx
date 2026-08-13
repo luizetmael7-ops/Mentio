@@ -10,7 +10,7 @@ const COPY = {
     nav: "Navigation principale",
     scan: "Scan gratuit",
     index: "Le Baromètre",
-    sources: "Sources",
+    agencies: "Agences",
     pricing: "Tarifs",
     login: "Connexion",
     signup: "Commencer",
@@ -22,7 +22,7 @@ const COPY = {
     nav: "Main navigation",
     scan: "Free scan",
     index: "The Index",
-    sources: "Sources",
+    agencies: "Agencies",
     pricing: "Pricing",
     login: "Log in",
     signup: "Get started",
@@ -51,11 +51,14 @@ export function BrandNav({ locale = "fr" }: { locale?: "fr" | "en" }) {
           >
             {t.index}
           </Link>
+          {/* L'entrée de l'acheteur réel. Elle a pris la place de « Sources », qui
+              reste accessible depuis le bloc « Le levier » de la home et le footer :
+              une barre à huit liens ne se lit plus. */}
           <Link
-            href="/sources"
+            href="/agences"
             className="hidden rounded-full px-3 py-1.5 font-medium text-[var(--ink-soft)] transition-colors hover:text-[var(--ink)] lg:block"
           >
-            {t.sources}
+            {t.agencies}
           </Link>
           <Link
             href="/pricing"

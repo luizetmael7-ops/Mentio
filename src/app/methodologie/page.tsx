@@ -51,10 +51,10 @@ export default async function MethodologiePage() {
             1. Les questions
           </h2>
           <p className="mt-3 text-[var(--ink-soft)]">
-            Une liste fixe de 50 questions d&apos;intention d&apos;achat par secteur, écrites comme
-            un client les tape : «&nbsp;quel est le meilleur magnésium contre la fatigue&nbsp;?&nbsp;»,
-            pas «&nbsp;magnésium fatigue&nbsp;». Elles ne changent pas d&apos;une édition à
-            l&apos;autre.
+            Une liste fixe de 50 questions d&apos;intention d&apos;achat pour le secteur couvert —
+            aujourd&apos;hui la beauté, le soin et les compléments — écrites comme un client les
+            tape : «&nbsp;quel est le meilleur magnésium contre la fatigue&nbsp;?&nbsp;», pas
+            «&nbsp;magnésium fatigue&nbsp;». Elles ne changent pas d&apos;une édition à l&apos;autre.
           </p>
           <p className="mt-3 text-[var(--ink-soft)]">
             C&apos;est la règle la plus importante du Baromètre. Modifier les questions rendrait
@@ -267,6 +267,25 @@ export default async function MethodologiePage() {
             Version Markdown
           </a>
         </p>
+
+        {/* Une sortie. Cette page était un cul-de-sac : on y arrive pour vérifier la
+            mesure — souvent avant de la revendre à un client — et il n'y avait rien
+            à faire ensuite. */}
+        <div className="mt-8 rounded-2xl border border-[var(--line)] bg-white p-6">
+          <p className="text-sm leading-relaxed text-[var(--ink-soft)]">
+            <strong className="text-[var(--ink)]">Vous vérifiez la méthode avant de vous en
+            servir ?</strong>{" "}
+            La même mesure alimente le rapport que vous pouvez poser devant un client —{" "}
+            <Link href="/agences" className="font-medium text-[var(--ink)] underline decoration-[var(--line)] underline-offset-4">
+              ce que Mentio fait pour une agence
+            </Link>
+            . Pour une marque, le{" "}
+            <Link href="/score" className="font-medium text-[var(--ink)] underline decoration-[var(--line)] underline-offset-4">
+              relevé gratuit
+            </Link>{" "}
+            applique la même lecture sur 10 questions.
+          </p>
+        </div>
       </main>
       <BrandFooter />
     </div>

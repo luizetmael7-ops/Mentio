@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { BrandNav } from "@/components/brand/nav";
 import { BrandFooter } from "@/components/brand/footer";
-import { TierTable, TierScale, TierBadge } from "@/components/brand/tier";
+import { TierTable, TierBadge } from "@/components/brand/tier";
 import { TIERS } from "@/lib/spectrum";
 import { modelsSentence } from "@/lib/models";
 import { getEditions, formatEditionDate, brandSlug, brandScore } from "@/lib/index-edition";
@@ -46,9 +46,7 @@ export default async function ScoreMentioPage() {
         </h1>
         <p className="mt-5 text-lg leading-relaxed text-[var(--ink-soft)]">
           Une marque est-elle recommandée par les IA ? Jusqu&apos;ici la réponse était une
-          impression. Le Score Mentio en fait un nombre : <strong>la part des réponses d&apos;IA qui
-          citent la marque</strong>, sur les questions d&apos;achat réelles de sa catégorie, ramenée
-          sur 100.
+          impression. Le Score Mentio en fait un nombre.
         </p>
 
         <div className="mt-8 rounded-2xl border border-[var(--line)] bg-white p-6">
@@ -69,11 +67,11 @@ export default async function ScoreMentioPage() {
           <p className="mt-2 text-[var(--ink-soft)]">
             Le score seul ne dit rien à qui n&apos;a pas de repère. Le palier, si.
           </p>
+          {/* TierTable seule : elle porte les plages ET ce que chaque palier veut dire.
+              La TierScale affichée juste en dessous redonnait les mêmes cinq paliers
+              avec les mêmes bornes — deux légendes pour une échelle. */}
           <div className="mt-6">
             <TierTable />
-          </div>
-          <div className="mt-6 rounded-2xl border border-[var(--line)] bg-white p-5 sm:p-6">
-            <TierScale />
           </div>
         </section>
 

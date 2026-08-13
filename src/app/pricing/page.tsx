@@ -1,40 +1,48 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { BrandNav } from "@/components/brand/nav";
 import { BrandFooter } from "@/components/brand/footer";
-import {
-  PricingTiers,
-  WhiteGloveStrip,
-  UpgradeLadder,
-  CadenceMatrix,
-} from "@/components/brand/pricing-tiers";
+import { PricingTiers, WhiteGloveStrip, UpgradeLadder } from "@/components/brand/pricing-tiers";
 import { Reveal } from "@/components/brand/reveal";
+import { PLAN_LIMITS } from "@/lib/plans";
 
 export const metadata: Metadata = {
   title: "Tarifs — Mentio",
   description:
-    "AI visibility tracking from €0. Start free, scale when it works — cancel in two clicks.",
+    "Le suivi de visibilité IA à partir de 0 €. Prix publics, jamais de devis, sans engagement — et deux formules pensées pour les agences.",
+  alternates: { canonical: "/pricing" },
 };
 
+/**
+ * La FAQ répond aux objections réelles, avec les vrais noms de formules.
+ * Elle a longtemps parlé de « Growth » et « Agency » — des noms commerciaux
+ * abandonnés, restés ici alors que la grille affichait Brand, Agence et Agence+.
+ * Un prospect qui lit un nom qu'il ne trouve nulle part se demande ce qu'on lui vend.
+ */
 const FAQ: Array<[string, string]> = [
   [
     "Pourquoi la fréquence change selon le modèle ?",
-    "Chaque réponse d'IA avec recherche web a un coût réel. Growth et Agency interrogent les modèles économiques (ChatGPT, Gemini) chaque jour et les plus chers (Claude, Perplexity) chaque semaine. C'est le meilleur signal par euro, et c'est assumé.",
+    `Chaque réponse d'IA avec recherche web a un coût réel, et il varie du simple au quadruple selon l'éditeur. À partir de ${PLAN_LIMITS.brand.label}, les modèles économiques (ChatGPT, Gemini) sont interrogés chaque jour et les plus chers (Claude, Perplexity) chaque semaine. C'est le meilleur signal par euro, et c'est assumé plutôt que caché.`,
   ],
   [
     "Le relevé correspond-il à ce que voient vraiment mes clients ?",
-    "On passe par les APIs officielles des modèles, recherche web activée. C'est un bon reflet, documenté, de ce que voit un client — jamais du scraping des applications grand public.",
+    "On passe par les APIs officielles des modèles, recherche web activée. C'est un bon reflet, documenté, de ce que voit un client — jamais du scraping des applications grand public, qui personnalisent leurs réponses.",
+  ],
+  [
+    "Sur quels secteurs Mentio fonctionne-t-il ?",
+    `Le scan gratuit fonctionne sur n'importe quel secteur : les questions d'achat sont générées à la volée à partir de la catégorie que vous saisissez. Le suivi hebdomadaire, lui, s'appuie aujourd'hui sur la bibliothèque beauté, soin et compléments — c'est elle qui garantit que les mêmes questions reviennent d'une semaine sur l'autre. D'autres secteurs arrivent, et ${PLAN_LIMITS.agencyplus.label} inclut dès maintenant une bibliothèque écrite sur mesure pour le vôtre.`,
   ],
   [
     "Que veut dire « mise en route faite par nous » ?",
     "On écrit vos questions, on ajoute vos concurrents et on règle le suivi. Vous ne configurez rien : le premier relevé est déjà juste.",
   ],
   [
-    "Puis-je changer d'avis ?",
-    "À tout moment. Sans engagement : changez de formule ou résiliez en deux clics depuis l'espace de facturation.",
+    "Je suis une agence — qu'est-ce que ça change ?",
+    `${PLAN_LIMITS.agency.label} et ${PLAN_LIMITS.agencyplus.label} suivent ${PLAN_LIMITS.agency.brands} à ${PLAN_LIMITS.agencyplus.brands} marques en parallèle et débloquent les rapports en marque blanche : une page partageable à vos couleurs, que vous posez devant un prospect. C'est ce qui transforme la mesure en argument de vente.`,
   ],
   [
-    "Et les secteurs autres que la beauté ?",
-    "La bibliothèque de questions couvre aujourd'hui la beauté, le soin et les compléments. D'autres secteurs arrivent — et Agency inclut dès maintenant une bibliothèque sur mesure pour le vôtre.",
+    "Puis-je changer d'avis ?",
+    "À tout moment. Sans engagement : changez de formule ou résiliez en deux clics depuis l'espace de facturation, et vos données restent exportables.",
   ],
 ];
 
@@ -54,10 +62,18 @@ export default function PricingPage() {
             Annuel : deux mois offerts. Sans engagement. Chaque formule est calée sur le coût réel
             des modèles — pas de magie, pas de marge cachée.
           </p>
+          <p className="mt-4 max-w-xl text-sm text-[var(--ink-soft)]">
+            {`Deux formules sur quatre sont pensées pour les agences : ${PLAN_LIMITS.agency.brands} à ${PLAN_LIMITS.agencyplus.brands} marques suivies et des rapports en marque blanche. `}
+            <Link
+              href="/agences"
+              className="font-medium text-[var(--ink)] underline decoration-[var(--line)] underline-offset-4"
+            >
+              Ce que Mentio fait pour une agence →
+            </Link>
+          </p>
           <div className="mt-14">
             <UpgradeLadder />
             <PricingTiers />
-            <CadenceMatrix />
             <WhiteGloveStrip />
           </div>
         </section>
