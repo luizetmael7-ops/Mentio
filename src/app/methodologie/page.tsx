@@ -227,6 +227,10 @@ export default async function MethodologiePage() {
                   t: "Questions renforcées",
                   v: sampling ? `${sampling.contestedQuestions.length}` : "aucune",
                 },
+                {
+                  t: "Renfort mené à son terme",
+                  v: sampling?.capReached ? "non — plafond budgétaire atteint" : "oui",
+                },
               ].map((item) => (
                 <div key={item.t} className="rounded-xl bg-white/5 px-4 py-3">
                   <dd className="font-metric text-lg font-bold tabular-nums">{item.v}</dd>

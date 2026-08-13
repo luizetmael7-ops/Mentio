@@ -38,6 +38,8 @@ export interface Sampling {
   contestedPasses: number;
   contestedQuestions: string[];
   totalCalls: number;
+  /** L'édition a-t-elle été écourtée par le plafond de dépense ? */
+  capReached?: boolean;
 }
 
 export interface Edition {
