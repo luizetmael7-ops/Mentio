@@ -77,13 +77,20 @@ function toEdition(row: EditionRow): Edition {
   };
 }
 
+/**
+ * La verticale publiée par défaut sur le site. Les autres éditions cohabitent en
+ * base sous leur propre verticale — produire le Baromètre des agences ne change
+ * donc rien à ce qu'affichent /barometre, /marques et la home.
+ */
+export const DEFAULT_VERTICAL = "beaute_complements";
+
 /** Les dernières éditions publiables, la plus récente d'abord. */
-export async function getEditions(limit = 6): Promise<Edition[]> {
+export async function getEditions(limit = 6, vertical = DEFAULT_VERTICAL): Promise<Edition[]> {
   try {
     const { data } = await supabaseAdmin()
       .from("index_editions")
       .select("edition_date, data")
-      .eq("vertical", "beaute_complements")
+      .eq("vertical", vertical)
       .order("edition_date", { ascending: false })
       .limit(limit);
     // On écarte les éditions vides (providers en échec) : jamais d'index à zéro

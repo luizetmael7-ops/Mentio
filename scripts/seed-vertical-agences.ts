@@ -111,7 +111,9 @@ async function main() {
   console.log(`\n✅ ${QUESTIONS.length} questions insérées pour la verticale « ${VERTICAL} »`);
   console.log(`   Aucune mesure lancée, aucun coût engagé.\n`);
   console.log(`   Pour produire l'édition (≈ 1,50 $ en échantillonnage stratifié) :`);
-  console.log(`   déclencher l'événement mentio/index.refresh avec vertical=${VERTICAL}\n`);
+  console.log(`   npx tsx scripts/trigger-run.ts  — ou envoyer l'événement Inngest`);
+  console.log(`   mentio/index.refresh avec { "vertical": "${VERTICAL}" }\n`);
+  console.log(`   Cette dépense doit être validée avant d'être engagée (constitution §7).\n`);
 }
 
 main().catch((e) => {
