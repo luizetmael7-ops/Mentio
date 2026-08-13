@@ -1,5 +1,5 @@
 import Stripe from "stripe";
-import type { Plan } from "@/lib/plans";
+import { PAID_PLANS, type Plan } from "@/lib/plans";
 
 let _stripe: Stripe | null = null;
 export function stripe(): Stripe {
@@ -16,10 +16,17 @@ export async function getPriceId(plan: Exclude<Plan, "free">, interval: BillingI
   return data[0].id;
 }
 
-/** lookup_key ou metadata → plan interne */
+/**
+ * lookup_key ou metadata → plan interne.
+ *
+ * Le repli par lookup_key est construit depuis PLAN_LIMITS : la version écrite à
+ * la main listait « starter | growth | agency », des paliers qui n'existent plus.
+ * Un abonnement dont le prix n'a pas de metadata retombait donc sur `null`, et le
+ * webhook basculait l'organisation en `free` — un client qui paie, déclassé.
+ */
 export function planFromPrice(price: Stripe.Price): Plan | null {
   const fromMeta = price.metadata?.plan as Plan | undefined;
   if (fromMeta) return fromMeta;
-  const match = price.lookup_key?.match(/^mentio_(starter|growth|agency)_/);
+  const match = price.lookup_key?.match(new RegExp(`^mentio_(${PAID_PLANS.join("|")})_`));
   return (match?.[1] as Plan) ?? null;
 }

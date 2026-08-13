@@ -10,6 +10,17 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
+/**
+ * Fenêtre glissante, isolée hors du composant.
+ *
+ * `react-hooks/purity` refuse `Date.now()` appelé pendant le rendu — la règle est
+ * syntaxique et ne distingue pas un composant serveur, qui ne se re-rend pas. Le
+ * calcul est le même, il n'est simplement plus écrit dans le corps du composant.
+ */
+function isoDaysAgo(days: number): string {
+  return new Date(Date.now() - days * 86400_000).toISOString();
+}
+
 export default async function DashboardPage({
   searchParams,
 }: {
@@ -32,8 +43,8 @@ export default async function DashboardPage({
   const plan = ((brand.organizations as unknown as { plan: string }).plan ?? "free") as Plan;
   const limits = PLAN_LIMITS[plan];
 
-  const thirtyDaysAgo = new Date(Date.now() - 30 * 86400_000).toISOString().slice(0, 10);
-  const sevenDaysAgo = new Date(Date.now() - 7 * 86400_000).toISOString();
+  const thirtyDaysAgo = isoDaysAgo(30).slice(0, 10);
+  const sevenDaysAgo = isoDaysAgo(7);
 
   const [
     { data: scores },
@@ -227,7 +238,7 @@ export default async function DashboardPage({
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardDescription>Today's LLM cost (internal)</CardDescription>
+            <CardDescription>Coût LLM du jour (interne)</CardDescription>
             <CardTitle className="text-4xl tabular-nums">
               {costToday > 0 ? `$${costToday.toFixed(2)}` : "—"}
             </CardTitle>

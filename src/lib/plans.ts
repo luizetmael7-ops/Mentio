@@ -81,6 +81,35 @@ export const PLAN_LIMITS: Record<Plan, PlanLimits> = {
   },
 };
 
+/**
+ * Les paliers payants, déduits de la grille — jamais recopiés.
+ *
+ * Une liste écrite à la main s'est déjà désynchronisée une fois : le garde de
+ * `startCheckout` acceptait « starter | growth | agency », des noms abandonnés,
+ * pendant que la grille vendait « brand | agency | agencyplus ». Résultat : deux
+ * des trois paliers payants renvoyaient « Palier inconnu » au moment de payer.
+ */
+export const PAID_PLANS = (Object.keys(PLAN_LIMITS) as Plan[]).filter(
+  (plan) => PLAN_LIMITS[plan].priceMonthlyEur > 0
+);
+
+export function isPaidPlan(value: string): value is Exclude<Plan, "free"> {
+  return (PAID_PLANS as string[]).includes(value);
+}
+
+/**
+ * Le lien « je veux ce palier » — un seul constructeur pour toutes les surfaces.
+ *
+ * Le palier choisi doit survivre à l'inscription : sans le paramètre `next`,
+ * le visiteur qui cliquait « Agence+ » se retrouvait sur le dashboard, sans
+ * mémoire de son choix, et devait retrouver seul l'écran de facturation.
+ */
+export function checkoutHref(plan: Plan, annual: boolean): string {
+  if (plan === "free") return "/signup";
+  const target = `/settings/billing?plan=${plan}&interval=${annual ? "yearly" : "monthly"}`;
+  return `/signup?next=${encodeURIComponent(target)}`;
+}
+
 /** Modèles à jouer aujourd'hui pour ce plan (hebdo = le lundi). */
 export function modelsDue(plan: Plan, date: Date): ModelKey[] {
   const isMonday = date.getUTCDay() === 1;

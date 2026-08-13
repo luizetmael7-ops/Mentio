@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { supabaseServer } from "@/lib/supabase/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { stripe, getPriceId, type BillingInterval } from "@/lib/stripe";
-import type { Plan } from "@/lib/plans";
+import { isPaidPlan, type Plan } from "@/lib/plans";
 import { captureServer } from "@/lib/posthog-server";
 
 async function requireOrg() {
@@ -29,9 +29,14 @@ async function requireOrg() {
 
 /** Démarre un Stripe Checkout pour un palier payant. */
 export async function startCheckout(formData: FormData) {
-  const plan = String(formData.get("plan")) as Exclude<Plan, "free">;
-  const interval = (String(formData.get("interval") ?? "monthly") as BillingInterval) ?? "monthly";
-  if (!["starter", "growth", "agency"].includes(plan)) throw new Error("Palier inconnu");
+  const requested = String(formData.get("plan") ?? "");
+  if (!isPaidPlan(requested)) throw new Error(`Palier inconnu : ${requested || "aucun"}`);
+  const plan: Exclude<Plan, "free"> = requested;
+  // « annual » est le mot employé côté grille tarifaire, « yearly » celui des
+  // lookup_keys Stripe. On accepte les deux plutôt que de faire échouer un
+  // paiement sur une différence de vocabulaire interne.
+  const rawInterval = String(formData.get("interval") ?? "monthly");
+  const interval: BillingInterval = rawInterval === "yearly" || rawInterval === "annual" ? "yearly" : "monthly";
 
   const { org, email } = await requireOrg();
   const client = stripe();

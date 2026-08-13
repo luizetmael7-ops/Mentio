@@ -3,27 +3,22 @@
 import { useState } from "react";
 import Link from "next/link";
 import { ArrowRight, Check, Sparkles } from "lucide-react";
-import { PLAN_LIMITS, type Plan, type Cadence } from "@/lib/plans";
+import { PLAN_LIMITS, checkoutHref, type Plan } from "@/lib/plans";
 import { MODELS } from "@/lib/models";
 import type { ModelKey } from "@/lib/llm/types";
 
 /**
- * La cadence, en une ligne dans la carte.
+ * La cadence, en une ligne dans la carte — et à un seul endroit.
  *
- * Avant : une grille de 4 puces « ChatGPT — Quotidien » par carte, répétée sur les
- * 4 formules. Seize étiquettes pour une information qui tient en une phrase, et un
- * rendu bricolé. Le détail complet vit maintenant dans un seul tableau sous la
- * grille (CadenceMatrix), là où on compare vraiment.
+ * Historique : d'abord 4 puces « ChatGPT — Quotidien » par carte (16 étiquettes),
+ * puis une phrase résumée PLUS un tableau comparatif sous la grille. Soit la même
+ * information écrite deux fois, dont une sur cinq colonnes. On garde la ligne dans
+ * la carte, au moment où la formule se choisit, et elle affiche `cadenceLabel` —
+ * la formulation exacte de plans.ts, celle que le dashboard et la facturation
+ * montrent déjà au client.
  */
 function CadenceLine({ plan, dark }: { plan: (typeof PLAN_LIMITS)["free"]; dark?: boolean }) {
   const keys = Object.keys(plan.modelCadence) as ModelKey[];
-  const daily = keys.filter((k) => plan.modelCadence[k] === "daily");
-  const summary =
-    daily.length === keys.length
-      ? "Relevé quotidien"
-      : daily.length > 0
-        ? `Quotidien sur ${daily.length} modèle${daily.length > 1 ? "s" : ""}, hebdomadaire sur les autres`
-        : "Relevé hebdomadaire";
 
   return (
     <div
@@ -48,94 +43,29 @@ function CadenceLine({ plan, dark }: { plan: (typeof PLAN_LIMITS)["free"]; dark?
         <span
           className={`font-metric ml-1.5 text-[0.65rem] uppercase tracking-wider ${dark ? "text-white/60" : "text-[var(--ink-soft)]"}`}
         >
-          {keys.length} IA sur 4
+          {`${keys.length} IA sur ${MODELS.length}`}
         </span>
       </div>
       <p className={`mt-1.5 text-xs ${dark ? "text-white/70" : "text-[var(--ink-soft)]"}`}>
-        {summary}
+        {plan.cadenceLabel}
       </p>
     </div>
   );
 }
 
 /**
- * Le détail des cadences, une seule fois, là où la comparaison a du sens :
- * les modèles en lignes, les formules en colonnes.
+ * L'échelle d'upgrade : LA différence clé entre chaque palier, en une ligne.
+ * Les noms viennent de plans.ts — un libellé recopié ici finirait par mentir.
  */
-export function CadenceMatrix() {
-  const plans = Object.entries(PLAN_LIMITS) as Array<[Plan, (typeof PLAN_LIMITS)["free"]]>;
-  return (
-    <div className="mt-8 overflow-hidden rounded-2xl border border-[var(--line)] bg-white">
-      <p className="border-b border-[var(--line)] px-5 py-3.5 text-sm">
-        <span className="font-semibold">À quelle fréquence chaque IA est interrogée</span>
-      </p>
-      <div className="overflow-x-auto">
-        <table className="w-full min-w-[30rem] text-sm">
-          <thead>
-            <tr className="border-b border-[var(--line)] bg-[var(--porcelain)]/60">
-              <th scope="col" className="px-5 py-2.5 text-left font-metric text-[0.65rem] uppercase tracking-wider text-[var(--ink-soft)]">
-                Modèle
-              </th>
-              {plans.map(([key, plan]) => (
-                <th
-                  key={key}
-                  scope="col"
-                  className="px-3 py-2.5 text-center font-display text-xs font-extrabold uppercase tracking-wide"
-                >
-                  {plan.label}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {MODELS.map((model) => (
-              <tr key={model.key} className="border-b border-[var(--line)] last:border-b-0">
-                <th scope="row" className="px-5 py-3 text-left font-medium">
-                  <span className="flex items-center gap-2">
-                    <span
-                      aria-hidden
-                      className="size-2 shrink-0 rounded-full"
-                      style={{ backgroundColor: model.color }}
-                    />
-                    {model.name}
-                  </span>
-                </th>
-                {plans.map(([key, plan]) => {
-                  const cadence = plan.modelCadence[model.key] as Cadence | undefined;
-                  return (
-                    <td key={key} className="px-3 py-3 text-center">
-                      {cadence === "daily" ? (
-                        <span className="font-metric text-xs font-bold uppercase tracking-wide text-[var(--poppy)]">
-                          Chaque jour
-                        </span>
-                      ) : cadence ? (
-                        <span className="font-metric text-xs uppercase tracking-wide text-[var(--ink-soft)]">
-                          Chaque semaine
-                        </span>
-                      ) : (
-                        <span aria-label="non inclus" className="text-[var(--line)]">
-                          —
-                        </span>
-                      )}
-                    </td>
-                  );
-                })}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  );
-}
-
-/** L'échelle d'upgrade : LA différence clé entre chaque palier, en une ligne. */
 export function UpgradeLadder() {
   const steps: Array<[string, string]> = [
-    ["Free", "le palier et un concurrent"],
-    ["Brand", "les 4 IA · 50 questions · l'action du jour"],
-    ["Agence", "10 marques · rapports en marque blanche"],
-    ["Agence+", "30 marques · API · questions sur mesure"],
+    [PLAN_LIMITS.free.label, "le palier et un concurrent"],
+    [PLAN_LIMITS.brand.label, `les ${MODELS.length} IA · 50 questions · l'action du jour`],
+    [PLAN_LIMITS.agency.label, `${PLAN_LIMITS.agency.brands} marques · rapports en marque blanche`],
+    [
+      PLAN_LIMITS.agencyplus.label,
+      `${PLAN_LIMITS.agencyplus.brands} marques · API · questions sur mesure`,
+    ],
   ];
   return (
     <div className="mb-10 flex flex-col items-stretch gap-2 sm:flex-row sm:items-center">
@@ -156,8 +86,12 @@ export function UpgradeLadder() {
 
 /**
  * Pricing grid + sélecteur mensuel/annuel.
- * Hiérarchie : Agency = fleuron plum, Growth = le plus choisi, Starter = première marche
- * évidente (jade), Free = l'hameçon.
+ *
+ * Hiérarchie visuelle, calée sur l'acheteur réel : Agence+ = le fleuron (plum),
+ * Agence = le plus choisi (poppy), Brand = la première marche évidente (jade),
+ * Free = l'hameçon. Les noms de variables suivent les clés de plans.ts — ils ont
+ * porté pendant un temps les anciens noms commerciaux (« Growth », « Starter »),
+ * qui se sont retrouvés recopiés tels quels dans la FAQ et sur la landing.
  */
 export function PricingTiers() {
   const [annual, setAnnual] = useState(false);
@@ -207,9 +141,9 @@ export function PricingTiers() {
       <div className="grid gap-x-4 gap-y-7 md:grid-cols-2 lg:grid-cols-4">
         {(Object.entries(PLAN_LIMITS) as Array<[Plan, (typeof PLAN_LIMITS)["free"]]>).map(
           ([key, plan]) => {
-            const isAgency = key === "agencyplus";
-            const isGrowth = key === "agency";
-            const isStarter = key === "brand";
+            const isAgencyPlus = key === "agencyplus";
+            const isAgency = key === "agency";
+            const isBrand = key === "brand";
             const isFree = plan.priceMonthlyEur === 0;
             // Annuel = 10 mois payés pour 12 → on affiche l'équivalent mensuel
             const displayPrice = annual
@@ -221,26 +155,26 @@ export function PricingTiers() {
                 key={key}
                 aria-label={`Formule ${plan.label}`}
                 className={
-                  isAgency
+                  isAgencyPlus
                     ? "relative flex flex-col rounded-3xl bg-[var(--plum)] p-7 text-white shadow-[0_24px_80px_rgb(31,24,48,0.45)]"
-                    : isGrowth
+                    : isAgency
                       ? "relative flex flex-col rounded-3xl border-2 border-[var(--poppy)] bg-white p-7 shadow-[0_16px_60px_rgb(232,70,43,0.14)]"
-                      : isStarter
+                      : isBrand
                         ? "relative flex flex-col rounded-3xl border-2 border-[var(--jade)] bg-white p-7 shadow-[0_16px_60px_rgb(47,169,138,0.14)]"
                         : "flex flex-col rounded-3xl border border-[var(--line)] bg-white p-7"
                 }
               >
-                {isStarter && (
+                {isBrand && (
                   <span className="absolute -top-3 left-6 flex items-center gap-1 rounded-full bg-[var(--jade)] px-3 py-0.5 font-metric text-[0.65rem] uppercase tracking-widest text-white">
                     <Sparkles aria-hidden className="size-3" /> Commencez ici
                   </span>
                 )}
-                {isGrowth && (
+                {isAgency && (
                   <span className="absolute -top-3 left-6 rounded-full bg-[var(--poppy)] px-3 py-0.5 font-metric text-[0.65rem] uppercase tracking-widest text-white">
                     Le plus choisi
                   </span>
                 )}
-                {isAgency && (
+                {isAgencyPlus && (
                   <span className="absolute -top-3 left-6 rounded-full bg-[var(--spectrum-amber)] px-3 py-0.5 font-metric text-[0.65rem] uppercase tracking-widest text-[var(--ink)]">
                     Le fleuron
                   </span>
@@ -254,23 +188,23 @@ export function PricingTiers() {
                   <span className="text-4xl tabular-nums">{displayPrice}</span>
                   <span className="text-2xl">€</span>
                   <span
-                    className={`ml-0.5 text-sm font-normal ${isAgency ? "text-white/50" : "text-[var(--ink-soft)]"}`}
+                    className={`ml-0.5 text-sm font-normal ${isAgencyPlus ? "text-white/50" : "text-[var(--ink-soft)]"}`}
                   >
                     /mois
                   </span>
                 </p>
                 <p
-                  className={`mt-1 h-4 text-xs ${isAgency ? "text-white/50" : "text-[var(--ink-soft)]"}`}
+                  className={`mt-1 h-4 text-xs ${isAgencyPlus ? "text-white/50" : "text-[var(--ink-soft)]"}`}
                 >
                   {annual && !isFree ? `${plan.priceMonthlyEur * 10} € facturés à l'année` : ""}
                 </p>
-                {/* Hauteur réservée sur TOUTES les cartes : sans ça, la phrase de Starter
+                {/* Hauteur réservée sur TOUTES les cartes : sans ça, la phrase de Brand
                     décalait ses lignes de spécifications par rapport aux autres colonnes. */}
                 <p className="mt-1 h-8 text-xs font-medium leading-tight text-[var(--jade)]">
-                  {isStarter ? "Pour une marque qui veut entrer dans les réponses." : ""}
+                  {isBrand ? "Pour une marque qui veut entrer dans les réponses." : ""}
                 </p>
                 <dl
-                  className={`mt-4 space-y-1.5 text-sm ${isAgency ? "text-white/80" : "text-[var(--ink-soft)]"}`}
+                  className={`mt-4 space-y-1.5 text-sm ${isAgencyPlus ? "text-white/80" : "text-[var(--ink-soft)]"}`}
                 >
                   <div className="flex justify-between">
                     <dt>Marques</dt>
@@ -291,10 +225,10 @@ export function PricingTiers() {
                     <dd className="font-metric tabular-nums">{plan.competitors}</dd>
                   </div>
                 </dl>
-                <CadenceLine plan={plan} dark={isAgency} />
+                <CadenceLine plan={plan} dark={isAgencyPlus} />
                 <ul
                   className={`mt-5 flex-1 space-y-2.5 border-t pt-5 text-sm ${
-                    isAgency
+                    isAgencyPlus
                       ? "border-white/10 text-white/85"
                       : "border-[var(--line)] text-[var(--ink-soft)]"
                   }`}
@@ -304,9 +238,9 @@ export function PricingTiers() {
                       <Check
                         aria-hidden
                         className={`mt-0.5 size-4 shrink-0 ${
-                          isAgency
+                          isAgencyPlus
                             ? "text-[var(--spectrum-amber)]"
-                            : isStarter
+                            : isBrand
                               ? "text-[var(--jade)]"
                               : "text-[var(--poppy)]"
                         }`}
@@ -316,13 +250,13 @@ export function PricingTiers() {
                   ))}
                 </ul>
                 <Link
-                  href={`/signup?plan=${key}&billing=${annual ? "annual" : "monthly"}`}
+                  href={checkoutHref(key, annual)}
                   className={
-                    isAgency
+                    isAgencyPlus
                       ? "mt-6 rounded-full bg-white py-2.5 text-center font-semibold text-[var(--ink)] transition-transform hover:scale-[1.02]"
-                      : isGrowth
+                      : isAgency
                         ? "mt-6 rounded-full bg-[var(--poppy)] py-2.5 text-center font-semibold text-white transition-transform hover:scale-[1.02]"
-                        : isStarter
+                        : isBrand
                           ? "mt-6 rounded-full bg-[var(--jade)] py-2.5 text-center font-semibold text-white transition-transform hover:scale-[1.02]"
                           : "mt-6 rounded-full bg-[var(--ink)] py-2.5 text-center font-semibold text-white transition-transform hover:scale-[1.02]"
                   }
