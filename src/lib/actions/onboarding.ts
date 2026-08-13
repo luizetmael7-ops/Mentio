@@ -58,6 +58,19 @@ export async function completeOnboarding(formData: FormData) {
     throw new Error(`Your ${limits.label} plan allows ${limits.brands} brand(s). Upgrade to add more.`);
   }
 
+  // La verticale par défaut, assumée et corrigée à la main.
+  //
+  // Toute marque créée entre en « beaute_complements » : c'est la seule librairie
+  // de 50 questions écrite et relue à ce jour. Un client d'un autre secteur reçoit
+  // donc un relevé sur le mauvais marché tant qu'on ne l'a pas déplacé.
+  //
+  // Le correctif est délibérément un script d'administration et non un sélecteur
+  // ici : les 50 questions d'une verticale ne changent plus jamais une fois
+  // publiées — la comparabilité d'une édition à l'autre est l'actif du produit —
+  // donc elles se relisent avant d'être figées. À ce volume, deux minutes de
+  // relecture valent mieux qu'un formulaire qui grave de mauvaises questions.
+  //
+  //   npx tsx scripts/set-vertical.ts --marque "…" --verticale … --categorie "…"
   const { data: brand, error: brandError } = await admin
     .from("brands")
     .insert({ org_id: orgId, name: brandName, domain: domain || null, vertical: "beaute_complements" })

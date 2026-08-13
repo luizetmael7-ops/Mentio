@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { supabaseServer } from "@/lib/supabase/server";
 import { PLAN_LIMITS, type Plan } from "@/lib/plans";
+import { buildActionPlan } from "@/lib/action-plan";
 import { modelLabel } from "@/lib/models-meta";
 import { sameBrand } from "@/lib/llm/judge";
 import { ScoreChart } from "@/components/dashboard/score-chart";
@@ -149,32 +150,18 @@ export default async function DashboardPage({
     .map(([text]) => text);
 
   const leader = topCited.find(([, info]) => !info.isTarget);
-  const actions: Array<{ title: string; detail: string }> = [];
-  if (topSources.length > 0 && (latestVisibility ?? 0) < 60) {
-    const targets = topSources.slice(0, 3).map(([domain]) => domain).join(", ");
-    actions.push({
-      title: `Get cited on ${topSources[0][0]}`,
-      detail: `The AIs read ${targets} ${topSources[0][1]}+ times this week to answer your questions. A mention, ranking or review there is the highest-leverage move you can make.`,
-    });
-  }
-  if (invisiblePrompts.length > 0) {
-    actions.push({
-      title: `Claim ${invisiblePrompts.length} question${invisiblePrompts.length > 1 ? "s" : ""} where you're invisible`,
-      detail: `Start with “${invisiblePrompts[0]}” — publish a genuinely useful comparison or FAQ page answering it, then get it referenced by the sources above.`,
-    });
-  }
-  if (leader && (latestSov ?? 0) < 50) {
-    actions.push({
-      title: `${leader[0]} is winning your conversation`,
-      detail: `${leader[1].n} mentions on your questions this week. Study where they're cited and target the same pages — that's their entire moat.`,
-    });
-  }
-  if (actions.length === 0) {
-    actions.push({
-      title: "Hold the line",
-      detail: "No urgent gap this week. Keep your sources fresh — the next reading will tell you if anything moves.",
-    });
-  }
+  // La règle vit dans src/lib/action-plan.ts : l'email hebdomadaire doit rendre
+  // exactement le même plan, sinon le client lit deux conseils différents pour
+  // la même semaine.
+  const actions = buildActionPlan({
+    brandName: brand.name,
+    visibility: latestVisibility ?? null,
+    shareOfVoice: latestSov ?? null,
+    sources: topSources.map(([domain, count]) => ({ domain, count })),
+    invisiblePrompts,
+    topRival: leader ? { name: leader[0], mentions: leader[1].n } : null,
+    rivalNames: topCited.filter(([, i]) => !i.isTarget).map(([name]) => name),
+  });
   const ACTION_COLORS = ["var(--spectrum-poppy)", "var(--spectrum-amber)", "var(--spectrum-iris)"];
 
   return (

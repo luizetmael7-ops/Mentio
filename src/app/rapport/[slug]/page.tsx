@@ -271,19 +271,30 @@ export default async function RapportPage({
             <p className="mt-1 text-sm text-[var(--ink-soft)]">
               Les domaines que les modèles ont ouverts pour répondre sans {report.name}.
             </p>
+            {/* Chaque source porte son type ET sa porte d'entrée. Sans ça, la
+                liste était un constat : « les modèles lisent ces sites », et le
+                lecteur n'avait aucun moyen d'agir dessus. */}
             <ol className="mt-4 overflow-hidden rounded-2xl border border-[var(--line)] bg-white">
               {report.sources.map((s, i) => (
-                <li
-                  key={s.domain}
-                  className="flex items-center gap-3 border-b border-[var(--line)] px-5 py-3 last:border-b-0"
-                >
-                  <span className="font-metric w-6 shrink-0 text-sm tabular-nums text-[var(--ink-soft)]">
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                  <span className="min-w-0 flex-1 truncate">{s.domain}</span>
-                  <span className="font-metric w-24 shrink-0 text-right text-xs tabular-nums text-[var(--ink-soft)]">
-                    {`${s.rivalWeight} réponses`}
-                  </span>
+                <li key={s.domain} className="border-b border-[var(--line)] px-5 py-4 last:border-b-0">
+                  <div className="flex items-center gap-3">
+                    <span className="font-metric w-6 shrink-0 text-sm tabular-nums text-[var(--ink-soft)]">
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    <span className="min-w-0 flex-1 truncate font-medium">{s.domain}</span>
+                    <span
+                      className="font-metric shrink-0 rounded-full px-2.5 py-0.5 text-[0.6rem] uppercase tracking-wider text-white"
+                      style={{ backgroundColor: s.type.color }}
+                    >
+                      {s.type.label}
+                    </span>
+                    <span className="font-metric w-24 shrink-0 text-right text-xs tabular-nums text-[var(--ink-soft)]">
+                      {`${s.rivalWeight} réponses`}
+                    </span>
+                  </div>
+                  <p className="mt-1.5 pl-9 text-xs leading-relaxed text-[var(--ink-soft)]">
+                    {s.type.route}
+                  </p>
                 </li>
               ))}
             </ol>

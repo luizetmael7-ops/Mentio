@@ -7,6 +7,7 @@ import { CountUp } from "@/components/brand/count-up";
 import { Reveal } from "@/components/brand/reveal";
 import { modelName } from "@/lib/models";
 import { getEditions, formatEditionDate, brandSlug } from "@/lib/index-edition";
+import { classifySource } from "@/lib/source-types";
 
 export const metadata: Metadata = {
   title: "Les sites que les IA lisent avant de recommander — Mentio",
@@ -17,19 +18,9 @@ export const metadata: Metadata = {
 
 export const revalidate = 3600;
 
-/** Une source est-elle un média, un site de marque, une institution ? */
-function classify(domain: string): { label: string; color: string } {
-  if (/\.(gov|gouv\.fr)$|nih\.gov|ncbi|who\.int|nhs\.uk|anses|ansm/.test(domain)) {
-    return { label: "Institution", color: "var(--spectrum-iris)" };
-  }
-  if (/youtube|reddit|tiktok|instagram|facebook|pinterest|quora/.test(domain)) {
-    return { label: "Plateforme", color: "var(--spectrum-amber)" };
-  }
-  if (/wikipedia|wikimedia/.test(domain)) {
-    return { label: "Encyclopédie", color: "var(--spectrum-ash)" };
-  }
-  return { label: "Média ou marchand", color: "var(--spectrum-coral)" };
-}
+// La classification vit dans src/lib/source-types.ts, avec la porte d'entrée qui
+// va avec chaque type. Cette page en avait sa propre copie, plus pauvre et déjà
+// divergente — c'est exactement ainsi qu'un libellé finit par mentir quelque part.
 
 /**
  * Le classement des sources. C'est l'actif le plus difficile à copier : il faut
@@ -112,7 +103,7 @@ export default async function SourcesPage() {
               </p>
               <ol>
                 {sources.map((source, i) => {
-                  const kind = classify(source.domain);
+                  const kind = classifySource(source.domain);
                   const brands = [...(brandsBySource.get(source.domain) ?? new Map())]
                     .sort((a, b) => b[1] - a[1])
                     .slice(0, 3)

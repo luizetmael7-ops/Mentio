@@ -7,6 +7,7 @@ import {
 } from "@/lib/index-edition";
 import { tierOf, type Tier } from "@/lib/spectrum";
 import { modelName } from "@/lib/models";
+import { classifySource, brandDomainHint, type SourceType } from "@/lib/source-types";
 
 /**
  * LE RAPPORT — l'arme commerciale des agences.
@@ -40,6 +41,8 @@ export interface ReportSource {
   count: number;
   /** Combien de réponses citant un concurrent s'appuient sur ce domaine */
   rivalWeight: number;
+  /** De quoi il s'agit, et par quelle porte on y entre */
+  type: SourceType;
 }
 
 export interface BrandReport {
@@ -149,11 +152,15 @@ export async function buildReport(slug: string): Promise<BrandReport | null> {
   for (const a of missed) for (const d of new Set(a.sources)) {
     sourceCount.set(d, (sourceCount.get(d) ?? 0) + 1);
   }
+  // Les domaines des marques classées, pour reconnaître le site d'un concurrent :
+  // aucune expression régulière ne devinerait que loreal.com en est un.
+  const brandDomains = edition.brands.map((b) => brandDomainHint(b.name)).filter((d) => d.length > 3);
   const sources: ReportSource[] = [...sourceCount.entries()]
     .map(([domain, rivalWeight]) => ({
       domain,
       rivalWeight,
       count: edition.sources.find((s) => s.domain === domain)?.count ?? rivalWeight,
+      type: classifySource(domain, brandDomains),
     }))
     .sort((a, b) => b.rivalWeight - a.rivalWeight)
     .slice(0, 5);
@@ -161,10 +168,19 @@ export async function buildReport(slug: string): Promise<BrandReport | null> {
   // Les actions : c'est la moitié « solution » de la promesse. Générées depuis les
   // données, jamais inventées, et ordonnées par effet attendu.
   const actions: Array<{ title: string; detail: string }> = [];
-  if (sources[0]) {
+  // La première source ACTIONNABLE, pas la première tout court : proposer « se
+  // faire référencer sur loreal.com » (un concurrent) ou sur nih.gov (une agence
+  // sanitaire) décrédibilise tout le plan, et c'est ce que faisait la version
+  // précédente. La porte d'entrée dépend du type de site — un média se contacte,
+  // un label s'obtient, une plateforme se publie.
+  const reachable = sources.find((s) => s.type.actionable);
+  if (reachable) {
     actions.push({
-      title: `Se faire référencer sur ${sources[0].domain}`,
-      detail: `Ce domaine alimente ${sources[0].rivalWeight} des réponses où ${brand.name} n'apparaît pas. C'est le levier le plus direct : les modèles y retournent à chaque interrogation.`,
+      title:
+        reachable.type.kind === "plateforme"
+          ? `Créer une présence sur ${reachable.domain}`
+          : `Se faire citer sur ${reachable.domain}`,
+      detail: `Ce domaine alimente ${reachable.rivalWeight} des réponses où ${brand.name} n'apparaît pas, et les modèles y retournent à chaque interrogation. ${reachable.type.route}`,
     });
   }
   const weakest = [...perModel].sort((a, b) => a.score - b.score)[0];

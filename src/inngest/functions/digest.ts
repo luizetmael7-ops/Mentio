@@ -9,6 +9,7 @@ import { supabaseAdmin } from "@/lib/supabase/admin";
 import { resend, EMAIL_FROM, deliverableTo } from "@/lib/resend";
 import WeeklyDigest from "@/emails/weekly-digest";
 import { sameBrand } from "@/lib/llm/judge";
+import { buildActionPlan } from "@/lib/action-plan";
 
 function average(values: number[]): number | null {
   if (values.length === 0) return null;
@@ -36,7 +37,13 @@ export const weeklyDigest = inngest.createFunction(
         const weekAgo = new Date(Date.now() - 7 * 86400_000).toISOString().slice(0, 10);
         const twoWeeksAgo = new Date(Date.now() - 14 * 86400_000).toISOString().slice(0, 10);
 
-        const [{ data: users }, { data: scores }, { data: mentions }] = await Promise.all([
+        const [
+          { data: users },
+          { data: scores },
+          { data: mentions },
+          { data: sourceRuns },
+          { data: judgedRuns },
+        ] = await Promise.all([
           supabase.from("users").select("email").eq("org_id", brand.org_id),
           supabase.from("scores").select("date, visibility_score, share_of_voice").eq("brand_id", brand.id).gte("date", twoWeeksAgo),
           supabase
@@ -44,6 +51,20 @@ export const weeklyDigest = inngest.createFunction(
             .select("name, is_target_brand, prompt_runs!inner(brand_id, run_at)")
             .eq("prompt_runs.brand_id", brand.id)
             .gte("prompt_runs.run_at", `${weekAgo}T00:00:00Z`),
+          // Les deux requêtes qui manquaient pour produire une action : les domaines
+          // lus cette semaine, et les questions restées sans citation.
+          supabase
+            .from("prompt_runs")
+            .select("cited_sources")
+            .eq("brand_id", brand.id)
+            .gte("run_at", `${weekAgo}T00:00:00Z`),
+          supabase
+            .from("prompt_runs")
+            .select("prompts!inner(text), mentions(is_target_brand)")
+            .eq("brand_id", brand.id)
+            .eq("status", "judged")
+            .gte("run_at", `${weekAgo}T00:00:00Z`)
+            .limit(120),
         ]);
         if (!users || users.length === 0) return "aucun destinataire";
 
@@ -65,6 +86,50 @@ export const weeklyDigest = inngest.createFunction(
           .sort((a, b) => b.count - a.count)
           .slice(0, 5);
 
+        // Les domaines lus cette semaine, du plus lu au moins lu
+        const sourceCounts = new Map<string, number>();
+        for (const run of sourceRuns ?? []) {
+          for (const source of (run.cited_sources ?? []) as Array<{ domain?: string }>) {
+            if (source.domain) {
+              sourceCounts.set(source.domain, (sourceCounts.get(source.domain) ?? 0) + 1);
+            }
+          }
+        }
+        const sources = [...sourceCounts.entries()]
+          .map(([domain, count]) => ({ domain, count }))
+          .sort((a, b) => b.count - a.count)
+          .slice(0, 8);
+
+        // Les questions où la marque n'est ressortie sur aucun passage
+        const promptVisibility = new Map<string, { seen: number; cited: number }>();
+        for (const run of judgedRuns ?? []) {
+          const text = (run.prompts as unknown as { text: string })?.text;
+          if (!text) continue;
+          const entry = promptVisibility.get(text) ?? { seen: 0, cited: 0 };
+          entry.seen += 1;
+          if (((run.mentions ?? []) as Array<{ is_target_brand: boolean }>).some((m) => m.is_target_brand)) {
+            entry.cited += 1;
+          }
+          promptVisibility.set(text, entry);
+        }
+        const invisiblePrompts = [...promptVisibility.entries()]
+          .filter(([, v]) => v.cited === 0)
+          .map(([text]) => text);
+
+        // Même règle que le dashboard, au mot près — c'est tout l'intérêt du module partagé
+        const action =
+          buildActionPlan({
+            brandName: brand.name,
+            visibility,
+            shareOfVoice,
+            sources,
+            invisiblePrompts,
+            topRival: topCompetitors[0]
+              ? { name: topCompetitors[0].name, mentions: topCompetitors[0].count }
+              : null,
+            rivalNames: topCompetitors.map((c) => c.name),
+          })[0] ?? null;
+
         const html = await render(
           WeeklyDigest({
             brandName: brand.name,
@@ -72,6 +137,7 @@ export const weeklyDigest = inngest.createFunction(
             visibilityDelta: previous === null ? null : visibility - previous,
             shareOfVoice,
             topCompetitors,
+            action,
             appUrl: process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000",
           })
         );
@@ -79,7 +145,11 @@ export const weeklyDigest = inngest.createFunction(
         const { error } = await resend().emails.send({
           from: EMAIL_FROM,
           to: users.map((u) => deliverableTo(u.email)),
-          subject: `${brand.name}: AI visibility ${visibility}/100 this week`,
+          // L'objet porte l'action, pas le score : un score connu donne le
+          // sentiment que le travail est fait, et l'email n'est plus ouvert.
+          subject: action
+            ? `${brand.name} — à faire cette semaine : ${action.title}`
+            : `${brand.name} — visibilité IA ${visibility}/100 cette semaine`,
           html,
         });
         if (error) throw new Error(error.message);
