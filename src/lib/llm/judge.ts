@@ -38,14 +38,30 @@ function client(): OpenAI {
 
 // Institutions, autorités et médias que le juge LLM laisse parfois passer malgré la
 // consigne — filtre déterministe en dernier rempart (comparaison sur nom normalisé).
+//
+// La seconde liste est apparue avec l'édition « Agences GEO France » : interrogés
+// sur les prestataires du référencement IA, les modèles se citaient eux-mêmes et
+// citaient leurs éditeurs. Google ressortait 4e et Perplexity 12e d'un classement
+// d'AGENCES. Ce ne sont pas des concurrents des agences, ce sont les moteurs qu'on
+// mesure — les laisser dans un classement nominatif le disqualifie entier.
 const NON_BRANDS = new Set(
   [
     "nhs", "nih", "aad", "american academy of dermatology", "mayo clinic", "cleveland clinic",
     "anses", "ansm", "efsa", "ewg", "pubmed", "cochrane", "inserm", "oms", "who", "fda",
     "vidal", "doctissimo", "60 millions de consommateurs", "que choisir", "ufc que choisir",
     "nih office of dietary supplements", "harvard health", "webmd", "healthline", "wikipedia",
+
+    // Éditeurs de modèles, moteurs et assistants : ce qu'on mesure, jamais ce qu'on classe
+    "google", "google ai", "gemini", "openai", "chatgpt", "anthropic", "claude",
+    "perplexity", "perplexity ai", "microsoft", "bing", "copilot", "microsoft copilot",
+    "meta", "meta ai", "mistral", "mistral ai", "deepseek", "grok", "xai",
   ].map((n) => normalizeBrandName(n))
 );
+
+/** Les noms exclus, pour les scripts de nettoyage d'une édition déjà mesurée. */
+export function isNonBrand(name: string): boolean {
+  return NON_BRANDS.has(normalizeBrandName(name));
+}
 
 function clean(extraction: Extraction): Extraction {
   extraction.brands = extraction.brands.filter((b) => !NON_BRANDS.has(normalizeBrandName(b.name)));
