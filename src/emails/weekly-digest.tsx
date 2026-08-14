@@ -37,6 +37,14 @@ export interface WeeklyDigestProps {
    * la seule qui appelle une réaction immédiate.
    */
   overtake?: string | null;
+  /**
+   * Le franchissement de palier. Placé au-dessus de tout : c'est l'événement qui
+   * installe le vocabulaire du barème dans la bouche du client.
+   */
+  tierChange?: string | null;
+  tierChangeTitle?: string | null;
+  /** « 4 relevés consécutifs en hausse » — un fait mesuré, pas un encouragement */
+  streak?: string | null;
   appUrl: string;
 }
 
@@ -48,6 +56,9 @@ export default function WeeklyDigest({
   topCompetitors,
   action,
   overtake,
+  tierChange,
+  tierChangeTitle,
+  streak,
   appUrl,
 }: WeeklyDigestProps) {
   const deltaText =
@@ -63,7 +74,9 @@ export default function WeeklyDigest({
       {/* L'aperçu de la boîte de réception : l'action y passe avant le score,
           c'est elle qui fait ouvrir. */}
       <Preview>
-        {overtake
+        {tierChangeTitle
+          ? tierChangeTitle
+          : overtake
           ? overtake
           : action
           ? `${brandName} — à faire cette semaine : ${action.title}`
@@ -72,6 +85,38 @@ export default function WeeklyDigest({
       <Body style={{ fontFamily: "sans-serif", backgroundColor: "#fafafa", padding: "24px" }}>
         <Container style={{ backgroundColor: "#ffffff", borderRadius: 8, padding: 32, maxWidth: 520 }}>
           <Heading as="h2">Votre semaine IA — {brandName}</Heading>
+
+          {/* Le franchissement de palier — sobre : on nomme le fait et on le date,
+              sans félicitations. Un institut de mesure qui congratule comme une
+              application de fitness perd ce qui fait sa valeur. */}
+          {tierChange && (
+            <Section
+              style={{
+                border: "1px solid #171520",
+                padding: "14px 16px",
+                margin: "12px 0 20px",
+              }}
+            >
+              <Text
+                style={{
+                  margin: 0,
+                  fontSize: 11,
+                  letterSpacing: 1,
+                  textTransform: "uppercase",
+                  color: "#544F60",
+                }}
+              >
+                Changement de palier
+              </Text>
+              <Text style={{ margin: "6px 0 0", fontWeight: 700, color: "#171520" }}>
+                {tierChangeTitle}
+              </Text>
+              <Text style={{ margin: "6px 0 0", color: "#333", lineHeight: 1.5 }}>{tierChange}</Text>
+              {streak ? (
+                <Text style={{ margin: "8px 0 0", fontSize: 13, color: "#544F60" }}>{streak}</Text>
+              ) : null}
+            </Section>
+          )}
 
           {/* Le dépassement, avant tout le reste. C'est la seule ligne qui
               nomme un responsable et une question. */}

@@ -4,6 +4,15 @@ import { PLAN_LIMITS, type Plan } from "@/lib/plans";
 import { buildActionPlan } from "@/lib/action-plan";
 import { placementEffect, placementSentence, type PlacementRow } from "@/lib/placements";
 import { declarePlacement, abandonPlacement } from "@/lib/actions/placements";
+import { buildDomainStats, domainStatSentence, PUBLICATION_THRESHOLD } from "@/lib/placement-stats";
+import { supabaseAdmin } from "@/lib/supabase/admin";
+import {
+  detectTierChange,
+  risingStreak,
+  tierChangeSubject,
+  tierChangeSentence,
+  streakSentence,
+} from "@/lib/progression";
 import { modelLabel } from "@/lib/models-meta";
 import { sameBrand } from "@/lib/llm/judge";
 import { ScoreChart } from "@/components/dashboard/score-chart";
@@ -202,10 +211,42 @@ export default async function DashboardPage({
   // bouton qui ne fait rien coûte plus cher qu'une fonctionnalité annoncée absente.
   const placementsReady = !placementsError;
 
+  // ── Le franchissement de palier, mis en scène sobrement ────────────────────
+  // Le barème est le vocabulaire qu'on installe : il ne s'installe que si le
+  // produit met la phrase dans la bouche du client au moment où elle est vraie.
+  const rounded = points.map((p) => ({ date: p.date, visibility: Math.round(p.visibility) }));
+  const tierChange = detectTierChange(rounded);
+  const streak = streakSentence(risingStreak(rounded));
+
+  // ── Le playbook collaboratif ───────────────────────────────────────────────
+  // Agrégat de TOUS les clients, d'où le client admin : les politiques RLS
+  // cloisonnent par organisation, et c'est précisément la raison pour laquelle
+  // rien de nominatif ne sort d'ici — uniquement des moyennes au-delà du seuil.
+  const domainStats = await buildDomainStats(supabaseAdmin()).catch(() => []);
+  const statFor = (domain: string) =>
+    domainStats.find((d) => d.domain === domain.toLowerCase().replace(/^www\./, ""));
+
   const ACTION_COLORS = ["var(--spectrum-poppy)", "var(--spectrum-amber)", "var(--spectrum-iris)"];
 
   return (
     <main className="flex-1 p-6 max-w-6xl mx-auto w-full grid gap-6">
+      {/* L'événement, tout en haut. Sobre : on nomme le fait et on le date, sans
+          félicitations — un institut de mesure qui congratule perd sa valeur. */}
+      {tierChange && (
+        <div className="rounded-xl border-2 border-foreground p-5">
+          <p className="text-[11px] uppercase tracking-widest text-muted-foreground">
+            Changement de palier
+          </p>
+          <p className="mt-1.5 text-lg font-semibold">{tierChangeSubject(brand.name, tierChange)}</p>
+          <p className="mt-1.5 text-sm text-muted-foreground">{tierChangeSentence(tierChange)}</p>
+          <div className="mt-3 flex flex-wrap items-center gap-3">
+            {streak && <Badge variant="secondary">{streak}</Badge>}
+            <Button variant="outline" size="sm" asChild>
+              <a href="/badge">Afficher ce palier sur votre site →</a>
+            </Button>
+          </div>
+        </div>
+      )}
       <header className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <div className="flex flex-wrap items-center gap-2">
@@ -301,9 +342,31 @@ export default async function DashboardPage({
                 <p className="text-sm font-semibold">{action.title}</p>
               </div>
               <p className="mt-2 text-xs leading-relaxed text-muted-foreground">{action.detail}</p>
+              {/* Ce que l'ensemble des clients a constaté sur ce domaine. Agrégé,
+                  anonyme, et affiché seulement au-delà du seuil de publication :
+                  une moyenne sur trois placements est une anecdote, pas une norme.
+                  C'est la contrepartie de la déclaration — contribuer donne accès
+                  à une donnée que personne ne peut produire seul. */}
+              {(() => {
+                const domain = action.title.match(/[a-z0-9-]+\.[a-z.]{2,}/i)?.[0];
+                const sentence = domain ? domainStatSentence(statFor(domain)) : null;
+                return sentence ? (
+                  <p className="mt-3 border-t pt-2 text-[11px] leading-relaxed text-muted-foreground">
+                    <span className="font-medium text-foreground">Constaté par les clients Mentio :</span>{" "}
+                    {sentence}
+                  </p>
+                ) : null;
+              })()}
             </div>
           ))}
         </CardContent>
+        {domainStats.length === 0 && (
+          <CardContent className="pt-0">
+            <p className="text-xs text-muted-foreground">
+              {`Les délais et gains constatés par domaine apparaîtront ici dès ${PUBLICATION_THRESHOLD} placements déclarés sur un même site, tous clients confondus. Déclarer les vôtres ci-dessous alimente cette donnée — et vous y donne accès pour tous les autres domaines.`}
+            </p>
+          </CardContent>
+        )}
       </Card>
 
       {/* ── LE JOURNAL DES PLACEMENTS ──────────────────────────────────────────

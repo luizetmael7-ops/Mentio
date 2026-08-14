@@ -11,6 +11,13 @@ import WeeklyDigest from "@/emails/weekly-digest";
 import { sameBrand } from "@/lib/llm/judge";
 import { buildActionPlan } from "@/lib/action-plan";
 import { detectOvertake, overtakeSubject, overtakeSentence } from "@/lib/overtake";
+import {
+  detectTierChange,
+  risingStreak,
+  tierChangeSubject,
+  tierChangeSentence,
+  streakSentence,
+} from "@/lib/progression";
 
 function average(values: number[]): number | null {
   if (values.length === 0) return null;
@@ -133,6 +140,25 @@ export const weeklyDigest = inngest.createFunction(
             rivalNames: topCompetitors.map((c) => c.name),
           })[0] ?? null;
 
+        // Série de scores par date, moyennée sur les modèles — la base du
+        // franchissement de palier et de la série de hausses.
+        const byDate = new Map<string, number[]>();
+        for (const row of scores ?? []) {
+          byDate.set(row.date, [...(byDate.get(row.date) ?? []), Number(row.visibility_score)]);
+        }
+        const points = [...byDate.entries()]
+          .map(([date, vals]) => ({
+            date,
+            visibility: Math.round(vals.reduce((a, b) => a + b, 0) / vals.length),
+          }))
+          .sort((a, b) => a.date.localeCompare(b.date));
+
+        // Le franchissement de palier : l'événement qui installe le vocabulaire.
+        // On compare des PALIERS, pas des scores — 29 → 30 est un événement,
+        // 30 → 40 n'en est pas un.
+        const tierChange = detectTierChange(points);
+        const streak = streakSentence(risingStreak(points));
+
         // Le dépassement nominatif : un concurrent qui prend une question où la
         // marque était citée la semaine dernière. C'est le seul motif de
         // reconnexion spontané — un score qui monte ne fait ouvrir aucun email.
@@ -159,6 +185,9 @@ export const weeklyDigest = inngest.createFunction(
             topCompetitors,
             action,
             overtake: overtake ? overtakeSentence(overtake) : null,
+            tierChange: tierChange ? tierChangeSentence(tierChange) : null,
+            tierChangeTitle: tierChange ? tierChangeSubject(brand.name, tierChange) : null,
+            streak,
             appUrl: process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000",
           })
         );
@@ -170,11 +199,13 @@ export const weeklyDigest = inngest.createFunction(
           // nommé qui prend une question précise bat tout le reste ; l'action
           // vient ensuite ; le score en dernier, parce qu'un score connu donne le
           // sentiment que le travail est fait et l'email n'est plus ouvert.
-          subject: overtake
-            ? overtakeSubject(overtake)
-            : action
-              ? `${brand.name} — à faire cette semaine : ${action.title}`
-              : `${brand.name} — visibilité IA ${visibility}/100 cette semaine`,
+          subject: tierChange
+            ? tierChangeSubject(brand.name, tierChange)
+            : overtake
+              ? overtakeSubject(overtake)
+              : action
+                ? `${brand.name} — à faire cette semaine : ${action.title}`
+                : `${brand.name} — visibilité IA ${visibility}/100 cette semaine`,
           html,
         });
         if (error) throw new Error(error.message);
