@@ -8,6 +8,7 @@ import { PLAN_LIMITS, checkoutHref } from "@/lib/plans";
 import { modelsSentence } from "@/lib/models";
 import { buildReport } from "@/lib/report";
 import { getLatestEdition, formatEditionDate, brandSlug } from "@/lib/index-edition";
+import { signShare } from "@/lib/report-access";
 
 export const metadata: Metadata = {
   title: "Mentio pour les agences — la mesure qui vend un retainer GEO",
@@ -39,8 +40,13 @@ export default async function AgencesPage() {
   // de l'édition en cours, plutôt qu'un rapport fictif.
   const sample = edition?.brands[1] ?? edition?.brands[0];
   const sampleSlug = sample ? brandSlug(sample.name) : null;
+  // La démonstration doit être SIGNÉE comme le sera celle d'une agence cliente :
+  // depuis que la marque blanche est verrouillée, un lien non signé afficherait
+  // la version publique — soit exactement le contraire de ce que cette page vend.
   const sampleHref = sampleSlug
-    ? `/rapport/${sampleSlug}?agence=Votre%20agence&couleur=%232FA98A`
+    ? `/rapport/${sampleSlug}?agence=${encodeURIComponent("Votre agence")}&couleur=%232FA98A&jeton=${encodeURIComponent(
+        signShare({ slug: sampleSlug, agence: "Votre agence", couleur: "#2FA98A" })
+      )}`
     : "/barometre";
   // Les actions réelles du rapport, montrées telles quelles. Un site qui promet
   // « on vous dit quoi faire » sans jamais montrer à quoi ça ressemble vend une
@@ -93,9 +99,10 @@ export default async function AgencesPage() {
                 envoyable par lien
               </h2>
               <p className="mt-4 max-w-2xl text-white/70">
-                Pas une capture d&apos;écran de dashboard : une page publique que votre prospect
-                ouvre sans créer de compte, avec votre nom, votre logo et votre couleur. Elle se
-                termine par trois actions à mener — c&apos;est-à-dire par votre mission.
+                Pas une capture d&apos;écran de dashboard : une page que votre prospect ouvre sans
+                créer de compte, avec votre nom, votre logo et votre couleur. Le lien est signé
+                depuis votre espace — personne ne peut le fabriquer, et il se termine par le plan
+                d&apos;action complet, c&apos;est-à-dire par votre mission.
               </p>
               <ul className="mt-8 grid gap-3 sm:grid-cols-2">
                 {[
@@ -113,8 +120,8 @@ export default async function AgencesPage() {
                     "Les domaines réellement consultés par les modèles pour répondre.",
                   ],
                   [
-                    "Trois actions, dans l'ordre",
-                    "Le levier le plus rentable d'abord — c'est le devis que vous allez écrire.",
+                    "Le plan d'action complet",
+                    "Une douzaine d'actions ordonnées par effet, chacune avec sa porte d'entrée, son format et son angle. C'est le devis que vous allez écrire.",
                   ],
                   [
                     "Export PDF",

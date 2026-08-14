@@ -8,6 +8,7 @@ import { PrintButton } from "@/components/brand/print-button";
 import { modelName } from "@/lib/models";
 import { formatEditionDate, brandSlug, citationCount } from "@/lib/index-edition";
 import { buildReport, parseBranding } from "@/lib/report";
+import { verifyShare, type ReportAccess } from "@/lib/report-access";
 import { getEditions } from "@/lib/index-edition";
 
 export const revalidate = 3600;
@@ -58,7 +59,18 @@ export default async function RapportPage({
   const report = await buildReport(slug);
   if (!report) notFound();
 
-  const branding = parseBranding(await searchParams);
+  const query = await searchParams;
+  const requested = parseBranding(query);
+  const jeton = typeof query.jeton === "string" ? query.jeton : undefined;
+
+  // Le niveau d'accès, avant tout affichage. Un `?agence=` fabriqué à la main
+  // sans jeton valide ne donne RIEN : ni les couleurs, ni le plan déplié.
+  const signed = verifyShare(
+    { slug, agence: requested.agency, couleur: requested.color, logo: requested.logo },
+    jeton
+  );
+  const access: ReportAccess = signed ? "complet" : "public";
+  const branding = signed ? requested : {};
   const accent = branding.color ?? "var(--poppy)";
 
   return (
@@ -159,26 +171,40 @@ export default async function RapportPage({
             <h2 className="font-display text-xl font-extrabold uppercase tracking-wide">
               Ce qu&apos;il faut faire, dans l&apos;ordre
             </h2>
+            {/* En accès public, seule l'action 01 est dépliée ; les suivantes sont
+                NOMMÉES, pas floutées. On ne cache pas du contenu derrière un
+                voile — on en donne une entière et on dit ce que contiennent les
+                autres. Un lecteur sait exactement ce qu'il n'a pas. */}
             <ol className="mt-4 space-y-3">
-              {report.actions.map((action, i) => (
+              {report.actions.map((action, i) => {
+                const expanded = access === "complet" || i === 0;
+                return (
                 <li
                   key={action.title}
-                  className="rounded-2xl border border-[var(--line)] bg-white p-5"
-                  style={{ borderLeftWidth: 4, borderLeftColor: accent }}
+                  className={
+                    expanded
+                      ? "rounded-2xl border border-[var(--line)] bg-white p-5"
+                      : "rounded-2xl border border-[var(--line)] bg-white px-5 py-3.5"
+                  }
+                  style={expanded ? { borderLeftWidth: 4, borderLeftColor: accent } : undefined}
                 >
                   <p className="flex items-baseline gap-2.5">
                     <span className="font-metric text-xs tabular-nums" style={{ color: accent }}>
                       {String(i + 1).padStart(2, "0")}
                     </span>
-                    <span className="font-semibold">{action.title}</span>
+                    <span className={expanded ? "font-semibold" : "text-[var(--ink)]"}>
+                      {action.title}
+                    </span>
                   </p>
+                  {expanded && (
                   <p className="mt-2 pl-7 text-sm leading-relaxed text-[var(--ink-soft)]">
                     {action.detail}
                   </p>
+                  )}
                   {/* Le mode d'emploi, quand le domaine est documenté. En lignes
                       étiquetées plutôt qu'en paragraphe : c'est ce qu'on lit à voix
                       haute devant un client, pas ce qu'on parcourt. */}
-                  {(action.route || action.format || action.angle) && (
+                  {expanded && (action.route || action.format || action.angle) && (
                     <dl className="mt-3 space-y-2 border-t border-[var(--line)] pl-7 pt-3 text-sm">
                       {[
                         ["Par où entrer", action.route],
@@ -200,8 +226,32 @@ export default async function RapportPage({
                     </dl>
                   )}
                 </li>
-              ))}
+                );
+              })}
             </ol>
+
+            {/* L'encart, sobre, sur la version publique uniquement. */}
+            {access === "public" && report.actions.length > 1 && (
+              <div className="mt-4 rounded-2xl border border-[var(--line)] bg-white p-5">
+                <p className="text-sm leading-relaxed text-[var(--ink-soft)]">
+                  {`L'action 01 est donnée en entier ci-dessus. Les ${report.actions.length - 1} suivantes sont nommées, et leur mode d'emploi — par où entrer, quel format, quel angle — est dans le rapport complet.`}
+                </p>
+                <div className="mt-4 flex flex-wrap items-center gap-4">
+                  <Link
+                    href="/pricing"
+                    className="inline-flex items-center gap-2 rounded-full bg-[var(--ink)] px-5 py-2.5 text-sm font-semibold text-white transition-transform hover:scale-[1.02]"
+                  >
+                    Plan complet et rapport à vos couleurs — voir les formules
+                  </Link>
+                  <Link
+                    href="/agences"
+                    className="text-sm font-medium text-[var(--ink)] underline decoration-[var(--line)] underline-offset-4"
+                  >
+                    Pour une agence →
+                  </Link>
+                </div>
+              </div>
+            )}
             {/* Le durable : sans ça, le rapport est un audit qu'on paie une fois. */}
             <p className="mt-4 text-sm leading-relaxed text-[var(--ink-soft)]">
               {`Ces actions se vérifient : les mêmes 50 questions sont reposées le ${formatEditionDate(report.nextMeasure)}, puis chaque semaine. Un mouvement de rang n'est publié que s'il dépasse le bruit de mesure — ce qui bouge ici a bougé pour de vrai.`}

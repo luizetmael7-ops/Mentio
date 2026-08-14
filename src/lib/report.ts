@@ -211,12 +211,20 @@ export async function buildReport(slug: string): Promise<BrandReport | null> {
   //  1. Chaque action est DÉDUITE d'une mesure. Aucune n'est un conseil générique,
   //     aucune n'est écrite par un modèle. Un plan qu'on ne peut pas rattacher à
   //     un chiffre relevé est un plan que le client peut contester.
-  //  2. Elles sont ordonnées par effet attendu, pas par facilité : conquérir une
-  //     source lue à chaque interrogation déplace plus qu'une page isolée.
+  //  2. Les QUATRE PREMIÈRES viennent de quatre familles différentes. Générées
+  //     par effet attendu seul, les quatre premières étaient quatre « Se faire
+  //     citer sur X » : un lecteur en déduisait que les douze actions étaient
+  //     douze variantes d'une même idée, ce qui est faux et détruit la valeur
+  //     perçue du plan. Même contenu, même véracité, lecture opposée.
+  //     Au-delà des quatre, on reprend l'ordre par effet attendu.
   //  3. Quand le domaine est documenté dans le playbook, l'action porte la voie
   //     d'entrée, le format accepté et l'angle qui passe. C'est la différence
   //     entre « faites-vous citer sur darwin-nutrition.fr » et un mode d'emploi.
-  const actions: ReportAction[] = [];
+  // Une famille par nature de levier. Chacune reste triée par effet attendu.
+  const familleSources: ReportAction[] = [];
+  const familleQuestions: ReportAction[] = [];
+  const familleEcart: ReportAction[] = [];
+  const familleRivaux: ReportAction[] = [];
 
   // 1. Les sources conquérables, de la plus lue à la moins lue. On écarte les
   //    institutions (on ne se fait pas citer par le NIH) et les sites de marques
@@ -225,7 +233,7 @@ export async function buildReport(slug: string): Promise<BrandReport | null> {
   for (const source of sourcePool.filter((s) => s.type.actionable).slice(0, 5)) {
     const play = playbookFor(source.domain);
     const opening = `Ce domaine alimente ${source.rivalWeight} des réponses où ${brand.name} n'apparaît pas, et les modèles y retournent à chaque interrogation.`;
-    actions.push({
+    familleSources.push({
       title:
         source.type.kind === "plateforme"
           ? `Créer une présence sur ${source.domain}`
@@ -241,7 +249,7 @@ export async function buildReport(slug: string): Promise<BrandReport | null> {
   // 2. Les questions perdues : chacune est une réponse d'achat où un concurrent
   //    répond à votre place, nommément.
   for (const q of lostQuestions.slice(0, 4)) {
-    actions.push({
+    familleQuestions.push({
       title: `Traiter « ${q.prompt} »`,
       detail: `${q.winner} occupe la première place sur cette question (${modelName(q.model)}). Produire une page qui y répond mieux — au format de la question, pas au format d'une fiche produit — puis la faire citer sur les domaines ci-dessus : c'est l'enchaînement qui déplace un rang.`,
     });
@@ -252,7 +260,7 @@ export async function buildReport(slug: string): Promise<BrandReport | null> {
   const weakest = [...perModel].sort((a, b) => a.score - b.score)[0];
   const strongest = [...perModel].sort((a, b) => b.score - a.score)[0];
   if (weakest && strongest && weakest.model !== strongest.model && strongest.score > weakest.score) {
-    actions.push({
+    familleEcart.push({
       title: `Combler l'écart sur ${modelName(weakest.model)}`,
       detail: `${brand.name} sort ${strongest.hits} fois sur ${modelName(strongest.model)} mais seulement ${weakest.hits} fois sur ${modelName(weakest.model)}. Ce n'est pas un problème de notoriété : les deux modèles ne lisent pas les mêmes sources. Repérez les domaines cités par ${modelName(weakest.model)} sur vos questions perdues et traitez-les en priorité.`,
     });
@@ -260,11 +268,20 @@ export async function buildReport(slug: string): Promise<BrandReport | null> {
 
   // 4. Les concurrents qui occupent le terrain, nommés.
   for (const rival of rivals.slice(0, 2)) {
-    actions.push({
+    familleRivaux.push({
       title: `Se positionner face à ${rival.name}`,
       detail: `${rival.name} apparaît dans ${rival.citations} réponses où ${brand.name} est absente${rival.firstPlaces > 0 ? `, dont ${rival.firstPlaces} en première position` : ""}. Un comparatif honnête publié sur votre site, puis repris par les sources du secteur, est le format que les modèles citent le plus volontiers — y compris quand il ne vous donne pas systématiquement le premier rôle.`,
     });
   }
+
+  // Le panachage : une action de chaque famille dans les quatre visibles, puis
+  // le reste par effet attendu. L'ordre des familles suit leur poids réel — une
+  // source lue à chaque interrogation pèse plus qu'un comparatif concurrentiel.
+  const familles = [familleSources, familleEcart, familleQuestions, familleRivaux];
+  const actions: ReportAction[] = familles
+    .map((f) => f[0])
+    .filter((a): a is ReportAction => Boolean(a));
+  for (const famille of familles) actions.push(...famille.slice(1));
 
   // Garde-fou : un rapport sans action est un score, et un score se screenshote
   // une fois puis on résilie.

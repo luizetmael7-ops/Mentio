@@ -28,7 +28,10 @@ export const PLAN_LIMITS: Record<Plan, PlanLimits> = {
     label: "Free",
     priceMonthlyEur: 0,
     brands: 1,
-    promptsPerBrand: 5,
+    // Aligné sur le scan gratuit (10 questions, public-scan.ts). À 5, s'inscrire
+    // donnait MOINS que ne pas s'inscrire : le compte gratuit était une punition.
+    // Le surcoût est borné par le plafond `free_plan` du coupe-circuit.
+    promptsPerBrand: 10,
     competitors: 2,
     modelCadence: { chatgpt: "weekly" },
     cadenceLabel: "Hebdomadaire · ChatGPT",

@@ -22,6 +22,7 @@
  *   npx tsx scripts/build-agency-outreach.ts --skip-check   (sans vérification HTTP)
  */
 import { readFileSync, writeFileSync } from "node:fs";
+import { shareUrl } from "../src/lib/report-access";
 
 const CIBLES = "content/agences.md";
 
@@ -233,10 +234,21 @@ async function loadBarometre(): Promise<{
   return { brands, leaders };
 }
 
+/**
+ * Le lien du rapport, SIGNÉ.
+ *
+ * Depuis que la marque blanche est le livrable du palier Agence, un
+ * `?agence=&couleur=` fabriqué à la main est ignoré : sans jeton valide, le
+ * rapport s'affiche en version publique, sans couleurs et avec le plan replié.
+ * Ces liens-ci sont les nôtres — on les signe, et le prospect les ouvre sans
+ * compte. C'est aussi la démonstration de la fonctionnalité qu'on vend.
+ */
 function reportUrlFor(a: Agency): string {
-  const params = new URLSearchParams({ agence: a.agence });
-  if (a.couleur) params.set("couleur", `#${a.couleur.replace("#", "")}`);
-  return `${BASE}/rapport/${a.slug}?${params.toString()}`;
+  return shareUrl(BASE, {
+    slug: a.slug,
+    agence: a.agence,
+    couleur: a.couleur ? `#${a.couleur.replace("#", "")}` : undefined,
+  });
 }
 
 /** Un lien mort dans un email vaut un contact perdu : on les vérifie tous. */
