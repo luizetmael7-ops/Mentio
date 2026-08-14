@@ -225,6 +225,13 @@ export default async function DashboardPage({
           </p>
         </div>
         <div className="flex gap-2">
+          {/* L'écran d'ensemble n'a de sens qu'à plusieurs marques — sur une
+              formule mono-marque, le lien mènerait à un mur. */}
+          {limits.brands > 1 && (
+            <Button variant="outline" asChild>
+              <a href="/portefeuille">Portefeuille</a>
+            </Button>
+          )}
           <Button variant="outline" asChild>
             <a href={`/settings/brand?brand=${brand.id}`}>Settings</a>
           </Button>
