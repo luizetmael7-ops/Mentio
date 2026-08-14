@@ -211,9 +211,19 @@ export function PricingTiers() {
                   className={`mt-4 space-y-1.5 text-sm ${isAgencyPlus ? "text-white/80" : "text-[var(--ink-soft)]"}`}
                 >
                   <div className="flex justify-between">
-                    <dt>Marques</dt>
+                    <dt>Marques incluses</dt>
                     <dd className="font-metric tabular-nums">{plan.brands}</dd>
                   </div>
+                  {/* Le supplément est annoncé sur la carte, pas dans une note de
+                      bas de page : une tarification à l'usage qu'on découvre après
+                      coup est une mauvaise surprise, et une mauvaise surprise sur
+                      une facture coûte le client. */}
+                  {plan.extraBrandEur ? (
+                    <div className="flex justify-between">
+                      <dt>Marque supplémentaire</dt>
+                      <dd className="font-metric tabular-nums">{`${plan.extraBrandEur} €`}</dd>
+                    </div>
+                  ) : null}
                   <div className="flex justify-between">
                     <dt>Questions{plan.brands > 1 ? " / marque" : ""}</dt>
                     <dd className="font-metric tabular-nums">{plan.promptsPerBrand}</dd>

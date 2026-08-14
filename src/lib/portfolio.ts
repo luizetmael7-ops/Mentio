@@ -1,5 +1,6 @@
 import { buildActionPlan, type PlannedAction } from "@/lib/action-plan";
 import { tierOf, type Tier } from "@/lib/spectrum";
+import { sectorRanksFor, type SectorRank } from "@/lib/sector-rank";
 import { sameBrand } from "@/lib/llm/judge";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
@@ -38,6 +39,8 @@ export interface PortfolioRow {
   action: PlannedAction | null;
   /** Aucune mesure du tout : marque ajoutée récemment, relevé pas encore passé */
   awaitingFirstRun: boolean;
+  /** Sa place au Baromètre sectoriel — null si elle n'y figure pas */
+  sector: SectorRank | null;
 }
 
 interface ScoreRow {
@@ -158,6 +161,10 @@ export async function buildPortfolio(
     mentionsByBrand.set(runInfo.brand_id, counts);
   }
 
+  // Le rang sectoriel de toutes les marques d'un coup : une requête d'éditions
+  // pour le portefeuille entier, pas une par ligne.
+  const ranks = await sectorRanksFor(brands.map((b) => b.name)).catch(() => new Map());
+
   const rows: PortfolioRow[] = brands.map((brand) => {
     const series = averageByDate(scoresByBrand.get(brand.id) ?? []);
     const last = series.at(-1) ?? null;
@@ -200,6 +207,7 @@ export async function buildPortfolio(
       topRival: top ? { name: top[0], mentions: top[1] } : null,
       action: plan[0] ?? null,
       awaitingFirstRun: series.length === 0,
+      sector: ranks.get(brand.name) ?? null,
     };
   });
 

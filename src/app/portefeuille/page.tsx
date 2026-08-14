@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { supabaseServer } from "@/lib/supabase/server";
-import { PLAN_LIMITS, type Plan } from "@/lib/plans";
+import { PLAN_LIMITS, monthlyPriceFor, extraBrands, type Plan } from "@/lib/plans";
 import { buildPortfolio } from "@/lib/portfolio";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -69,6 +69,15 @@ export default async function PortefeuillePage() {
   const rows = await buildPortfolio(supabase, brands.map((b) => ({ id: b.id, name: b.name })));
   const movers = rows.filter((r) => r.delta !== null && r.delta !== 0).length;
 
+  // Le compteur de facturation, AVANT que la facture bouge. Une agence doit voir
+  // ce qu'elle paiera au moment où elle ajoute une marque, jamais le découvrir
+  // sur un relevé bancaire — c'est la seule façon dont une tarification à
+  // l'usage reste acceptable.
+  const tracked = rows.length;
+  const facture = monthlyPriceFor(plan, tracked);
+  const supplement = extraBrands(plan, tracked);
+  const prochaine = monthlyPriceFor(plan, tracked + 1) - facture;
+
   return (
     <main className="flex-1 p-6 max-w-6xl mx-auto w-full grid gap-6">
       <header className="flex flex-wrap items-center justify-between gap-4">
@@ -82,6 +91,20 @@ export default async function PortefeuillePage() {
           <Link href="/dashboard">Tableau de bord →</Link>
         </Button>
       </header>
+
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base">Facturation</CardTitle>
+          <CardDescription>
+            {supplement > 0
+              ? `${tracked} marques suivies — ${limits.brands} incluses et ${supplement} en supplément. Votre abonnement est de ${facture} € par mois.`
+              : `${tracked} marque${tracked > 1 ? "s" : ""} suivie${tracked > 1 ? "s" : ""} sur ${limits.brands} incluses. Votre abonnement est de ${facture} € par mois.`}
+            {prochaine > 0
+              ? ` La prochaine marque ajoutée coûtera ${prochaine} € de plus par mois.`
+              : ` Vous pouvez encore en ajouter ${limits.brands - tracked} sans changement de prix.`}
+          </CardDescription>
+        </CardHeader>
+      </Card>
 
       <Card>
         <CardHeader>
@@ -98,6 +121,7 @@ export default async function PortefeuillePage() {
                 <TableRow>
                   <TableHead>Marque</TableHead>
                   <TableHead>Palier</TableHead>
+                  <TableHead>Rang secteur</TableHead>
                   <TableHead className="text-right">Score</TableHead>
                   <TableHead className="text-right">Semaine</TableHead>
                   <TableHead>Premier concurrent</TableHead>
@@ -127,6 +151,23 @@ export default async function PortefeuillePage() {
                         </span>
                       ) : (
                         <span className="text-sm text-muted-foreground">—</span>
+                      )}
+                    </TableCell>
+                    <TableCell className="text-sm">
+                      {row.sector ? (
+                        <span className="font-mono tabular-nums">
+                          {`${row.sector.rank}/${row.sector.total}`}
+                          {row.sector.delta !== null && row.sector.delta !== 0 && (
+                            <span
+                              className="ml-1.5"
+                              style={{ color: row.sector.delta > 0 ? "var(--jade)" : "var(--poppy)" }}
+                            >
+                              {row.sector.delta > 0 ? `+${row.sector.delta}` : row.sector.delta}
+                            </span>
+                          )}
+                        </span>
+                      ) : (
+                        <span className="text-muted-foreground">non classée</span>
                       )}
                     </TableCell>
                     <TableCell className="text-right font-mono tabular-nums">

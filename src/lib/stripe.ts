@@ -10,7 +10,10 @@ export function stripe(): Stripe {
 export type BillingInterval = "monthly" | "yearly";
 
 /** Retrouve le prix d'un palier par lookup_key (créés par scripts/setup-stripe.ts). */
-export async function getPriceId(plan: Exclude<Plan, "free">, interval: BillingInterval): Promise<string> {
+export async function getPriceId(
+  plan: Exclude<Plan, "free"> | `${Exclude<Plan, "free">}_extra`,
+  interval: BillingInterval
+): Promise<string> {
   const { data } = await stripe().prices.list({ lookup_keys: [`mentio_${plan}_${interval}`], limit: 1 });
   if (data.length === 0) throw new Error(`Prix Stripe manquant pour ${plan}/${interval} — lance scripts/setup-stripe.ts`);
   return data[0].id;

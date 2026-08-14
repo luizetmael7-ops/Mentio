@@ -5,6 +5,10 @@ import { buildActionPlan } from "@/lib/action-plan";
 import { placementEffect, placementSentence, type PlacementRow } from "@/lib/placements";
 import { declarePlacement, abandonPlacement } from "@/lib/actions/placements";
 import { buildDomainStats, domainStatSentence, PUBLICATION_THRESHOLD } from "@/lib/placement-stats";
+import { sectorRankFor, sectorRankSentence } from "@/lib/sector-rank";
+import { brandSlug } from "@/lib/index-edition";
+import { discoverCompetitors, discoverySentence } from "@/lib/competitor-discovery";
+import { addCompetitor } from "@/lib/actions/brand-settings";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import {
   detectTierChange,
@@ -223,6 +227,33 @@ export default async function DashboardPage({
   // cloisonnent par organisation, et c'est précisément la raison pour laquelle
   // rien de nominatif ne sort d'ici — uniquement des moyennes au-delà du seuil.
   const domainStats = await buildDomainStats(supabaseAdmin()).catch(() => []);
+
+  // ── Le rang sectoriel ──────────────────────────────────────────────────────
+  // « 18/100 » ne provoque aucune décision : on ne sait pas si c'est bien.
+  // « 12e sur 50 » en provoque une. Renvoie null si la marque n'est pas classée —
+  // on n'invente jamais un rang.
+  const sector = await sectorRankFor(brand.name).catch(() => null);
+
+  // ── Les concurrents qu'on ne suit pas encore ───────────────────────────────
+  const trackedCompetitors = (competitors ?? []).map((c) => c.name);
+  const discoveries = discoverCompetitors(
+    brand.name,
+    trackedCompetitors,
+    ((recentMentions ?? []) as Array<{
+      name: string;
+      is_target_brand: boolean;
+      prompt_runs: { run_at: string } | { run_at: string }[];
+    }>).map((m) => {
+      const run = Array.isArray(m.prompt_runs) ? m.prompt_runs[0] : m.prompt_runs;
+      return { name: m.name, isTarget: m.is_target_brand, runAt: String(run?.run_at ?? "") };
+    })
+  ).slice(0, 3);
+
+  // ── Le franchissement comme déclencheur ────────────────────────────────────
+  // Une marque qui progresse pendant que les autres stagnent est le meilleur
+  // moment pour parler des autres : le constat est fait, il n'y a rien à vendre.
+  const otherBrands = brands.filter((b) => b.id !== brand.id);
+  const placesLibres = Math.max(0, limits.brands - brands.length);
   const statFor = (domain: string) =>
     domainStats.find((d) => d.domain === domain.toLowerCase().replace(/^www\./, ""));
 
@@ -239,6 +270,19 @@ export default async function DashboardPage({
           </p>
           <p className="mt-1.5 text-lg font-semibold">{tierChangeSubject(brand.name, tierChange)}</p>
           <p className="mt-1.5 text-sm text-muted-foreground">{tierChangeSentence(tierChange)}</p>
+          {/* Le déclencheur : un constat sur les autres marques, une question
+              fermée, aucun argumentaire. Affiché uniquement quand il reste de la
+              place dans le forfait — proposer d'ajouter une marque payante au
+              moment où le client est content serait de la vente, pas du service. */}
+          {tierChange.direction === "montee" && otherBrands.length > 0 && placesLibres > 0 && (
+            <p className="mt-3 text-sm text-muted-foreground">
+              {`${otherBrands.length === 1 ? "Votre autre marque n'a pas bougé" : `Vos ${otherBrands.length} autres marques n'ont pas bougé`} de palier cette semaine. Il vous reste ${placesLibres} place${placesLibres > 1 ? "s" : ""} incluse${placesLibres > 1 ? "s" : ""} dans votre formule — `}
+              <a href="/settings/brand" className="underline underline-offset-4">
+                ajouter une marque
+              </a>
+              {" ?"}
+            </p>
+          )}
           <div className="mt-3 flex flex-wrap items-center gap-3">
             {streak && <Badge variant="secondary">{streak}</Badge>}
             <Button variant="outline" size="sm" asChild>
@@ -261,9 +305,18 @@ export default async function DashboardPage({
                 ))}
           </div>
           <p className="text-sm text-muted-foreground">
-            Plan <Badge variant="secondary">{limits.label}</Badge> · {limits.promptsPerBrand} prompts/brand ·{" "}
+            Plan <Badge variant="secondary">{limits.label}</Badge> · {limits.promptsPerBrand} questions ·{" "}
             {limits.cadenceLabel}
           </p>
+          {/* Le rang relatif, sous le nom de la marque. Absent si elle n'est pas
+              classée au Baromètre — on n'invente pas un rang pour meubler. */}
+          {sector && (
+            <p className="mt-1 text-sm">
+              <a href={`/marques/${brandSlug(brand.name)}`} className="underline underline-offset-4">
+                {sectorRankSentence(sector)}
+              </a>
+            </p>
+          )}
         </div>
         <div className="flex gap-2">
           {/* L'écran d'ensemble n'a de sens qu'à plusieurs marques — sur une
@@ -368,6 +421,45 @@ export default async function DashboardPage({
           </CardContent>
         )}
       </Card>
+
+      {/* Les concurrents que les relevés voient et que le client ne suit pas.
+          Un nouvel entrant passe devant : c'est un mouvement de marché, donc
+          pour une agence une raison d'appeler son client. */}
+      {discoveries.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Concurrents repérés dans vos réponses</CardTitle>
+            <CardDescription>
+              Cités à côté de {brand.name} sur vos questions, et absents de votre liste.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-3">
+            {discoveries.map((c) => (
+              <div
+                key={c.name}
+                className="flex flex-wrap items-center justify-between gap-3 rounded-xl border p-4"
+              >
+                <div className="min-w-0">
+                  <p className="flex items-center gap-2 text-sm font-semibold">
+                    {c.name}
+                    {c.isNewEntrant && <Badge variant="secondary">nouvel entrant</Badge>}
+                  </p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {discoverySentence(c, brand.name)}
+                  </p>
+                </div>
+                <form action={addCompetitor}>
+                  <input type="hidden" name="brandId" value={brand.id} />
+                  <input type="hidden" name="name" value={c.name} />
+                  <Button type="submit" variant="outline" size="sm">
+                    Suivre
+                  </Button>
+                </form>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      )}
 
       {/* ── LE JOURNAL DES PLACEMENTS ──────────────────────────────────────────
           Le seul chiffre que personne d'autre ne peut produire : il exige une

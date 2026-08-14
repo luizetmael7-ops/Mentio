@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { supabaseServer } from "@/lib/supabase/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { PLAN_LIMITS, type Plan } from "@/lib/plans";
+import { syncBrandQuantity } from "@/lib/billing-sync";
 
 /** Vérifie que l'utilisateur possède la marque, renvoie {orgId, plan}. */
 async function requireBrandOwnership(brandId: string) {
@@ -112,8 +113,14 @@ export async function addBrand(formData: FormData) {
     .from("brands")
     .select("id", { count: "exact", head: true })
     .eq("org_id", profile.org_id);
-  if ((count ?? 0) >= limits.brands) {
-    throw new Error(`Your ${limits.label} plan allows ${limits.brands} brand(s). Upgrade to add more.`);
+  // Un palier sans supplément reste un plafond ; un palier avec supplément ne
+  // bloque plus rien. Refuser une onzième marque à une agence qui grandit, c'est
+  // transformer un client qui réussit en client qui part — la facture s'ajuste,
+  // l'accès jamais.
+  if ((count ?? 0) >= limits.brands && !limits.extraBrandEur) {
+    throw new Error(
+      `La formule ${limits.label} suit ${limits.brands} marque${limits.brands > 1 ? "s" : ""}. Changez de formule pour en ajouter.`
+    );
   }
 
   const { data: brand, error } = await admin
@@ -133,6 +140,11 @@ export async function addBrand(formData: FormData) {
   if (prompts && prompts.length > 0) {
     await admin.from("brand_prompts").insert(prompts.map((p) => ({ brand_id: brand.id, prompt_id: p.id })));
   }
+  // La quantité facturée suit le nombre de marques. En cas d'échec Stripe on ne
+  // bloque pas : la marque existe, l'écart se rattrape à la prochaine synchro.
+  await syncBrandQuantity(profile.org_id);
+
   revalidatePath("/dashboard");
+  revalidatePath("/portefeuille");
   redirect(`/dashboard?brand=${brand.id}`);
 }

@@ -29,8 +29,20 @@ export type Cadence = "weekly" | "daily";
 
 export interface PlanLimits {
   label: string;
+  /** Prix de base, marques incluses comprises */
   priceMonthlyEur: number;
+  /** Marques INCLUSES dans le prix de base — pas un plafond */
   brands: number;
+  /**
+   * Prix mensuel d'une marque au-delà des incluses.
+   *
+   * Sans lui, une agence à 11 clients ne pouvait pas les suivre et une agence à
+   * 35 ne pouvait pas acheter : le palier était un mur, dans les deux sens. Avec
+   * lui, le revenu suit l'usage sans qu'on ait à vendre — et surtout, dépasser
+   * son quota devient rentable au lieu d'être ruineux. Le coût réel d'une marque
+   * est de 14,05 €/mois (voir plan-economics.ts) ; ces prix laissent 41 à 52 %.
+   */
+  extraBrandEur?: number;
   promptsPerBrand: number;
   competitors: number;
   /** Cadence par modèle — un modèle absent n'est jamais joué sur ce plan */
@@ -74,6 +86,7 @@ export const PLAN_LIMITS: Record<Plan, PlanLimits> = {
     label: "Agence",
     priceMonthlyEur: 149,
     brands: 10,
+    extraBrandEur: 29,
     promptsPerBrand: 50,
     competitors: 5,
     modelCadence: { chatgpt: "weekly", gemini: "weekly", claude: "weekly", perplexity: "weekly" },
@@ -81,20 +94,27 @@ export const PLAN_LIMITS: Record<Plan, PlanLimits> = {
     features: [
       "Rapports en marque blanche, illimités",
       "Votre logo et vos couleurs sur chaque rapport",
-      "10 marques suivies en parallèle",
+      "10 marques suivies, puis 29 € par marque",
       "Historique complet, semaine après semaine",
     ],
   },
   agencyplus: {
     label: "Agence+",
-    priceMonthlyEur: 349,
-    brands: 30,
+    // 349 € pour 30 marques incluses coûtait 422 € de mesure : −21 % à
+    // saturation. Monter le prix ne suffisait pas — à 449 € pour 30, la marge
+    // restait à 6 %. C'est le nombre d'incluses qui était calibré sur une
+    // hypothèse de coût fausse. 449 € pour 20 donne 37 %, et le croisement avec
+    // Agence + supplément tombe pile à 21 marques : aucun palier ne se marche
+    // dessus.
+    priceMonthlyEur: 449,
+    brands: 20,
+    extraBrandEur: 24,
     promptsPerBrand: 50,
     competitors: 10,
     modelCadence: { chatgpt: "weekly", gemini: "weekly", claude: "weekly", perplexity: "weekly" },
     cadenceLabel: "Les 4 IA chaque semaine — le même relevé que le Baromètre public",
     features: [
-      "30 marques suivies",
+      "20 marques suivies, puis 24 € par marque",
       "Accès API pour vos propres outils",
       "Bibliothèque de questions sur mesure",
       "Mise en route dédiée et support prioritaire",
@@ -146,4 +166,44 @@ export function planModels(plan: Plan): ModelKey[] {
 
 export function isRunDue(plan: Plan, date: Date): boolean {
   return modelsDue(plan, date).length > 0;
+}
+
+/** Marques facturées en supplément pour ce nombre de marques suivies. */
+export function extraBrands(plan: Plan, tracked: number): number {
+  return Math.max(0, tracked - PLAN_LIMITS[plan].brands);
+}
+
+/**
+ * Le prix mensuel réel pour un nombre de marques suivies.
+ *
+ * Affiché AVANT que la facture bouge : une agence qui ajoute une onzième marque
+ * doit voir le supplément au moment où elle l'ajoute, jamais le découvrir sur un
+ * relevé bancaire. C'est la seule façon dont une tarification à l'usage reste
+ * acceptable.
+ */
+export function monthlyPriceFor(plan: Plan, tracked: number): number {
+  const limits = PLAN_LIMITS[plan];
+  return limits.priceMonthlyEur + extraBrands(plan, tracked) * (limits.extraBrandEur ?? 0);
+}
+
+/** Un palier peut-il héberger ce nombre de marques ? */
+export function planCanHost(plan: Plan, tracked: number): boolean {
+  const limits = PLAN_LIMITS[plan];
+  return tracked <= limits.brands || (limits.extraBrandEur ?? 0) > 0;
+}
+
+/**
+ * Le palier le moins cher CAPABLE d'héberger ce nombre de marques.
+ *
+ * Le filtre n'est pas décoratif : sans lui, la fonction recommandait Brand à
+ * 49 € pour quarante marques — Brand n'a pas de supplément, donc son prix ne
+ * bouge pas, donc il gagnait toutes les comparaisons en restant incapable de
+ * faire le travail.
+ */
+export function cheapestPlanFor(tracked: number): Plan {
+  const eligible = PAID_PLANS.filter((plan) => planCanHost(plan, tracked));
+  const pool = eligible.length > 0 ? eligible : PAID_PLANS;
+  return pool.reduce((best, plan) =>
+    monthlyPriceFor(plan, tracked) < monthlyPriceFor(best, tracked) ? plan : best
+  );
 }
