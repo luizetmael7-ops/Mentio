@@ -22,6 +22,22 @@ export const CONTESTED_PASSES = 5;
 export const MAX_CONTESTED_QUESTIONS = 12;
 
 /**
+ * Le budget de renforcement du SUIVI CLIENT, plus serré que celui du Baromètre.
+ *
+ * Deux raisons, et la seconde est la plus importante. D'abord le coût : le
+ * Baromètre est une dépense unique par édition, le suivi client se multiplie par
+ * le nombre de marques d'un portefeuille — trente marques renforcées comme une
+ * édition coûteraient trente éditions par semaine.
+ *
+ * Ensuite le périmètre : le Baromètre départage cinquante marques, où les rangs
+ * serrés sont nombreux. Un suivi client compare une marque à ses cinq ou dix
+ * concurrents déclarés. Il y a mécaniquement moins de rangs disputés, donc moins
+ * de questions qui méritent d'être rejouées.
+ */
+export const CLIENT_CONTESTED_PASSES = 3;
+export const CLIENT_MAX_CONTESTED_QUESTIONS = 6;
+
+/**
  * Une mesure par couple (question, modèle) : combien de passages, et dans combien
  * la marque est sortie. C'est la granularité qui permet de normaliser correctement
  * quand certaines questions ont été rejouées et d'autres non.
@@ -91,7 +107,8 @@ export function movementIsSignificant(
  */
 export function contestedQuestions(
   ranking: Array<{ name: string; total: number }>,
-  questionsByBrand: Map<string, Set<string>>
+  questionsByBrand: Map<string, Set<string>>,
+  maxQuestions: number = MAX_CONTESTED_QUESTIONS
 ): string[] {
   const contested = new Set<string>();
   const sorted = [...ranking].sort((a, b) => b.total - a.total);
@@ -112,6 +129,6 @@ export function contestedQuestions(
   }
   return [...weight.entries()]
     .sort((a, b) => b[1] - a[1])
-    .slice(0, MAX_CONTESTED_QUESTIONS)
+    .slice(0, maxQuestions)
     .map(([question]) => question);
 }

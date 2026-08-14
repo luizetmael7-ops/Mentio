@@ -21,8 +21,8 @@ export const metadata: Metadata = {
  */
 const FAQ: Array<[string, string]> = [
   [
-    "Pourquoi la fréquence change selon le modèle ?",
-    `Chaque réponse d'IA avec recherche web a un coût réel, et il varie du simple au quadruple selon l'éditeur. À partir de ${PLAN_LIMITS.brand.label}, les modèles économiques (ChatGPT, Gemini) sont interrogés chaque jour et les plus chers (Claude, Perplexity) chaque semaine. C'est le meilleur signal par euro, et c'est assumé plutôt que caché.`,
+    "Pourquoi un relevé hebdomadaire et pas quotidien ?",
+    "Parce qu'un score de visibilité IA ne bouge pas en vingt-quatre heures, et parce que le Baromètre public est hebdomadaire : vos chiffres sont ainsi directement comparables à la référence du secteur. Un relevé quotidien produirait quinze cents mesures par mois que personne ne lit, et vous rendrait incomparable à notre propre classement. Là où le classement est serré, la question est en revanche rejouée plusieurs fois dans la semaine — c'est l'échantillonnage stratifié, décrit dans la méthodologie.",
   ],
   [
     "Le relevé correspond-il à ce que voient vraiment mes clients ?",

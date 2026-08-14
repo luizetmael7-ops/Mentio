@@ -6,7 +6,7 @@
  */
 import { inngest } from "../client";
 import { supabaseAdmin } from "@/lib/supabase/admin";
-import { computeVisibilityScore, computeShareOfVoice, type RunMention } from "@/lib/scoring";
+import { computeVisibilityScoreByPrompt, computeShareOfVoice, type RunMention } from "@/lib/scoring";
 import { sameBrand } from "@/lib/llm/judge";
 import { resend, EMAIL_FROM, deliverableTo } from "@/lib/resend";
 
@@ -34,7 +34,7 @@ export const brandScorer = inngest.createFunction(
           supabase.from("competitors").select("name").eq("brand_id", brandId),
           supabase
             .from("prompt_runs")
-            .select("id, model, mentions(name, is_target_brand, cited, position, sentiment)")
+            .select("id, model, prompt_id, mentions(name, is_target_brand, cited, position, sentiment)")
             .eq("brand_id", brandId)
             .eq("status", "judged")
             .gte("run_at", `${date}T00:00:00Z`)
@@ -51,14 +51,21 @@ export const brandScorer = inngest.createFunction(
 
       const rows = [];
       for (const [model, modelRuns] of byModel) {
-        const targetMentions: Array<RunMention | null> = [];
+        // Groupé par QUESTION, pas par run : l'échantillonnage stratifié rejoue
+        // certaines questions et pas d'autres, et une moyenne de runs bruts
+        // donnerait à une question rejouée trois fois le poids de trois questions.
+        const byPrompt = new Map<string, Array<RunMention | null>>();
         let targetCount = 0;
         let competitorCount = 0;
 
         for (const run of modelRuns) {
           const mentions = run.mentions ?? [];
           const target = mentions.find((m) => m.is_target_brand);
-          targetMentions.push(target ? { cited: target.cited, position: target.position, sentiment: target.sentiment } : null);
+          const key = String((run as unknown as { prompt_id?: string }).prompt_id ?? run.id);
+          byPrompt.set(key, [
+            ...(byPrompt.get(key) ?? []),
+            target ? { cited: target.cited, position: target.position, sentiment: target.sentiment } : null,
+          ]);
           if (target) targetCount += 1;
           competitorCount += mentions.filter(
             (m) => !m.is_target_brand && competitorNames.some((c) => sameBrand(c, m.name))
@@ -69,7 +76,7 @@ export const brandScorer = inngest.createFunction(
           brand_id: brandId,
           date,
           model,
-          visibility_score: computeVisibilityScore(targetMentions),
+          visibility_score: computeVisibilityScoreByPrompt(byPrompt),
           share_of_voice: computeShareOfVoice(targetCount, competitorCount),
         });
       }
@@ -88,6 +95,15 @@ export const brandScorer = inngest.createFunction(
         rows,
         models: rows.map((r) => `${r.model}: vis ${r.visibility_score} / sov ${r.share_of_voice}`),
       };
+    });
+
+    // Le renforcement stratifié (constitution §4) : une fois la couverture jugée,
+    // on rejoue UNIQUEMENT les questions où deux marques sont au coude à coude.
+    // Le Renforceur vérifie lui-même qu'il n'est pas déjà passé aujourd'hui, donc
+    // un scorer rejoué après la phase 2 ne relance pas une phase 3.
+    await step.sendEvent("ask-reinforcement", {
+      name: "mentio/brand.reinforce",
+      data: { brandId },
     });
 
     // Alerte v1 : chute de visibilité ou de share-of-voice vs le relevé précédent

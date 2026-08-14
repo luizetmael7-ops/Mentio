@@ -16,6 +16,10 @@ import type { ModelKey } from "@/lib/llm/types";
  * la carte, au moment où la formule se choisit, et elle affiche `cadenceLabel` —
  * la formulation exacte de plans.ts, celle que le dashboard et la facturation
  * montrent déjà au client.
+ *
+ * Depuis le 2026-08-14, tous les paliers sont hebdomadaires : la ligne dit donc
+ * la même chose partout, et c'est voulu. La cadence n'est plus un critère de
+ * choix entre formules — le nombre de marques et la marque blanche le sont.
  */
 function CadenceLine({ plan, dark }: { plan: (typeof PLAN_LIMITS)["free"]; dark?: boolean }) {
   const keys = Object.keys(plan.modelCadence) as ModelKey[];

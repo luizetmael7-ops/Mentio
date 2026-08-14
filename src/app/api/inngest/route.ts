@@ -6,6 +6,7 @@ import { inngest } from "@/inngest/client";
 import { dailyRunner, brandRunner, promptRunner } from "@/inngest/functions/runner";
 import { runJudge } from "@/inngest/functions/judge";
 import { brandScorer } from "@/inngest/functions/scorer";
+import { brandReinforcer } from "@/inngest/functions/reinforcer";
 import { publicScan } from "@/inngest/functions/public-scan";
 import { weeklyDigest } from "@/inngest/functions/digest";
 import { weeklyIndex } from "@/inngest/functions/weekly-index";
@@ -13,5 +14,5 @@ import { econome } from "@/inngest/functions/econome";
 
 export const { GET, POST, PUT } = serve({
   client: inngest,
-  functions: [dailyRunner, brandRunner, promptRunner, runJudge, brandScorer, publicScan, weeklyDigest, weeklyIndex, econome],
+  functions: [dailyRunner, brandRunner, promptRunner, runJudge, brandScorer, brandReinforcer, publicScan, weeklyDigest, weeklyIndex, econome],
 });

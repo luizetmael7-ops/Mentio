@@ -1,10 +1,28 @@
 import type { ModelKey } from "@/lib/llm/types";
 
 /**
- * Paliers et quotas (brief §11, recalibrés le 2026-07-17 sur les coûts LLM mesurés).
- * La cadence est PAR MODÈLE : les modèles économiques (ChatGPT, Gemini) tournent en
- * quotidien sur les plans hauts, les plus chers (Claude, Perplexity) en hebdo —
- * c'est ce mix qui protège la marge (~55-80 % selon palier).
+ * Paliers et quotas.
+ *
+ * CADENCE HEBDOMADAIRE SUR TOUS LES PALIERS, décidé le 2026-08-14.
+ *
+ * Le quotidien a existé sur ChatGPT et Gemini, et c'est une décision qui ne s'est
+ * jamais prise : elle s'est installée. Elle produisait 3 433 appels par marque et
+ * par mois pour une donnée que personne ne lit à cette fréquence — un score de
+ * visibilité IA ne bouge pas en vingt-quatre heures. Le Baromètre public est
+ * hebdomadaire, la home promet « les mêmes 50 questions chaque semaine, pour que
+ * deux éditions soient comparables », et le suivi client tournait en quotidien :
+ * l'asymétrie rendait les chiffres d'un client incomparables à la référence
+ * publique qu'on lui vend.
+ *
+ * Ce n'est donc pas une dégradation. C'est l'alignement sur notre propre méthode,
+ * et ça devient un argument : le relevé d'un client est le même que celui du
+ * Baromètre, donc directement comparable.
+ *
+ * LES MARGES NE SONT PLUS ÉCRITES ICI. Un commentaire annonçait « ~55-80 % » ;
+ * il est resté vrai six semaines après avoir cessé de l'être, et la grille a
+ * vendu Agence à 149 € pour 438 € de coût réel. Le calcul vit désormais dans
+ * `plan-economics.ts`, se déduit de cette configuration, et l'Économe alerte
+ * si le coût d'une marque dépasse un tiers de son prix.
  */
 export type Plan = "free" | "brand" | "agency" | "agencyplus";
 export type Cadence = "weekly" | "daily";
@@ -34,7 +52,7 @@ export const PLAN_LIMITS: Record<Plan, PlanLimits> = {
     promptsPerBrand: 10,
     competitors: 2,
     modelCadence: { chatgpt: "weekly" },
-    cadenceLabel: "Hebdomadaire · ChatGPT",
+    cadenceLabel: "ChatGPT chaque semaine",
     features: ["Votre palier et votre rang", "Un concurrent cité à votre place", "Sans carte bancaire"],
   },
   brand: {
@@ -43,8 +61,8 @@ export const PLAN_LIMITS: Record<Plan, PlanLimits> = {
     brands: 1,
     promptsPerBrand: 50,
     competitors: 5,
-    modelCadence: { chatgpt: "daily", gemini: "daily", claude: "weekly", perplexity: "weekly" },
-    cadenceLabel: "ChatGPT + Gemini chaque jour · Claude + Perplexity chaque semaine",
+    modelCadence: { chatgpt: "weekly", gemini: "weekly", claude: "weekly", perplexity: "weekly" },
+    cadenceLabel: "Les 4 IA chaque semaine — le même relevé que le Baromètre public",
     features: [
       "Score complet, modèle par modèle",
       "Les sites que les IA lisent pour répondre",
@@ -58,8 +76,8 @@ export const PLAN_LIMITS: Record<Plan, PlanLimits> = {
     brands: 10,
     promptsPerBrand: 50,
     competitors: 5,
-    modelCadence: { chatgpt: "daily", gemini: "daily", claude: "weekly", perplexity: "weekly" },
-    cadenceLabel: "ChatGPT + Gemini chaque jour · Claude + Perplexity chaque semaine",
+    modelCadence: { chatgpt: "weekly", gemini: "weekly", claude: "weekly", perplexity: "weekly" },
+    cadenceLabel: "Les 4 IA chaque semaine — le même relevé que le Baromètre public",
     features: [
       "Rapports en marque blanche, illimités",
       "Votre logo et vos couleurs sur chaque rapport",
@@ -73,8 +91,8 @@ export const PLAN_LIMITS: Record<Plan, PlanLimits> = {
     brands: 30,
     promptsPerBrand: 50,
     competitors: 10,
-    modelCadence: { chatgpt: "daily", gemini: "daily", claude: "weekly", perplexity: "weekly" },
-    cadenceLabel: "ChatGPT + Gemini chaque jour · Claude + Perplexity chaque semaine",
+    modelCadence: { chatgpt: "weekly", gemini: "weekly", claude: "weekly", perplexity: "weekly" },
+    cadenceLabel: "Les 4 IA chaque semaine — le même relevé que le Baromètre public",
     features: [
       "30 marques suivies",
       "Accès API pour vos propres outils",

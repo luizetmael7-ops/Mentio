@@ -30,6 +30,30 @@ export function computeVisibilityScore(mentions: Array<RunMention | null>): numb
   return Math.round((total / mentions.length) * 100) / 100;
 }
 
+/**
+ * Le même score, mais NORMALISÉ PAR QUESTION.
+ *
+ * Indispensable dès que l'échantillonnage stratifié entre en jeu : une question
+ * disputée est rejouée trois fois, une question tranchée une seule. Faire la
+ * moyenne des runs bruts donnerait à la question rejouée trois fois le poids de
+ * trois questions — le score se mettrait à refléter le plan d'échantillonnage
+ * plutôt que la visibilité.
+ *
+ * On moyenne donc DANS chaque question d'abord, puis ENTRE les questions. C'est
+ * la même correction que `measureBrand` applique au Baromètre en sommant des
+ * proportions au lieu de compter des citations.
+ */
+export function computeVisibilityScoreByPrompt(
+  byPrompt: Map<string, Array<RunMention | null>>
+): number {
+  const perPrompt = [...byPrompt.values()]
+    .filter((runs) => runs.length > 0)
+    .map((runs) => runs.reduce((sum, m) => sum + runScore(m), 0) / runs.length);
+  if (perPrompt.length === 0) return 0;
+  const total = perPrompt.reduce((a, b) => a + b, 0);
+  return Math.round((total / perPrompt.length) * 100) / 100;
+}
+
 /** share_of_voice : 100 × mentions cible / (mentions cible + mentions concurrents) */
 export function computeShareOfVoice(targetMentions: number, competitorMentions: number): number {
   const total = targetMentions + competitorMentions;
