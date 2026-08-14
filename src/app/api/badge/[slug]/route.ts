@@ -51,7 +51,10 @@ export async function GET(_request: Request, { params }: { params: Promise<{ slu
   // (« septembre 2026 » est le plus long).
   const leftWidth = Math.max(150, 30 + month.length * 6.6);
   const width = Math.round(leftWidth + tierWidth);
-  const alt = `Score Mentio ${score} sur 100 — ${tier.label} — relevé de ${month}`;
+  // « relevé de août » → « relevé d'août ». Le libellé est lu par les lecteurs
+  // d'écran et repris comme titre du SVG : il doit être écrit correctement.
+  const deMonth = /^[aeiouyàâéèêëîïôöùûü]/i.test(month) ? `d'${month}` : `de ${month}`;
+  const alt = `Score Mentio ${score} sur 100 — ${tier.label} — relevé ${deMonth}`;
 
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="40" viewBox="0 0 ${width} 40" role="img" aria-label="${alt}">
   <title>${alt}</title>
