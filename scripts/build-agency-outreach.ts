@@ -120,7 +120,10 @@ function parseAgencies(): { agencies: Agency[]; errors: ParseError[] } {
 
   for (let i = 0; i < lines.length; i += 1) {
     const line = lines[i];
-    const heading = line.match(/^#{2,4}\s+(.*)$/);
+    // `#` inclus : ta liste titre ses paliers en h1 (« # PALIER 1 »), et les
+    // exclure attribuait à chaque cible le dernier `##` rencontré — soit
+    // « Comment remplir les colonnes manquantes » en guise de palier.
+    const heading = line.match(/^#{1,4}\s+(.*)$/);
     if (heading) {
       palier = heading[1].trim();
       columns = null; // un titre ferme le tableau précédent
