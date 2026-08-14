@@ -31,6 +31,12 @@ export interface WeeklyDigestProps {
   topCompetitors: Array<{ name: string; count: number }>;
   /** L'action du jour — la première du plan, celle qui a le plus d'effet attendu */
   action?: PlannedAction | null;
+  /**
+   * Le dépassement nominatif, s'il y en a un. Placé tout en haut : c'est la
+   * seule ligne de cet email qui désigne un responsable et une question, donc
+   * la seule qui appelle une réaction immédiate.
+   */
+  overtake?: string | null;
   appUrl: string;
 }
 
@@ -41,6 +47,7 @@ export default function WeeklyDigest({
   shareOfVoice,
   topCompetitors,
   action,
+  overtake,
   appUrl,
 }: WeeklyDigestProps) {
   const deltaText =
@@ -56,13 +63,41 @@ export default function WeeklyDigest({
       {/* L'aperçu de la boîte de réception : l'action y passe avant le score,
           c'est elle qui fait ouvrir. */}
       <Preview>
-        {action
+        {overtake
+          ? overtake
+          : action
           ? `${brandName} — à faire cette semaine : ${action.title}`
           : `${brandName} — visibilité IA ${String(visibility ?? "—")}/100${deltaText}`}
       </Preview>
       <Body style={{ fontFamily: "sans-serif", backgroundColor: "#fafafa", padding: "24px" }}>
         <Container style={{ backgroundColor: "#ffffff", borderRadius: 8, padding: 32, maxWidth: 520 }}>
           <Heading as="h2">Votre semaine IA — {brandName}</Heading>
+
+          {/* Le dépassement, avant tout le reste. C'est la seule ligne qui
+              nomme un responsable et une question. */}
+          {overtake && (
+            <Section
+              style={{
+                borderLeft: "4px solid #E8462B",
+                backgroundColor: "#fdf3f1",
+                padding: "12px 16px",
+                margin: "12px 0 20px",
+              }}
+            >
+              <Text
+                style={{
+                  margin: 0,
+                  fontSize: 11,
+                  letterSpacing: 1,
+                  textTransform: "uppercase",
+                  color: "#E8462B",
+                }}
+              >
+                Une place a changé de main
+              </Text>
+              <Text style={{ margin: "6px 0 0", color: "#171520", lineHeight: 1.5 }}>{overtake}</Text>
+            </Section>
+          )}
 
           <Section>
             <Text style={{ fontSize: 40, fontWeight: 700, margin: "8px 0" }}>

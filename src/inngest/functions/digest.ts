@@ -10,6 +10,7 @@ import { resend, EMAIL_FROM, deliverableTo } from "@/lib/resend";
 import WeeklyDigest from "@/emails/weekly-digest";
 import { sameBrand } from "@/lib/llm/judge";
 import { buildActionPlan } from "@/lib/action-plan";
+import { detectOvertake, overtakeSubject, overtakeSentence } from "@/lib/overtake";
 
 function average(values: number[]): number | null {
   if (values.length === 0) return null;
@@ -58,13 +59,15 @@ export const weeklyDigest = inngest.createFunction(
             .select("cited_sources")
             .eq("brand_id", brand.id)
             .gte("run_at", `${weekAgo}T00:00:00Z`),
+          // Deux semaines, pas une : le dépassement se juge en comparant la
+          // semaine en cours à la précédente sur les MÊMES questions.
           supabase
             .from("prompt_runs")
-            .select("prompts!inner(text), mentions(is_target_brand)")
+            .select("run_at, prompts!inner(text), mentions(name, is_target_brand)")
             .eq("brand_id", brand.id)
             .eq("status", "judged")
-            .gte("run_at", `${weekAgo}T00:00:00Z`)
-            .limit(120),
+            .gte("run_at", `${twoWeeksAgo}T00:00:00Z`)
+            .limit(400),
         ]);
         if (!users || users.length === 0) return "aucun destinataire";
 
@@ -130,6 +133,23 @@ export const weeklyDigest = inngest.createFunction(
             rivalNames: topCompetitors.map((c) => c.name),
           })[0] ?? null;
 
+        // Le dépassement nominatif : un concurrent qui prend une question où la
+        // marque était citée la semaine dernière. C'est le seul motif de
+        // reconnexion spontané — un score qui monte ne fait ouvrir aucun email.
+        const overtake = detectOvertake(
+          brand.name,
+          (judgedRuns ?? []).map((run) => {
+            const prompts = run.prompts as unknown as { text: string } | { text: string }[];
+            return {
+              prompt: Array.isArray(prompts) ? (prompts[0]?.text ?? "") : (prompts?.text ?? ""),
+              runAt: String(run.run_at),
+              brands: ((run.mentions ?? []) as Array<{ name: string; is_target_brand: boolean }>).map(
+                (m) => ({ name: m.name, isTarget: m.is_target_brand })
+              ),
+            };
+          })
+        );
+
         const html = await render(
           WeeklyDigest({
             brandName: brand.name,
@@ -138,6 +158,7 @@ export const weeklyDigest = inngest.createFunction(
             shareOfVoice,
             topCompetitors,
             action,
+            overtake: overtake ? overtakeSentence(overtake) : null,
             appUrl: process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000",
           })
         );
@@ -145,11 +166,15 @@ export const weeklyDigest = inngest.createFunction(
         const { error } = await resend().emails.send({
           from: EMAIL_FROM,
           to: users.map((u) => deliverableTo(u.email)),
-          // L'objet porte l'action, pas le score : un score connu donne le
-          // sentiment que le travail est fait, et l'email n'est plus ouvert.
-          subject: action
-            ? `${brand.name} — à faire cette semaine : ${action.title}`
-            : `${brand.name} — visibilité IA ${visibility}/100 cette semaine`,
+          // Trois objets possibles, par ordre de force d'ouverture. Un concurrent
+          // nommé qui prend une question précise bat tout le reste ; l'action
+          // vient ensuite ; le score en dernier, parce qu'un score connu donne le
+          // sentiment que le travail est fait et l'email n'est plus ouvert.
+          subject: overtake
+            ? overtakeSubject(overtake)
+            : action
+              ? `${brand.name} — à faire cette semaine : ${action.title}`
+              : `${brand.name} — visibilité IA ${visibility}/100 cette semaine`,
           html,
         });
         if (error) throw new Error(error.message);
