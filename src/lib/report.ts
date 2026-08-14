@@ -8,6 +8,7 @@ import {
 import { tierOf, type Tier } from "@/lib/spectrum";
 import { modelName } from "@/lib/models";
 import { classifySource, brandDomainHint, type SourceType } from "@/lib/source-types";
+import { playbookFor } from "@/lib/source-playbook";
 
 /**
  * LE RAPPORT — l'arme commerciale des agences.
@@ -45,6 +46,28 @@ export interface ReportSource {
   type: SourceType;
 }
 
+/**
+ * Une action du plan.
+ *
+ * `detail` porte le constat chiffré — d'où vient l'action, et pourquoi elle est
+ * à ce rang. Les trois champs suivants ne sont remplis que pour les domaines
+ * documentés dans le playbook : ce sont eux qui font passer du « quoi » au
+ * « comment », et ils sont volontairement séparés plutôt que concaténés — un
+ * pavé de six phrases ne se lit pas devant un client.
+ */
+export interface ReportAction {
+  title: string;
+  detail: string;
+  /** Par où entrer, concrètement */
+  route?: string;
+  /** Le format que ce domaine publie */
+  format?: string;
+  /** L'angle qui passe, et souvent celui qui ne passe pas */
+  angle?: string;
+  /** Ordre de grandeur, seulement quand il est structurel */
+  delai?: string;
+}
+
 export interface BrandReport {
   name: string;
   slug: string;
@@ -70,8 +93,8 @@ export interface BrandReport {
   rivals: ReportRival[];
   lostQuestions: ReportLostQuestion[];
   sources: ReportSource[];
-  /** Les trois actions à mener, dans l'ordre — c'est ce qui justifie l'abonnement */
-  actions: Array<{ title: string; detail: string }>;
+  /** Le plan, ordonné par effet attendu — c'est ce qui justifie l'abonnement */
+  actions: ReportAction[];
 }
 
 /** Le Baromètre reparaît chaque semaine, aux mêmes questions. */
@@ -143,14 +166,22 @@ export async function buildReport(slug: string): Promise<BrandReport | null> {
     .sort((a, b) => b.citations - a.citations)
     .slice(0, 5);
 
+  // Dédoublonnées par question : une même question posée à deux modèles produit
+  // deux réponses manquées, et le plan affichait « Traiter « … » » deux fois de
+  // suite. C'est une seule page à écrire, donc une seule action.
+  const seenPrompts = new Set<string>();
   const lostQuestions: ReportLostQuestion[] = missed
     .map((a) => ({
       prompt: a.prompt,
       model: a.model,
       winner: a.brands.find((b) => b.position === 1)?.name ?? a.brands[0]?.name ?? "",
     }))
-    .filter((q) => q.winner)
-    .slice(0, 5);
+    .filter((q) => {
+      if (!q.winner || seenPrompts.has(q.prompt)) return false;
+      seenPrompts.add(q.prompt);
+      return true;
+    })
+    .slice(0, 6);
 
   const sourceCount = new Map<string, number>();
   for (const a of missed) for (const d of new Set(a.sources)) {
@@ -159,62 +190,88 @@ export async function buildReport(slug: string): Promise<BrandReport | null> {
   // Les domaines des marques classées, pour reconnaître le site d'un concurrent :
   // aucune expression régulière ne devinerait que loreal.com en est un.
   const brandDomains = edition.brands.map((b) => brandDomainHint(b.name)).filter((d) => d.length > 3);
-  const sources: ReportSource[] = [...sourceCount.entries()]
+  // Le vivier complet sert à construire le plan ; l'affichage n'en montre que la
+  // tête. Tronquer à 5 avant de générer les actions limitait mécaniquement le plan
+  // à trois lignes, alors que les relevés en contiennent bien plus.
+  const sourcePool: ReportSource[] = [...sourceCount.entries()]
     .map(([domain, rivalWeight]) => ({
       domain,
       rivalWeight,
       count: edition.sources.find((s) => s.domain === domain)?.count ?? rivalWeight,
       type: classifySource(domain, brandDomains),
     }))
-    .sort((a, b) => b.rivalWeight - a.rivalWeight)
-    .slice(0, 5);
+    .sort((a, b) => b.rivalWeight - a.rivalWeight);
+  const sources = sourcePool.slice(0, 5);
 
-  // Les actions : c'est la moitié « solution » de la promesse. Générées depuis les
-  // données, jamais inventées, et ordonnées par effet attendu.
-  const actions: Array<{ title: string; detail: string }> = [];
-  // La première source ACTIONNABLE, pas la première tout court : proposer « se
-  // faire référencer sur loreal.com » (un concurrent) ou sur nih.gov (une agence
-  // sanitaire) décrédibilise tout le plan, et c'est ce que faisait la version
-  // précédente. La porte d'entrée dépend du type de site — un média se contacte,
-  // un label s'obtient, une plateforme se publie.
-  const reachable = sources.find((s) => s.type.actionable);
-  if (reachable) {
+  // ── LE PLAN D'ACTION ───────────────────────────────────────────────────────
+  //
+  // C'est la moitié « solution » de la promesse, et c'est ce qui se facture. Trois
+  // partis pris :
+  //
+  //  1. Chaque action est DÉDUITE d'une mesure. Aucune n'est un conseil générique,
+  //     aucune n'est écrite par un modèle. Un plan qu'on ne peut pas rattacher à
+  //     un chiffre relevé est un plan que le client peut contester.
+  //  2. Elles sont ordonnées par effet attendu, pas par facilité : conquérir une
+  //     source lue à chaque interrogation déplace plus qu'une page isolée.
+  //  3. Quand le domaine est documenté dans le playbook, l'action porte la voie
+  //     d'entrée, le format accepté et l'angle qui passe. C'est la différence
+  //     entre « faites-vous citer sur darwin-nutrition.fr » et un mode d'emploi.
+  const actions: ReportAction[] = [];
+
+  // 1. Les sources conquérables, de la plus lue à la moins lue. On écarte les
+  //    institutions (on ne se fait pas citer par le NIH) et les sites de marques
+  //    concurrentes — proposer « se faire référencer sur loreal.com » suffit à
+  //    disqualifier tout le plan.
+  for (const source of sourcePool.filter((s) => s.type.actionable).slice(0, 5)) {
+    const play = playbookFor(source.domain);
+    const opening = `Ce domaine alimente ${source.rivalWeight} des réponses où ${brand.name} n'apparaît pas, et les modèles y retournent à chaque interrogation.`;
     actions.push({
       title:
-        reachable.type.kind === "plateforme"
-          ? `Créer une présence sur ${reachable.domain}`
-          : `Se faire citer sur ${reachable.domain}`,
-      detail: `Ce domaine alimente ${reachable.rivalWeight} des réponses où ${brand.name} n'apparaît pas, et les modèles y retournent à chaque interrogation. ${reachable.type.route}`,
+        source.type.kind === "plateforme"
+          ? `Créer une présence sur ${source.domain}`
+          : `Se faire citer sur ${source.domain}`,
+      detail: play ? `${opening} ${play.what}` : `${opening} ${source.type.route}`,
+      route: play?.route,
+      format: play?.format,
+      angle: play?.angle,
+      delai: play?.delai,
     });
   }
+
+  // 2. Les questions perdues : chacune est une réponse d'achat où un concurrent
+  //    répond à votre place, nommément.
+  for (const q of lostQuestions.slice(0, 4)) {
+    actions.push({
+      title: `Traiter « ${q.prompt} »`,
+      detail: `${q.winner} occupe la première place sur cette question (${modelName(q.model)}). Produire une page qui y répond mieux — au format de la question, pas au format d'une fiche produit — puis la faire citer sur les domaines ci-dessus : c'est l'enchaînement qui déplace un rang.`,
+    });
+  }
+
+  // 3. L'écart entre modèles : deux moteurs ne lisent pas les mêmes sources, et
+  //    l'écart se corrige par les sources, pas par la notoriété.
   const weakest = [...perModel].sort((a, b) => a.score - b.score)[0];
   const strongest = [...perModel].sort((a, b) => b.score - a.score)[0];
   if (weakest && strongest && weakest.model !== strongest.model && strongest.score > weakest.score) {
     actions.push({
       title: `Combler l'écart sur ${modelName(weakest.model)}`,
-      detail: `${brand.name} sort ${strongest.hits} fois sur ${modelName(strongest.model)} mais seulement ${weakest.hits} fois sur ${modelName(weakest.model)}. Ce n'est pas un problème de notoriété : les deux modèles ne lisent pas les mêmes sources.`,
-    });
-  }
-  if (lostQuestions[0]) {
-    actions.push({
-      title: `Traiter « ${lostQuestions[0].prompt} »`,
-      detail: `${lostQuestions[0].winner} occupe la première place sur cette question. Produire une page qui y répond mieux, et la faire citer sur les domaines ci-dessus, est ce qui déplace un rang.`,
+      detail: `${brand.name} sort ${strongest.hits} fois sur ${modelName(strongest.model)} mais seulement ${weakest.hits} fois sur ${modelName(weakest.model)}. Ce n'est pas un problème de notoriété : les deux modèles ne lisent pas les mêmes sources. Repérez les domaines cités par ${modelName(weakest.model)} sur vos questions perdues et traitez-les en priorité.`,
     });
   }
 
-  // Garde-fou : un rapport sans action est un score, et un score se screenshote une
-  // fois puis on résilie. Ces replis restent ancrés dans les données mesurées — on
-  // n'invente jamais un conseil, on en déduit un depuis ce qu'on a relevé.
-  if (actions.length < 3 && rivals[0]) {
+  // 4. Les concurrents qui occupent le terrain, nommés.
+  for (const rival of rivals.slice(0, 2)) {
     actions.push({
-      title: `Se positionner face à ${rivals[0].name}`,
-      detail: `${rivals[0].name} apparaît dans ${rivals[0].citations} réponses où ${brand.name} est absente${rivals[0].firstPlaces > 0 ? `, dont ${rivals[0].firstPlaces} en première position` : ""}. Un comparatif honnête publié sur le site, et repris par les sources du secteur, est le format que les modèles citent le plus volontiers.`,
+      title: `Se positionner face à ${rival.name}`,
+      detail: `${rival.name} apparaît dans ${rival.citations} réponses où ${brand.name} est absente${rival.firstPlaces > 0 ? `, dont ${rival.firstPlaces} en première position` : ""}. Un comparatif honnête publié sur votre site, puis repris par les sources du secteur, est le format que les modèles citent le plus volontiers — y compris quand il ne vous donne pas systématiquement le premier rôle.`,
     });
   }
-  if (actions.length < 3) {
+
+  // Garde-fou : un rapport sans action est un score, et un score se screenshote
+  // une fois puis on résilie.
+  if (actions.length === 0) {
     actions.push({
       title: `Couvrir les questions d'achat non traitées`,
-      detail: `${brand.name} ressort sur ${brand.total} des ${edition.runs} réponses relevées. Les ${Math.max(edition.runs - brand.total, 0)} restantes sont autant de questions où un concurrent répond à sa place. Le détail question par question est ci-dessous.`,
+      detail: `${brand.name} ressort sur ${Math.round(brand.total)} des ${edition.runs} réponses relevées. Les autres sont autant de questions où un concurrent répond à sa place. Le détail question par question est ci-dessous.`,
     });
   }
 

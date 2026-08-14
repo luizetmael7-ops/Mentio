@@ -175,6 +175,30 @@ export default async function RapportPage({
                   <p className="mt-2 pl-7 text-sm leading-relaxed text-[var(--ink-soft)]">
                     {action.detail}
                   </p>
+                  {/* Le mode d'emploi, quand le domaine est documenté. En lignes
+                      étiquetées plutôt qu'en paragraphe : c'est ce qu'on lit à voix
+                      haute devant un client, pas ce qu'on parcourt. */}
+                  {(action.route || action.format || action.angle) && (
+                    <dl className="mt-3 space-y-2 border-t border-[var(--line)] pl-7 pt-3 text-sm">
+                      {[
+                        ["Par où entrer", action.route],
+                        ["Format attendu", action.format],
+                        ["L'angle qui passe", action.angle],
+                        ["Délai", action.delai],
+                      ]
+                        .filter(([, v]) => v)
+                        .map(([label, value]) => (
+                          <div key={label}>
+                            <dt className="font-metric text-[0.65rem] uppercase tracking-wider text-[var(--ink-soft)]">
+                              {label}
+                            </dt>
+                            <dd className="mt-0.5 leading-relaxed text-[var(--ink-soft)]">
+                              {value}
+                            </dd>
+                          </div>
+                        ))}
+                    </dl>
+                  )}
                 </li>
               ))}
             </ol>

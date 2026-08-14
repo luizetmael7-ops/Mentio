@@ -2,6 +2,8 @@ import { redirect } from "next/navigation";
 import { supabaseServer } from "@/lib/supabase/server";
 import { PLAN_LIMITS, type Plan } from "@/lib/plans";
 import { buildActionPlan } from "@/lib/action-plan";
+import { placementEffect, placementSentence, type PlacementRow } from "@/lib/placements";
+import { declarePlacement, abandonPlacement } from "@/lib/actions/placements";
 import { modelLabel } from "@/lib/models-meta";
 import { sameBrand } from "@/lib/llm/judge";
 import { ScoreChart } from "@/components/dashboard/score-chart";
@@ -162,6 +164,44 @@ export default async function DashboardPage({
     topRival: leader ? { name: leader[0], mentions: leader[1].n } : null,
     rivalNames: topCited.filter(([, i]) => !i.isTarget).map(([name]) => name),
   });
+  // ── Journal des placements ─────────────────────────────────────────────────
+  // Requêtes à part de la fenêtre glissante de 30 jours : un placement déclaré il
+  // y a trois mois a besoin du score qui le précède, sinon son effet n'est pas
+  // isolable et la seule chose qu'on sait produire disparaît.
+  const [{ data: placements, error: placementsError }, { data: allScores }] = await Promise.all([
+    supabase
+      .from("placements")
+      .select("id, domain, placed_on, status, note")
+      .eq("brand_id", brand.id)
+      .neq("status", "abandonne")
+      .order("placed_on", { ascending: false }),
+    supabase
+      .from("scores")
+      .select("date, visibility_score")
+      .eq("brand_id", brand.id)
+      .order("date"),
+  ]);
+
+  // Un point par DATE de relevé : les scores sont stockés par modèle, et l'effet
+  // d'un placement se juge sur la visibilité d'ensemble, pas moteur par moteur.
+  const visibilityByDate = new Map<string, number[]>();
+  for (const s of allScores ?? []) {
+    visibilityByDate.set(s.date, [
+      ...(visibilityByDate.get(s.date) ?? []),
+      Number(s.visibility_score),
+    ]);
+  }
+  const points = [...visibilityByDate.entries()].map(([date, vals]) => ({
+    date,
+    visibility: vals.reduce((a, b) => a + b, 0) / vals.length,
+  }));
+  const effects = ((placements ?? []) as PlacementRow[]).map((p) => placementEffect(p, points));
+  const today = new Date().toISOString().slice(0, 10);
+  // La table peut ne pas exister encore (migration non appliquée). On l'affiche
+  // plutôt que de laisser un formulaire qui n'enregistre rien en silence : un
+  // bouton qui ne fait rien coûte plus cher qu'une fonctionnalité annoncée absente.
+  const placementsReady = !placementsError;
+
   const ACTION_COLORS = ["var(--spectrum-poppy)", "var(--spectrum-amber)", "var(--spectrum-iris)"];
 
   return (
@@ -256,6 +296,98 @@ export default async function DashboardPage({
               <p className="mt-2 text-xs leading-relaxed text-muted-foreground">{action.detail}</p>
             </div>
           ))}
+        </CardContent>
+      </Card>
+
+      {/* ── LE JOURNAL DES PLACEMENTS ──────────────────────────────────────────
+          Le seul chiffre que personne d'autre ne peut produire : il exige une
+          mesure hebdomadaire antérieure ET postérieure à une date connue, sur les
+          mêmes questions. C'est aussi ce qui fait rester : un score se screenshote
+          une fois, une preuve de progression n'arrive qu'à la mesure suivante. */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Journal des placements</CardTitle>
+          <CardDescription>
+            Déclarez la date où vous avez obtenu une citation. À chaque relevé, on
+            mesure ce qu&apos;elle a produit.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="grid gap-4">
+          {effects.length > 0 && (
+            <ul className="grid gap-2">
+              {effects.map((e) => (
+                <li
+                  key={e.id}
+                  className="flex flex-wrap items-center justify-between gap-3 rounded-xl border p-4"
+                >
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold">{e.domain}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {`Déclaré le ${e.placedOn} · ${placementSentence(e)}`}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    {e.delta !== null && !e.pending && (
+                      <span
+                        className="font-metric text-2xl font-bold tabular-nums"
+                        style={{
+                          color:
+                            e.delta > 0
+                              ? "var(--jade)"
+                              : e.delta < 0
+                                ? "var(--poppy)"
+                                : "var(--ink-soft)",
+                        }}
+                      >
+                        {`${e.delta > 0 ? "+" : ""}${e.delta}`}
+                      </span>
+                    )}
+                    <form action={abandonPlacement}>
+                      <input type="hidden" name="placementId" value={e.id} />
+                      <Button type="submit" variant="ghost" size="sm">
+                        Retirer
+                      </Button>
+                    </form>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+
+          {!placementsReady && (
+            <p className="rounded-xl border border-dashed p-4 text-sm text-muted-foreground">
+              Le journal n&apos;est pas encore activé sur cette base — la migration
+              <code className="mx-1 rounded bg-muted px-1">placements</code> reste à appliquer.
+            </p>
+          )}
+          {placementsReady && (
+          <form action={declarePlacement} className="grid gap-2 sm:grid-cols-[1.4fr_auto_auto]">
+            <input type="hidden" name="brandId" value={brand.id} />
+            <input
+              name="domain"
+              required
+              placeholder="darwin-nutrition.fr"
+              aria-label="Domaine où vous avez été cité"
+              className="h-9 rounded-md border px-3 text-sm"
+            />
+            <input
+              type="date"
+              name="placedOn"
+              required
+              max={today}
+              aria-label="Date du placement"
+              className="h-9 rounded-md border px-3 text-sm"
+            />
+            <Button type="submit" size="sm">
+              Déclarer
+            </Button>
+          </form>
+          )}
+          <p className="text-xs text-muted-foreground">
+            Rien n&apos;est vérifié automatiquement : vous déclarez, on mesure. Le chiffre
+            qui compte n&apos;est pas la présence de la page, c&apos;est ce que le relevé
+            suivant montre.
+          </p>
         </CardContent>
       </Card>
 

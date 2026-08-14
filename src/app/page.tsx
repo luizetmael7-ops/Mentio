@@ -52,7 +52,7 @@ export default async function LandingPage({
   // La moitié « solution » de la promesse, montrée plutôt qu'annoncée : une action
   // réelle, extraite du rapport d'une marque réelle. Zéro appel LLM — le rapport se
   // déduit des mesures déjà stockées.
-  const sampleAction = leader ? (await buildReport(brandSlug(leader.name)))?.actions[0] : null;
+  const samplePlan = leader ? await buildReport(brandSlug(leader.name)) : null;
 
   return (
     <div className="flex min-h-screen flex-col bg-[var(--porcelain)] text-[var(--ink)]">
@@ -344,24 +344,84 @@ export default async function LandingPage({
               </Reveal>
             )}
 
-            {/* Ce que ça donne — une action réelle, mot pour mot */}
-            {sampleAction && leader && (
+            {/* ── LE PLAN D'ACTION, montré et pas promis ──────────────────────
+                Une action entière, les suivantes NOMMÉES sans être dépliées, et
+                le compte total. Pas de contenu flouté, pas de « débloquez la
+                suite » : on montre ce qu'on sait faire, la valeur du rapport
+                complet est qu'il porte les douze, pas qu'il cache les onze.
+                Le compte vient du plan réel — si le générateur en produit huit,
+                la page affiche huit. Un « /12 » décoratif se vérifie en un clic
+                sur le rapport lui-même. */}
+            {samplePlan && samplePlan.actions.length > 1 && leader && (
               <Reveal className="mt-6">
-                <div className="rounded-2xl border border-[var(--line)] bg-white p-6 sm:p-7">
-                  <p className="eyebrow mb-3">Et concrètement, on vous dit quoi ?</p>
-                  <p className="font-display text-lg font-extrabold uppercase tracking-wide">
-                    {sampleAction.title}
+                <div className="rounded-2xl border border-[var(--line)] bg-white p-6 sm:p-8">
+                  <p className="eyebrow">Le plan d&apos;action</p>
+                  <h3 className="mt-3 font-display text-2xl font-extrabold uppercase tracking-wide">
+                    Un extrait, sur une marque réelle
+                  </h3>
+                  <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[var(--ink-soft)]">
+                    {`Voici la première action du plan de ${samplePlan.name}, telle qu'elle s'affiche dans son rapport. Le plan complet en compte ${samplePlan.actions.length}, classées par effet attendu. L'exemple porte sur l'édition beauté, soin et compléments — la seule verticale relevée chaque semaine aujourd'hui.`}
                   </p>
-                  <p className="mt-2 max-w-2xl text-sm leading-relaxed text-[var(--ink-soft)]">
-                    {sampleAction.detail}
+
+                  <div className="mt-7 rounded-2xl bg-[var(--porcelain)]/70 p-5 sm:p-6">
+                    <p className="font-metric text-[0.65rem] uppercase tracking-widest text-[var(--poppy)]">
+                      {`Action 01/${samplePlan.actions.length}`}
+                    </p>
+                    <p className="mt-2 font-display text-lg font-extrabold uppercase tracking-wide">
+                      {samplePlan.actions[0].title}
+                    </p>
+                    <p className="mt-2 text-sm leading-relaxed text-[var(--ink-soft)]">
+                      {samplePlan.actions[0].detail}
+                    </p>
+                    {(samplePlan.actions[0].route || samplePlan.actions[0].format) && (
+                      <dl className="mt-4 space-y-2.5 border-t border-[var(--line)] pt-4 text-sm">
+                        {[
+                          ["Par où entrer", samplePlan.actions[0].route],
+                          ["Format attendu", samplePlan.actions[0].format],
+                          ["L'angle qui passe", samplePlan.actions[0].angle],
+                        ]
+                          .filter(([, v]) => v)
+                          .map(([label, value]) => (
+                            <div key={label}>
+                              <dt className="font-metric text-[0.62rem] uppercase tracking-wider text-[var(--ink-soft)]">
+                                {label}
+                              </dt>
+                              <dd className="mt-0.5 leading-relaxed text-[var(--ink-soft)]">
+                                {value}
+                              </dd>
+                            </div>
+                          ))}
+                      </dl>
+                    )}
+                  </div>
+
+                  <p className="mt-7 font-metric text-[0.65rem] uppercase tracking-widest text-[var(--ink-soft)]">
+                    La suite du plan
                   </p>
-                  <p className="mt-4 font-metric text-xs text-[var(--ink-soft)]">
-                    {`Première action du rapport de ${leader.name}, telle quelle. `}
+                  <ol className="mt-3 space-y-1.5">
+                    {samplePlan.actions.slice(1, 5).map((action, i) => (
+                      <li key={action.title} className="flex items-baseline gap-3 text-sm">
+                        <span className="font-metric shrink-0 tabular-nums text-[var(--ink-soft)]">
+                          {String(i + 2).padStart(2, "0")}
+                        </span>
+                        <span className="text-[var(--ink)]">{action.title}</span>
+                      </li>
+                    ))}
+                  </ol>
+                  {samplePlan.actions.length > 5 && (
+                    <p className="mt-3 text-sm text-[var(--ink-soft)]">
+                      {`↳ ${samplePlan.actions.length - 5} autres actions dans le rapport complet`}
+                    </p>
+                  )}
+
+                  <p className="mt-6 border-t border-[var(--line)] pt-5 text-sm leading-relaxed text-[var(--ink-soft)]">
+                    Chaque action est déduite des relevés — aucune n&apos;est un conseil générique,
+                    aucune n&apos;est écrite par un modèle.{" "}
                     <Link
                       href={`/rapport/${brandSlug(leader.name)}`}
-                      className="text-[var(--ink)] underline decoration-[var(--line)] underline-offset-4"
+                      className="font-medium text-[var(--ink)] underline decoration-[var(--line)] underline-offset-4"
                     >
-                      Voir le rapport entier →
+                      {`Ouvrir le rapport de ${samplePlan.name} →`}
                     </Link>
                   </p>
                 </div>
