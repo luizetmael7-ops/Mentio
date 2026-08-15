@@ -42,13 +42,14 @@ Mentio — baromètre de la visibilité des marques dans les réponses IA
 mentio.fr · Nice
 ```
 
-**Relance J+4 — Noqode — je remonte ce message**
+**Relance J+4 — Je remonte ce message**
 
 ```
-Amaury DE LUCA, je remonte ce message au cas où il serait passé — le relevé de
-Noqode est prêt et à vos couleurs : https://mentio.fr/rapport/noqode?agence=Noqode&jeton=JdcZmZQgpHUJvKgL-QISRkbXAXRkk-DayxP4AVgKTyI
+Amaury DE LUCA, je remonte ce message au cas où il serait passé.
 
-Je vous l'envoie, ou je laisse tomber ?
+Le relevé est prêt et il est à vous, sans contrepartie : https://mentio.fr/rapport/noqode?agence=Noqode&jeton=JdcZmZQgpHUJvKgL-QISRkbXAXRkk-DayxP4AVgKTyI
+
+Je vous le détaille, ou je laisse tomber ?
 
 Luiz
 ```
@@ -58,8 +59,8 @@ Luiz
 ```
 Amaury DE LUCA, dernier message sur le sujet.
 
-Le Baromètre est publié et Noqode y figure : https://mentio.fr/rapport/noqode?agence=Noqode&jeton=JdcZmZQgpHUJvKgL-QISRkbXAXRkk-DayxP4AVgKTyI
-C'est public et gratuit, prenez ce qui vous sert.
+Le Baromètre est publié, gratuit et sans compte : https://mentio.fr/rapport/noqode?agence=Noqode&jeton=JdcZmZQgpHUJvKgL-QISRkbXAXRkk-DayxP4AVgKTyI
+Prenez ce qui vous sert.
 
 Je ne relancerai plus. Si le sujet remonte chez vous un jour, mon adresse ne
 change pas.
@@ -68,6 +69,74 @@ Luiz
 ```
 
 **Rapport :** https://mentio.fr/rapport/noqode?agence=Noqode&jeton=JdcZmZQgpHUJvKgL-QISRkbXAXRkk-DayxP4AVgKTyI — vérifié HTTP 200
+
+---
+
+## 2. SEO-GEO.fr · Irving Lavalley
+*PALIER 1 — template `palier1-geo` — sans chiffre, lien vers le Baromètre*
+
+**À :** contact@seo-geo.fr
+**Objet :** Le classement des agences GEO françaises, par la mesure
+
+```
+Irving Lavalley,
+
+J'ai publié le 13 août le premier baromètre indépendant de la visibilité des
+agences GEO françaises dans les réponses IA : 43 agences classées selon le nombre
+de fois où ChatGPT, Gemini, Claude et Perplexity les citent en réponse à 50
+questions d'intention — « meilleure agence GEO Paris », « qui peut m'aider à être
+cité par ChatGPT » et leurs variantes.
+
+SEO-GEO.fr n'y figure pas, et c'est précisément l'information : sur ces
+questions-là, les modèles citent d'autres noms. Eskimoz sort première avec 34
+citations sur 100 réponses, et la dixième en compte encore 9 — le terrain n'est
+pas verrouillé, il est simplement occupé par ceux qui y sont.
+
+Le protocole est public, intervalles de confiance et limites de la mesure
+compris. Personne ne paie pour y figurer : le classement est la mesure. Le voici
+en entier : https://mentio.fr/barometre/agences-geo
+
+Deux choses possibles ensuite. La prochaine édition intègre les agences qui
+ressortent d'ici là, sans intervention de ma part. Et je peux générer dès
+aujourd'hui le rapport détaillé de n'importe quelle marque du baromètre beauté —
+score par moteur, concurrents cités à sa place, questions perdues, domaines à
+conquérir, douze actions classées par effet attendu — à vos couleurs et
+transférable à un client tel quel.
+
+Ça vous intéresse ?
+
+Luiz
+Mentio — baromètre de la visibilité des marques dans les réponses IA
+mentio.fr · Nice
+```
+
+**Relance J+4 — Je remonte ce message**
+
+```
+Irving Lavalley, je remonte ce message au cas où il serait passé.
+
+Le relevé est prêt et il est à vous, sans contrepartie : https://mentio.fr/barometre/agences-geo
+
+Je vous le détaille, ou je laisse tomber ?
+
+Luiz
+```
+
+**Relance J+11 — Dernier message — le Baromètre est public**
+
+```
+Irving Lavalley, dernier message sur le sujet.
+
+Le Baromètre est publié, gratuit et sans compte : https://mentio.fr/barometre/agences-geo
+Prenez ce qui vous sert.
+
+Je ne relancerai plus. Si le sujet remonte chez vous un jour, mon adresse ne
+change pas.
+
+Luiz
+```
+
+**Rapport :** https://mentio.fr/barometre/agences-geo — vérifié HTTP 200
 
 ---
 
@@ -106,13 +175,14 @@ Mentio — baromètre de la visibilité des marques dans les réponses IA
 mentio.fr · Nice
 ```
 
-**Relance J+4 — Promoovoir — je remonte ce message**
+**Relance J+4 — Je remonte ce message**
 
 ```
-Tanguy RICHARD & Sandra, je remonte ce message au cas où il serait passé — le relevé de
-Promoovoir est prêt et à vos couleurs : https://mentio.fr/rapport/promoovoir?agence=Promoovoir&jeton=le1zAa265gWzDrwXFZWxYTmAfm_gqHEfDDLisu4__tQ
+Tanguy RICHARD & Sandra, je remonte ce message au cas où il serait passé.
 
-Je vous l'envoie, ou je laisse tomber ?
+Le relevé est prêt et il est à vous, sans contrepartie : https://mentio.fr/rapport/promoovoir?agence=Promoovoir&jeton=le1zAa265gWzDrwXFZWxYTmAfm_gqHEfDDLisu4__tQ
+
+Je vous le détaille, ou je laisse tomber ?
 
 Luiz
 ```
@@ -122,8 +192,8 @@ Luiz
 ```
 Tanguy RICHARD & Sandra, dernier message sur le sujet.
 
-Le Baromètre est publié et Promoovoir y figure : https://mentio.fr/rapport/promoovoir?agence=Promoovoir&jeton=le1zAa265gWzDrwXFZWxYTmAfm_gqHEfDDLisu4__tQ
-C'est public et gratuit, prenez ce qui vous sert.
+Le Baromètre est publié, gratuit et sans compte : https://mentio.fr/rapport/promoovoir?agence=Promoovoir&jeton=le1zAa265gWzDrwXFZWxYTmAfm_gqHEfDDLisu4__tQ
+Prenez ce qui vous sert.
 
 Je ne relancerai plus. Si le sujet remonte chez vous un jour, mon adresse ne
 change pas.
@@ -170,13 +240,14 @@ Mentio — baromètre de la visibilité des marques dans les réponses IA
 mentio.fr · Nice
 ```
 
-**Relance J+4 — Stafe — je remonte ce message**
+**Relance J+4 — Je remonte ce message**
 
 ```
-Philippe Aïn, je remonte ce message au cas où il serait passé — le relevé de
-Stafe est prêt et à vos couleurs : https://mentio.fr/rapport/stafe?agence=Stafe&jeton=Sga0ZZXOe3L2U6E01jcvlu9kGxSyRf1IaX83DTEnifY
+Philippe Aïn, je remonte ce message au cas où il serait passé.
 
-Je vous l'envoie, ou je laisse tomber ?
+Le relevé est prêt et il est à vous, sans contrepartie : https://mentio.fr/rapport/stafe?agence=Stafe&jeton=Sga0ZZXOe3L2U6E01jcvlu9kGxSyRf1IaX83DTEnifY
+
+Je vous le détaille, ou je laisse tomber ?
 
 Luiz
 ```
@@ -186,8 +257,8 @@ Luiz
 ```
 Philippe Aïn, dernier message sur le sujet.
 
-Le Baromètre est publié et Stafe y figure : https://mentio.fr/rapport/stafe?agence=Stafe&jeton=Sga0ZZXOe3L2U6E01jcvlu9kGxSyRf1IaX83DTEnifY
-C'est public et gratuit, prenez ce qui vous sert.
+Le Baromètre est publié, gratuit et sans compte : https://mentio.fr/rapport/stafe?agence=Stafe&jeton=Sga0ZZXOe3L2U6E01jcvlu9kGxSyRf1IaX83DTEnifY
+Prenez ce qui vous sert.
 
 Je ne relancerai plus. Si le sujet remonte chez vous un jour, mon adresse ne
 change pas.
@@ -234,13 +305,14 @@ Mentio — baromètre de la visibilité des marques dans les réponses IA
 mentio.fr · Nice
 ```
 
-**Relance J+4 — Webconversion — je remonte ce message**
+**Relance J+4 — Je remonte ce message**
 
 ```
-Maud Epinette, je remonte ce message au cas où il serait passé — le relevé de
-Webconversion est prêt et à vos couleurs : https://mentio.fr/rapport/webconversion?agence=Webconversion&jeton=by2AfbWCetDvAuit7npH3YHXoK_f42dlNi5g5uGRWNg
+Maud Epinette, je remonte ce message au cas où il serait passé.
 
-Je vous l'envoie, ou je laisse tomber ?
+Le relevé est prêt et il est à vous, sans contrepartie : https://mentio.fr/rapport/webconversion?agence=Webconversion&jeton=by2AfbWCetDvAuit7npH3YHXoK_f42dlNi5g5uGRWNg
+
+Je vous le détaille, ou je laisse tomber ?
 
 Luiz
 ```
@@ -250,8 +322,8 @@ Luiz
 ```
 Maud Epinette, dernier message sur le sujet.
 
-Le Baromètre est publié et Webconversion y figure : https://mentio.fr/rapport/webconversion?agence=Webconversion&jeton=by2AfbWCetDvAuit7npH3YHXoK_f42dlNi5g5uGRWNg
-C'est public et gratuit, prenez ce qui vous sert.
+Le Baromètre est publié, gratuit et sans compte : https://mentio.fr/rapport/webconversion?agence=Webconversion&jeton=by2AfbWCetDvAuit7npH3YHXoK_f42dlNi5g5uGRWNg
+Prenez ce qui vous sert.
 
 Je ne relancerai plus. Si le sujet remonte chez vous un jour, mon adresse ne
 change pas.
@@ -297,13 +369,14 @@ Mentio — baromètre de la visibilité des marques dans les réponses IA
 mentio.fr · Nice
 ```
 
-**Relance J+4 — Natural-Net — je remonte ce message**
+**Relance J+4 — Je remonte ce message**
 
 ```
-Eric Emery, je remonte ce message au cas où il serait passé — le relevé de
-Natural-Net est prêt et à vos couleurs : https://mentio.fr/rapport/natural-net?agence=Natural-Net&jeton=uBIpWAo-xp9GUCVHAADYShujJQqomK85w6bRfcA6oIQ
+Eric Emery, je remonte ce message au cas où il serait passé.
 
-Je vous l'envoie, ou je laisse tomber ?
+Le relevé est prêt et il est à vous, sans contrepartie : https://mentio.fr/rapport/natural-net?agence=Natural-Net&jeton=uBIpWAo-xp9GUCVHAADYShujJQqomK85w6bRfcA6oIQ
+
+Je vous le détaille, ou je laisse tomber ?
 
 Luiz
 ```
@@ -313,8 +386,8 @@ Luiz
 ```
 Eric Emery, dernier message sur le sujet.
 
-Le Baromètre est publié et Natural-Net y figure : https://mentio.fr/rapport/natural-net?agence=Natural-Net&jeton=uBIpWAo-xp9GUCVHAADYShujJQqomK85w6bRfcA6oIQ
-C'est public et gratuit, prenez ce qui vous sert.
+Le Baromètre est publié, gratuit et sans compte : https://mentio.fr/rapport/natural-net?agence=Natural-Net&jeton=uBIpWAo-xp9GUCVHAADYShujJQqomK85w6bRfcA6oIQ
+Prenez ce qui vous sert.
 
 Je ne relancerai plus. Si le sujet remonte chez vous un jour, mon adresse ne
 change pas.
@@ -355,13 +428,14 @@ Mentio — baromètre de la visibilité des marques dans les réponses IA
 mentio.fr · Nice
 ```
 
-**Relance J+4 — Jalousie Agency — je remonte ce message**
+**Relance J+4 — Je remonte ce message**
 
 ```
-Équipe dirigeante, je remonte ce message au cas où il serait passé — le relevé de
-Jalousie Agency est prêt et à vos couleurs : https://mentio.fr/rapport/jalousie-agency?agence=Jalousie+Agency&jeton=nWkWsh_nuPacnJiqef-tspXZS3PiCh7Djig8jSruJj4
+Équipe dirigeante, je remonte ce message au cas où il serait passé.
 
-Je vous l'envoie, ou je laisse tomber ?
+Le relevé est prêt et il est à vous, sans contrepartie : https://mentio.fr/rapport/jalousie-agency?agence=Jalousie+Agency&jeton=nWkWsh_nuPacnJiqef-tspXZS3PiCh7Djig8jSruJj4
+
+Je vous le détaille, ou je laisse tomber ?
 
 Luiz
 ```
@@ -371,8 +445,8 @@ Luiz
 ```
 Équipe dirigeante, dernier message sur le sujet.
 
-Le Baromètre est publié et Jalousie Agency y figure : https://mentio.fr/rapport/jalousie-agency?agence=Jalousie+Agency&jeton=nWkWsh_nuPacnJiqef-tspXZS3PiCh7Djig8jSruJj4
-C'est public et gratuit, prenez ce qui vous sert.
+Le Baromètre est publié, gratuit et sans compte : https://mentio.fr/rapport/jalousie-agency?agence=Jalousie+Agency&jeton=nWkWsh_nuPacnJiqef-tspXZS3PiCh7Djig8jSruJj4
+Prenez ce qui vous sert.
 
 Je ne relancerai plus. Si le sujet remonte chez vous un jour, mon adresse ne
 change pas.
@@ -418,13 +492,14 @@ Mentio — baromètre de la visibilité des marques dans les réponses IA
 mentio.fr · Nice
 ```
 
-**Relance J+4 — Eskimoz — je remonte ce message**
+**Relance J+4 — Je remonte ce message**
 
 ```
-Andréa Bensaid, je remonte ce message au cas où il serait passé — le relevé de
-Eskimoz est prêt et à vos couleurs : https://mentio.fr/rapport/eskimoz?agence=Eskimoz&jeton=ucbPZotWQX_SaW5cGdE0_euLQp8XrIbeAUnbsxo5eAU
+Andréa Bensaid, je remonte ce message au cas où il serait passé.
 
-Je vous l'envoie, ou je laisse tomber ?
+Le relevé est prêt et il est à vous, sans contrepartie : https://mentio.fr/rapport/eskimoz?agence=Eskimoz&jeton=ucbPZotWQX_SaW5cGdE0_euLQp8XrIbeAUnbsxo5eAU
+
+Je vous le détaille, ou je laisse tomber ?
 
 Luiz
 ```
@@ -434,8 +509,8 @@ Luiz
 ```
 Andréa Bensaid, dernier message sur le sujet.
 
-Le Baromètre est publié et Eskimoz y figure : https://mentio.fr/rapport/eskimoz?agence=Eskimoz&jeton=ucbPZotWQX_SaW5cGdE0_euLQp8XrIbeAUnbsxo5eAU
-C'est public et gratuit, prenez ce qui vous sert.
+Le Baromètre est publié, gratuit et sans compte : https://mentio.fr/rapport/eskimoz?agence=Eskimoz&jeton=ucbPZotWQX_SaW5cGdE0_euLQp8XrIbeAUnbsxo5eAU
+Prenez ce qui vous sert.
 
 Je ne relancerai plus. Si le sujet remonte chez vous un jour, mon adresse ne
 change pas.
@@ -480,13 +555,14 @@ Mentio — baromètre de la visibilité des marques dans les réponses IA
 mentio.fr · Nice
 ```
 
-**Relance J+4 — iaba — je remonte ce message**
+**Relance J+4 — Je remonte ce message**
 
 ```
-Enzo Tinka, je remonte ce message au cas où il serait passé — le relevé de
-iaba est prêt et à vos couleurs : https://mentio.fr/rapport/iaba?agence=iaba.tech&jeton=hstvAnyIrmV2GQpqj6wy0td2PYXrkSfq2iKU_6m0E5o
+Enzo Tinka, je remonte ce message au cas où il serait passé.
 
-Je vous l'envoie, ou je laisse tomber ?
+Le relevé est prêt et il est à vous, sans contrepartie : https://mentio.fr/rapport/iaba?agence=iaba.tech&jeton=hstvAnyIrmV2GQpqj6wy0td2PYXrkSfq2iKU_6m0E5o
+
+Je vous le détaille, ou je laisse tomber ?
 
 Luiz
 ```
@@ -496,8 +572,8 @@ Luiz
 ```
 Enzo Tinka, dernier message sur le sujet.
 
-Le Baromètre est publié et iaba y figure : https://mentio.fr/rapport/iaba?agence=iaba.tech&jeton=hstvAnyIrmV2GQpqj6wy0td2PYXrkSfq2iKU_6m0E5o
-C'est public et gratuit, prenez ce qui vous sert.
+Le Baromètre est publié, gratuit et sans compte : https://mentio.fr/rapport/iaba?agence=iaba.tech&jeton=hstvAnyIrmV2GQpqj6wy0td2PYXrkSfq2iKU_6m0E5o
+Prenez ce qui vous sert.
 
 Je ne relancerai plus. Si le sujet remonte chez vous un jour, mon adresse ne
 change pas.
@@ -542,13 +618,14 @@ Mentio — baromètre de la visibilité des marques dans les réponses IA
 mentio.fr · Nice
 ```
 
-**Relance J+4 — SEO.fr — je remonte ce message**
+**Relance J+4 — Je remonte ce message**
 
 ```
-Direction / Pôle GEO, je remonte ce message au cas où il serait passé — le relevé de
-SEO.fr est prêt et à vos couleurs : https://mentio.fr/rapport/seo-fr?agence=SEO.fr&jeton=wHnxwOzWhQzi0c8_n3xVYsnX4gpslc0NsXiSg4UDA5E
+Direction / Pôle GEO, je remonte ce message au cas où il serait passé.
 
-Je vous l'envoie, ou je laisse tomber ?
+Le relevé est prêt et il est à vous, sans contrepartie : https://mentio.fr/rapport/seo-fr?agence=SEO.fr&jeton=wHnxwOzWhQzi0c8_n3xVYsnX4gpslc0NsXiSg4UDA5E
+
+Je vous le détaille, ou je laisse tomber ?
 
 Luiz
 ```
@@ -558,8 +635,8 @@ Luiz
 ```
 Direction / Pôle GEO, dernier message sur le sujet.
 
-Le Baromètre est publié et SEO.fr y figure : https://mentio.fr/rapport/seo-fr?agence=SEO.fr&jeton=wHnxwOzWhQzi0c8_n3xVYsnX4gpslc0NsXiSg4UDA5E
-C'est public et gratuit, prenez ce qui vous sert.
+Le Baromètre est publié, gratuit et sans compte : https://mentio.fr/rapport/seo-fr?agence=SEO.fr&jeton=wHnxwOzWhQzi0c8_n3xVYsnX4gpslc0NsXiSg4UDA5E
+Prenez ce qui vous sert.
 
 Je ne relancerai plus. Si le sujet remonte chez vous un jour, mon adresse ne
 change pas.
@@ -568,5 +645,1258 @@ Luiz
 ```
 
 **Rapport :** https://mentio.fr/rapport/seo-fr?agence=SEO.fr&jeton=wHnxwOzWhQzi0c8_n3xVYsnX4gpslc0NsXiSg4UDA5E — vérifié HTTP 200
+
+---
+
+## 11. Etowline · Direction
+*PALIER 1 — template `palier1-geo` — sans chiffre, lien vers le Baromètre*
+
+**À :** contact@etowline.fr
+**Objet :** Le classement des agences GEO françaises, par la mesure
+
+```
+Direction,
+
+J'ai publié le 13 août le premier baromètre indépendant de la visibilité des
+agences GEO françaises dans les réponses IA : 43 agences classées selon le nombre
+de fois où ChatGPT, Gemini, Claude et Perplexity les citent en réponse à 50
+questions d'intention — « meilleure agence GEO Paris », « qui peut m'aider à être
+cité par ChatGPT » et leurs variantes.
+
+Etowline n'y figure pas, et c'est précisément l'information : sur ces
+questions-là, les modèles citent d'autres noms. Eskimoz sort première avec 34
+citations sur 100 réponses, et la dixième en compte encore 9 — le terrain n'est
+pas verrouillé, il est simplement occupé par ceux qui y sont.
+
+Le protocole est public, intervalles de confiance et limites de la mesure
+compris. Personne ne paie pour y figurer : le classement est la mesure. Le voici
+en entier : https://mentio.fr/barometre/agences-geo
+
+Deux choses possibles ensuite. La prochaine édition intègre les agences qui
+ressortent d'ici là, sans intervention de ma part. Et je peux générer dès
+aujourd'hui le rapport détaillé de n'importe quelle marque du baromètre beauté —
+score par moteur, concurrents cités à sa place, questions perdues, domaines à
+conquérir, douze actions classées par effet attendu — à vos couleurs et
+transférable à un client tel quel.
+
+Ça vous intéresse ?
+
+Luiz
+Mentio — baromètre de la visibilité des marques dans les réponses IA
+mentio.fr · Nice
+```
+
+**Relance J+4 — Je remonte ce message**
+
+```
+Direction, je remonte ce message au cas où il serait passé.
+
+Le relevé est prêt et il est à vous, sans contrepartie : https://mentio.fr/barometre/agences-geo
+
+Je vous le détaille, ou je laisse tomber ?
+
+Luiz
+```
+
+**Relance J+11 — Dernier message — le Baromètre est public**
+
+```
+Direction, dernier message sur le sujet.
+
+Le Baromètre est publié, gratuit et sans compte : https://mentio.fr/barometre/agences-geo
+Prenez ce qui vous sert.
+
+Je ne relancerai plus. Si le sujet remonte chez vous un jour, mon adresse ne
+change pas.
+
+Luiz
+```
+
+**Rapport :** https://mentio.fr/barometre/agences-geo — vérifié HTTP 200
+
+---
+
+## 12. AISOS · Direction
+*PALIER 1 — template `palier1-geo` — sans chiffre, lien vers le Baromètre*
+
+**À :** hello@aisosystem.com
+**Objet :** Le classement des agences GEO françaises, par la mesure
+
+```
+Direction,
+
+J'ai publié le 13 août le premier baromètre indépendant de la visibilité des
+agences GEO françaises dans les réponses IA : 43 agences classées selon le nombre
+de fois où ChatGPT, Gemini, Claude et Perplexity les citent en réponse à 50
+questions d'intention — « meilleure agence GEO Paris », « qui peut m'aider à être
+cité par ChatGPT » et leurs variantes.
+
+AISOS n'y figure pas, et c'est précisément l'information : sur ces
+questions-là, les modèles citent d'autres noms. Eskimoz sort première avec 34
+citations sur 100 réponses, et la dixième en compte encore 9 — le terrain n'est
+pas verrouillé, il est simplement occupé par ceux qui y sont.
+
+Le protocole est public, intervalles de confiance et limites de la mesure
+compris. Personne ne paie pour y figurer : le classement est la mesure. Le voici
+en entier : https://mentio.fr/barometre/agences-geo
+
+Deux choses possibles ensuite. La prochaine édition intègre les agences qui
+ressortent d'ici là, sans intervention de ma part. Et je peux générer dès
+aujourd'hui le rapport détaillé de n'importe quelle marque du baromètre beauté —
+score par moteur, concurrents cités à sa place, questions perdues, domaines à
+conquérir, douze actions classées par effet attendu — à vos couleurs et
+transférable à un client tel quel.
+
+Ça vous intéresse ?
+
+Luiz
+Mentio — baromètre de la visibilité des marques dans les réponses IA
+mentio.fr · Nice
+```
+
+**Relance J+4 — Je remonte ce message**
+
+```
+Direction, je remonte ce message au cas où il serait passé.
+
+Le relevé est prêt et il est à vous, sans contrepartie : https://mentio.fr/barometre/agences-geo
+
+Je vous le détaille, ou je laisse tomber ?
+
+Luiz
+```
+
+**Relance J+11 — Dernier message — le Baromètre est public**
+
+```
+Direction, dernier message sur le sujet.
+
+Le Baromètre est publié, gratuit et sans compte : https://mentio.fr/barometre/agences-geo
+Prenez ce qui vous sert.
+
+Je ne relancerai plus. Si le sujet remonte chez vous un jour, mon adresse ne
+change pas.
+
+Luiz
+```
+
+**Rapport :** https://mentio.fr/barometre/agences-geo — vérifié HTTP 200
+
+---
+
+## 13. Agence GEO Pro · Kevin PAPOT
+*PALIER 1 — template `palier1-geo` — sans chiffre, lien vers le Baromètre*
+
+**À :** contact@agence-geo.agency
+**Objet :** Le classement des agences GEO françaises, par la mesure
+
+```
+Kevin PAPOT,
+
+J'ai publié le 13 août le premier baromètre indépendant de la visibilité des
+agences GEO françaises dans les réponses IA : 43 agences classées selon le nombre
+de fois où ChatGPT, Gemini, Claude et Perplexity les citent en réponse à 50
+questions d'intention — « meilleure agence GEO Paris », « qui peut m'aider à être
+cité par ChatGPT » et leurs variantes.
+
+Agence GEO Pro n'y figure pas, et c'est précisément l'information : sur ces
+questions-là, les modèles citent d'autres noms. Eskimoz sort première avec 34
+citations sur 100 réponses, et la dixième en compte encore 9 — le terrain n'est
+pas verrouillé, il est simplement occupé par ceux qui y sont.
+
+Le protocole est public, intervalles de confiance et limites de la mesure
+compris. Personne ne paie pour y figurer : le classement est la mesure. Le voici
+en entier : https://mentio.fr/barometre/agences-geo
+
+Deux choses possibles ensuite. La prochaine édition intègre les agences qui
+ressortent d'ici là, sans intervention de ma part. Et je peux générer dès
+aujourd'hui le rapport détaillé de n'importe quelle marque du baromètre beauté —
+score par moteur, concurrents cités à sa place, questions perdues, domaines à
+conquérir, douze actions classées par effet attendu — à vos couleurs et
+transférable à un client tel quel.
+
+Ça vous intéresse ?
+
+Luiz
+Mentio — baromètre de la visibilité des marques dans les réponses IA
+mentio.fr · Nice
+```
+
+**Relance J+4 — Je remonte ce message**
+
+```
+Kevin PAPOT, je remonte ce message au cas où il serait passé.
+
+Le relevé est prêt et il est à vous, sans contrepartie : https://mentio.fr/barometre/agences-geo
+
+Je vous le détaille, ou je laisse tomber ?
+
+Luiz
+```
+
+**Relance J+11 — Dernier message — le Baromètre est public**
+
+```
+Kevin PAPOT, dernier message sur le sujet.
+
+Le Baromètre est publié, gratuit et sans compte : https://mentio.fr/barometre/agences-geo
+Prenez ce qui vous sert.
+
+Je ne relancerai plus. Si le sujet remonte chez vous un jour, mon adresse ne
+change pas.
+
+Luiz
+```
+
+**Rapport :** https://mentio.fr/barometre/agences-geo — vérifié HTTP 200
+
+---
+
+## 14. Julien Gourdon (Consultant) · Julien Gourdon
+*PALIER 2 — template `palier2-consultant` — sans chiffre, lien vers le Baromètre*
+
+**À :** julien.gourdon@outlook.com
+**Objet :** Le classement des agences GEO, mesuré — en exclusivité
+
+```
+Julien Gourdon,
+
+Vous publiez sur la visibilité IA, et je vous écris parce que j'ai construit un
+jeu de données sur ce marché qui n'existe nulle part ailleurs en France.
+
+Mentio mesure quelles marques les IA citent réellement : 50 questions d'intention
+d'achat fixes par secteur, rejouées chaque semaine sur ChatGPT, Gemini, Claude et
+Perplexity, avec relevé des marques citées, de leur position, et des sources que
+les modèles consultent pour répondre. Méthodologie publique, intervalles de
+confiance, aucun placement payant.
+
+Deux éditions sont en ligne. Beauté, soin et compléments : 50 marques françaises
+classées, trois éditions depuis juillet, ce qui permet de suivre les mouvements
+dans le temps. Agences GEO France, publiée le 13 août : 43 agences classées selon
+leur visibilité réelle dans les réponses, Eskimoz en tête à 34 sur 100. C'est, à
+ma connaissance, la seule mesure indépendante de ce marché.
+
+Les données sont à vous si elles servent une publication — export, API, ou une
+analyse que je rédige avec vous : https://mentio.fr/barometre
+Je vous les envoie ?
+
+Luiz
+Mentio — baromètre de la visibilité des marques dans les réponses IA
+mentio.fr · Nice
+```
+
+**Relance J+4 — Je remonte ce message**
+
+```
+Julien Gourdon, je remonte ce message au cas où il serait passé.
+
+Le relevé est prêt et il est à vous, sans contrepartie : https://mentio.fr/barometre
+
+Je vous le détaille, ou je laisse tomber ?
+
+Luiz
+```
+
+**Relance J+11 — Dernier message — le Baromètre est public**
+
+```
+Julien Gourdon, dernier message sur le sujet.
+
+Le Baromètre est publié, gratuit et sans compte : https://mentio.fr/barometre
+Prenez ce qui vous sert.
+
+Je ne relancerai plus. Si le sujet remonte chez vous un jour, mon adresse ne
+change pas.
+
+Luiz
+```
+
+**Rapport :** https://mentio.fr/barometre — vérifié HTTP 200
+
+---
+
+## 15. Paul Vengeons (Consultant) · Paul Vengeons
+*PALIER 2 — template `palier2-consultant` — sans chiffre, lien vers le Baromètre*
+
+**À :** contact@paulvengeons.fr
+**Objet :** Le classement des agences GEO, mesuré — en exclusivité
+
+```
+Paul Vengeons,
+
+Vous publiez sur la visibilité IA, et je vous écris parce que j'ai construit un
+jeu de données sur ce marché qui n'existe nulle part ailleurs en France.
+
+Mentio mesure quelles marques les IA citent réellement : 50 questions d'intention
+d'achat fixes par secteur, rejouées chaque semaine sur ChatGPT, Gemini, Claude et
+Perplexity, avec relevé des marques citées, de leur position, et des sources que
+les modèles consultent pour répondre. Méthodologie publique, intervalles de
+confiance, aucun placement payant.
+
+Deux éditions sont en ligne. Beauté, soin et compléments : 50 marques françaises
+classées, trois éditions depuis juillet, ce qui permet de suivre les mouvements
+dans le temps. Agences GEO France, publiée le 13 août : 43 agences classées selon
+leur visibilité réelle dans les réponses, Eskimoz en tête à 34 sur 100. C'est, à
+ma connaissance, la seule mesure indépendante de ce marché.
+
+Les données sont à vous si elles servent une publication — export, API, ou une
+analyse que je rédige avec vous : https://mentio.fr/barometre
+Je vous les envoie ?
+
+Luiz
+Mentio — baromètre de la visibilité des marques dans les réponses IA
+mentio.fr · Nice
+```
+
+**Relance J+4 — Je remonte ce message**
+
+```
+Paul Vengeons, je remonte ce message au cas où il serait passé.
+
+Le relevé est prêt et il est à vous, sans contrepartie : https://mentio.fr/barometre
+
+Je vous le détaille, ou je laisse tomber ?
+
+Luiz
+```
+
+**Relance J+11 — Dernier message — le Baromètre est public**
+
+```
+Paul Vengeons, dernier message sur le sujet.
+
+Le Baromètre est publié, gratuit et sans compte : https://mentio.fr/barometre
+Prenez ce qui vous sert.
+
+Je ne relancerai plus. Si le sujet remonte chez vous un jour, mon adresse ne
+change pas.
+
+Luiz
+```
+
+**Rapport :** https://mentio.fr/barometre — vérifié HTTP 200
+
+---
+
+## 16. Junto · Etienne Alcouffe
+*PALIER 3 — template `palier3-sectorielle` — sans chiffre, lien vers le Baromètre*
+
+**À :** etienne@junto.fr
+**Objet :** Les 50 marques de soin, classées par citation IA
+
+```
+Etienne Alcouffe,
+
+Vous accompagnez des marques de beauté et de cosmétique. Il existe un canal
+d'acquisition qui ne remonte dans aucun outil d'analytics, et je viens d'en
+publier la mesure.
+
+Quand un consommateur demande à ChatGPT ou Gemini quelle crème solaire clean
+acheter, quel collagène choisir ou quel sérum vitamine C prendre, trois ou quatre
+marques sont citées et les autres n'existent pas. Aucun clic n'est enregistré,
+rien n'apparaît dans les statistiques du site. Je mesure ce canal chaque semaine
+depuis juillet : 50 questions d'intention d'achat fixes, posées à ChatGPT,
+Gemini, Claude et Perplexity via leurs API officielles, et relevé des marques
+citées, de leur position, et des sites que les modèles ont consultés pour
+répondre. 50 marques françaises sont classées.
+
+Le résultat qui surprend le plus : la marque la mieux placée de France plafonne à
+20 citations sur 100 réponses. Personne n'est installé, le terrain est vide. Et
+les trois domaines que les modèles consultent le plus sur ce secteur —
+cosmebio.org, aroma-zone.com et yuka.io — sont des sources que vos clients
+peuvent viser directement.
+
+Le classement complet est public, la méthodologie aussi, et personne ne paie pour
+y figurer : https://mentio.fr/barometre
+
+Si l'un de vos clients y figure et que vous voulez son rapport détaillé — score
+par moteur, rang sectoriel, questions où il est absent, domaines à conquérir,
+douze actions classées par effet attendu, le tout à vos couleurs et transférable
+tel quel — dites-moi lequel et je le génère dans la journée.
+
+Luiz
+Mentio — baromètre de la visibilité des marques dans les réponses IA
+mentio.fr · Nice
+```
+
+**Relance J+4 — Je remonte ce message**
+
+```
+Etienne Alcouffe, je remonte ce message au cas où il serait passé.
+
+Le relevé est prêt et il est à vous, sans contrepartie : https://mentio.fr/barometre
+
+Je vous le détaille, ou je laisse tomber ?
+
+Luiz
+```
+
+**Relance J+11 — Dernier message — le Baromètre est public**
+
+```
+Etienne Alcouffe, dernier message sur le sujet.
+
+Le Baromètre est publié, gratuit et sans compte : https://mentio.fr/barometre
+Prenez ce qui vous sert.
+
+Je ne relancerai plus. Si le sujet remonte chez vous un jour, mon adresse ne
+change pas.
+
+Luiz
+```
+
+**Rapport :** https://mentio.fr/barometre — vérifié HTTP 200
+
+---
+
+## 17. Alioze · Edouard Duban
+*PALIER 3 — template `palier3-sectorielle` — sans chiffre, lien vers le Baromètre*
+
+**À :** direction@alioze.com
+**Objet :** Les 50 marques de soin, classées par citation IA
+
+```
+Edouard Duban,
+
+Vous accompagnez des marques de beauté et de cosmétique. Il existe un canal
+d'acquisition qui ne remonte dans aucun outil d'analytics, et je viens d'en
+publier la mesure.
+
+Quand un consommateur demande à ChatGPT ou Gemini quelle crème solaire clean
+acheter, quel collagène choisir ou quel sérum vitamine C prendre, trois ou quatre
+marques sont citées et les autres n'existent pas. Aucun clic n'est enregistré,
+rien n'apparaît dans les statistiques du site. Je mesure ce canal chaque semaine
+depuis juillet : 50 questions d'intention d'achat fixes, posées à ChatGPT,
+Gemini, Claude et Perplexity via leurs API officielles, et relevé des marques
+citées, de leur position, et des sites que les modèles ont consultés pour
+répondre. 50 marques françaises sont classées.
+
+Le résultat qui surprend le plus : la marque la mieux placée de France plafonne à
+20 citations sur 100 réponses. Personne n'est installé, le terrain est vide. Et
+les trois domaines que les modèles consultent le plus sur ce secteur —
+cosmebio.org, aroma-zone.com et yuka.io — sont des sources que vos clients
+peuvent viser directement.
+
+Le classement complet est public, la méthodologie aussi, et personne ne paie pour
+y figurer : https://mentio.fr/barometre
+
+Si l'un de vos clients y figure et que vous voulez son rapport détaillé — score
+par moteur, rang sectoriel, questions où il est absent, domaines à conquérir,
+douze actions classées par effet attendu, le tout à vos couleurs et transférable
+tel quel — dites-moi lequel et je le génère dans la journée.
+
+Luiz
+Mentio — baromètre de la visibilité des marques dans les réponses IA
+mentio.fr · Nice
+```
+
+**Relance J+4 — Je remonte ce message**
+
+```
+Edouard Duban, je remonte ce message au cas où il serait passé.
+
+Le relevé est prêt et il est à vous, sans contrepartie : https://mentio.fr/barometre
+
+Je vous le détaille, ou je laisse tomber ?
+
+Luiz
+```
+
+**Relance J+11 — Dernier message — le Baromètre est public**
+
+```
+Edouard Duban, dernier message sur le sujet.
+
+Le Baromètre est publié, gratuit et sans compte : https://mentio.fr/barometre
+Prenez ce qui vous sert.
+
+Je ne relancerai plus. Si le sujet remonte chez vous un jour, mon adresse ne
+change pas.
+
+Luiz
+```
+
+**Rapport :** https://mentio.fr/barometre — vérifié HTTP 200
+
+---
+
+## 18. Alioze · Edouard Duban
+*PALIER 3 — template `palier3-sectorielle` — sans chiffre, lien vers le Baromètre*
+
+**À :** hello@alioze.com
+**Objet :** Les 50 marques de soin, classées par citation IA
+
+```
+Edouard Duban,
+
+Vous accompagnez des marques de beauté et de cosmétique. Il existe un canal
+d'acquisition qui ne remonte dans aucun outil d'analytics, et je viens d'en
+publier la mesure.
+
+Quand un consommateur demande à ChatGPT ou Gemini quelle crème solaire clean
+acheter, quel collagène choisir ou quel sérum vitamine C prendre, trois ou quatre
+marques sont citées et les autres n'existent pas. Aucun clic n'est enregistré,
+rien n'apparaît dans les statistiques du site. Je mesure ce canal chaque semaine
+depuis juillet : 50 questions d'intention d'achat fixes, posées à ChatGPT,
+Gemini, Claude et Perplexity via leurs API officielles, et relevé des marques
+citées, de leur position, et des sites que les modèles ont consultés pour
+répondre. 50 marques françaises sont classées.
+
+Le résultat qui surprend le plus : la marque la mieux placée de France plafonne à
+20 citations sur 100 réponses. Personne n'est installé, le terrain est vide. Et
+les trois domaines que les modèles consultent le plus sur ce secteur —
+cosmebio.org, aroma-zone.com et yuka.io — sont des sources que vos clients
+peuvent viser directement.
+
+Le classement complet est public, la méthodologie aussi, et personne ne paie pour
+y figurer : https://mentio.fr/barometre
+
+Si l'un de vos clients y figure et que vous voulez son rapport détaillé — score
+par moteur, rang sectoriel, questions où il est absent, domaines à conquérir,
+douze actions classées par effet attendu, le tout à vos couleurs et transférable
+tel quel — dites-moi lequel et je le génère dans la journée.
+
+Luiz
+Mentio — baromètre de la visibilité des marques dans les réponses IA
+mentio.fr · Nice
+```
+
+**Relance J+4 — Je remonte ce message**
+
+```
+Edouard Duban, je remonte ce message au cas où il serait passé.
+
+Le relevé est prêt et il est à vous, sans contrepartie : https://mentio.fr/barometre
+
+Je vous le détaille, ou je laisse tomber ?
+
+Luiz
+```
+
+**Relance J+11 — Dernier message — le Baromètre est public**
+
+```
+Edouard Duban, dernier message sur le sujet.
+
+Le Baromètre est publié, gratuit et sans compte : https://mentio.fr/barometre
+Prenez ce qui vous sert.
+
+Je ne relancerai plus. Si le sujet remonte chez vous un jour, mon adresse ne
+change pas.
+
+Luiz
+```
+
+**Rapport :** https://mentio.fr/barometre — vérifié HTTP 200
+
+---
+
+## 19. Velcome SEO · Équipe SEO
+*PALIER 3 — template `palier3-sectorielle` — sans chiffre, lien vers le Baromètre*
+
+**À :** contact@velcome-seo.fr
+**Objet :** Les 50 marques de soin, classées par citation IA
+
+```
+Équipe SEO,
+
+Vous accompagnez des marques de beauté et de cosmétique. Il existe un canal
+d'acquisition qui ne remonte dans aucun outil d'analytics, et je viens d'en
+publier la mesure.
+
+Quand un consommateur demande à ChatGPT ou Gemini quelle crème solaire clean
+acheter, quel collagène choisir ou quel sérum vitamine C prendre, trois ou quatre
+marques sont citées et les autres n'existent pas. Aucun clic n'est enregistré,
+rien n'apparaît dans les statistiques du site. Je mesure ce canal chaque semaine
+depuis juillet : 50 questions d'intention d'achat fixes, posées à ChatGPT,
+Gemini, Claude et Perplexity via leurs API officielles, et relevé des marques
+citées, de leur position, et des sites que les modèles ont consultés pour
+répondre. 50 marques françaises sont classées.
+
+Le résultat qui surprend le plus : la marque la mieux placée de France plafonne à
+20 citations sur 100 réponses. Personne n'est installé, le terrain est vide. Et
+les trois domaines que les modèles consultent le plus sur ce secteur —
+cosmebio.org, aroma-zone.com et yuka.io — sont des sources que vos clients
+peuvent viser directement.
+
+Le classement complet est public, la méthodologie aussi, et personne ne paie pour
+y figurer : https://mentio.fr/barometre
+
+Si l'un de vos clients y figure et que vous voulez son rapport détaillé — score
+par moteur, rang sectoriel, questions où il est absent, domaines à conquérir,
+douze actions classées par effet attendu, le tout à vos couleurs et transférable
+tel quel — dites-moi lequel et je le génère dans la journée.
+
+Luiz
+Mentio — baromètre de la visibilité des marques dans les réponses IA
+mentio.fr · Nice
+```
+
+**Relance J+4 — Je remonte ce message**
+
+```
+Équipe SEO, je remonte ce message au cas où il serait passé.
+
+Le relevé est prêt et il est à vous, sans contrepartie : https://mentio.fr/barometre
+
+Je vous le détaille, ou je laisse tomber ?
+
+Luiz
+```
+
+**Relance J+11 — Dernier message — le Baromètre est public**
+
+```
+Équipe SEO, dernier message sur le sujet.
+
+Le Baromètre est publié, gratuit et sans compte : https://mentio.fr/barometre
+Prenez ce qui vous sert.
+
+Je ne relancerai plus. Si le sujet remonte chez vous un jour, mon adresse ne
+change pas.
+
+Luiz
+```
+
+**Rapport :** https://mentio.fr/barometre — vérifié HTTP 200
+
+---
+
+## 20. Les Causantes · Maya Choppin de Janvry
+*PALIER 3 — template `palier3-sectorielle` — sans chiffre, lien vers le Baromètre*
+
+**À :** maya.choppin@lescausantes.com
+**Objet :** Les 50 marques de soin, classées par citation IA
+
+```
+Maya Choppin de Janvry,
+
+Vous accompagnez des marques de beauté et de cosmétique. Il existe un canal
+d'acquisition qui ne remonte dans aucun outil d'analytics, et je viens d'en
+publier la mesure.
+
+Quand un consommateur demande à ChatGPT ou Gemini quelle crème solaire clean
+acheter, quel collagène choisir ou quel sérum vitamine C prendre, trois ou quatre
+marques sont citées et les autres n'existent pas. Aucun clic n'est enregistré,
+rien n'apparaît dans les statistiques du site. Je mesure ce canal chaque semaine
+depuis juillet : 50 questions d'intention d'achat fixes, posées à ChatGPT,
+Gemini, Claude et Perplexity via leurs API officielles, et relevé des marques
+citées, de leur position, et des sites que les modèles ont consultés pour
+répondre. 50 marques françaises sont classées.
+
+Le résultat qui surprend le plus : la marque la mieux placée de France plafonne à
+20 citations sur 100 réponses. Personne n'est installé, le terrain est vide. Et
+les trois domaines que les modèles consultent le plus sur ce secteur —
+cosmebio.org, aroma-zone.com et yuka.io — sont des sources que vos clients
+peuvent viser directement.
+
+Le classement complet est public, la méthodologie aussi, et personne ne paie pour
+y figurer : https://mentio.fr/barometre
+
+Si l'un de vos clients y figure et que vous voulez son rapport détaillé — score
+par moteur, rang sectoriel, questions où il est absent, domaines à conquérir,
+douze actions classées par effet attendu, le tout à vos couleurs et transférable
+tel quel — dites-moi lequel et je le génère dans la journée.
+
+Luiz
+Mentio — baromètre de la visibilité des marques dans les réponses IA
+mentio.fr · Nice
+```
+
+**Relance J+4 — Je remonte ce message**
+
+```
+Maya Choppin de Janvry, je remonte ce message au cas où il serait passé.
+
+Le relevé est prêt et il est à vous, sans contrepartie : https://mentio.fr/barometre
+
+Je vous le détaille, ou je laisse tomber ?
+
+Luiz
+```
+
+**Relance J+11 — Dernier message — le Baromètre est public**
+
+```
+Maya Choppin de Janvry, dernier message sur le sujet.
+
+Le Baromètre est publié, gratuit et sans compte : https://mentio.fr/barometre
+Prenez ce qui vous sert.
+
+Je ne relancerai plus. Si le sujet remonte chez vous un jour, mon adresse ne
+change pas.
+
+Luiz
+```
+
+**Rapport :** https://mentio.fr/barometre — vérifié HTTP 200
+
+---
+
+## 21. Les Causantes · Florence Caruel
+*PALIER 3 — template `palier3-sectorielle` — sans chiffre, lien vers le Baromètre*
+
+**À :** florence@lescausantes.com
+**Objet :** Les 50 marques de soin, classées par citation IA
+
+```
+Florence Caruel,
+
+Vous accompagnez des marques de beauté et de cosmétique. Il existe un canal
+d'acquisition qui ne remonte dans aucun outil d'analytics, et je viens d'en
+publier la mesure.
+
+Quand un consommateur demande à ChatGPT ou Gemini quelle crème solaire clean
+acheter, quel collagène choisir ou quel sérum vitamine C prendre, trois ou quatre
+marques sont citées et les autres n'existent pas. Aucun clic n'est enregistré,
+rien n'apparaît dans les statistiques du site. Je mesure ce canal chaque semaine
+depuis juillet : 50 questions d'intention d'achat fixes, posées à ChatGPT,
+Gemini, Claude et Perplexity via leurs API officielles, et relevé des marques
+citées, de leur position, et des sites que les modèles ont consultés pour
+répondre. 50 marques françaises sont classées.
+
+Le résultat qui surprend le plus : la marque la mieux placée de France plafonne à
+20 citations sur 100 réponses. Personne n'est installé, le terrain est vide. Et
+les trois domaines que les modèles consultent le plus sur ce secteur —
+cosmebio.org, aroma-zone.com et yuka.io — sont des sources que vos clients
+peuvent viser directement.
+
+Le classement complet est public, la méthodologie aussi, et personne ne paie pour
+y figurer : https://mentio.fr/barometre
+
+Si l'un de vos clients y figure et que vous voulez son rapport détaillé — score
+par moteur, rang sectoriel, questions où il est absent, domaines à conquérir,
+douze actions classées par effet attendu, le tout à vos couleurs et transférable
+tel quel — dites-moi lequel et je le génère dans la journée.
+
+Luiz
+Mentio — baromètre de la visibilité des marques dans les réponses IA
+mentio.fr · Nice
+```
+
+**Relance J+4 — Je remonte ce message**
+
+```
+Florence Caruel, je remonte ce message au cas où il serait passé.
+
+Le relevé est prêt et il est à vous, sans contrepartie : https://mentio.fr/barometre
+
+Je vous le détaille, ou je laisse tomber ?
+
+Luiz
+```
+
+**Relance J+11 — Dernier message — le Baromètre est public**
+
+```
+Florence Caruel, dernier message sur le sujet.
+
+Le Baromètre est publié, gratuit et sans compte : https://mentio.fr/barometre
+Prenez ce qui vous sert.
+
+Je ne relancerai plus. Si le sujet remonte chez vous un jour, mon adresse ne
+change pas.
+
+Luiz
+```
+
+**Rapport :** https://mentio.fr/barometre — vérifié HTTP 200
+
+---
+
+## 22. Incare · Direction / Lead Marketing
+*PALIER 3 — template `palier3-sectorielle` — sans chiffre, lien vers le Baromètre*
+
+**À :** hello@incare-agency.com
+**Objet :** Les 50 marques de soin, classées par citation IA
+
+```
+Direction / Lead Marketing,
+
+Vous accompagnez des marques de beauté et de cosmétique. Il existe un canal
+d'acquisition qui ne remonte dans aucun outil d'analytics, et je viens d'en
+publier la mesure.
+
+Quand un consommateur demande à ChatGPT ou Gemini quelle crème solaire clean
+acheter, quel collagène choisir ou quel sérum vitamine C prendre, trois ou quatre
+marques sont citées et les autres n'existent pas. Aucun clic n'est enregistré,
+rien n'apparaît dans les statistiques du site. Je mesure ce canal chaque semaine
+depuis juillet : 50 questions d'intention d'achat fixes, posées à ChatGPT,
+Gemini, Claude et Perplexity via leurs API officielles, et relevé des marques
+citées, de leur position, et des sites que les modèles ont consultés pour
+répondre. 50 marques françaises sont classées.
+
+Le résultat qui surprend le plus : la marque la mieux placée de France plafonne à
+20 citations sur 100 réponses. Personne n'est installé, le terrain est vide. Et
+les trois domaines que les modèles consultent le plus sur ce secteur —
+cosmebio.org, aroma-zone.com et yuka.io — sont des sources que vos clients
+peuvent viser directement.
+
+Le classement complet est public, la méthodologie aussi, et personne ne paie pour
+y figurer : https://mentio.fr/barometre
+
+Si l'un de vos clients y figure et que vous voulez son rapport détaillé — score
+par moteur, rang sectoriel, questions où il est absent, domaines à conquérir,
+douze actions classées par effet attendu, le tout à vos couleurs et transférable
+tel quel — dites-moi lequel et je le génère dans la journée.
+
+Luiz
+Mentio — baromètre de la visibilité des marques dans les réponses IA
+mentio.fr · Nice
+```
+
+**Relance J+4 — Je remonte ce message**
+
+```
+Direction / Lead Marketing, je remonte ce message au cas où il serait passé.
+
+Le relevé est prêt et il est à vous, sans contrepartie : https://mentio.fr/barometre
+
+Je vous le détaille, ou je laisse tomber ?
+
+Luiz
+```
+
+**Relance J+11 — Dernier message — le Baromètre est public**
+
+```
+Direction / Lead Marketing, dernier message sur le sujet.
+
+Le Baromètre est publié, gratuit et sans compte : https://mentio.fr/barometre
+Prenez ce qui vous sert.
+
+Je ne relancerai plus. Si le sujet remonte chez vous un jour, mon adresse ne
+change pas.
+
+Luiz
+```
+
+**Rapport :** https://mentio.fr/barometre — vérifié HTTP 200
+
+---
+
+## 23. API and You · Direction commerciale
+*PALIER 3 — template `palier3-sectorielle` — sans chiffre, lien vers le Baromètre*
+
+**À :** info@api-and-you.com
+**Objet :** Les 50 marques de soin, classées par citation IA
+
+```
+Direction commerciale,
+
+Vous accompagnez des marques de beauté et de cosmétique. Il existe un canal
+d'acquisition qui ne remonte dans aucun outil d'analytics, et je viens d'en
+publier la mesure.
+
+Quand un consommateur demande à ChatGPT ou Gemini quelle crème solaire clean
+acheter, quel collagène choisir ou quel sérum vitamine C prendre, trois ou quatre
+marques sont citées et les autres n'existent pas. Aucun clic n'est enregistré,
+rien n'apparaît dans les statistiques du site. Je mesure ce canal chaque semaine
+depuis juillet : 50 questions d'intention d'achat fixes, posées à ChatGPT,
+Gemini, Claude et Perplexity via leurs API officielles, et relevé des marques
+citées, de leur position, et des sites que les modèles ont consultés pour
+répondre. 50 marques françaises sont classées.
+
+Le résultat qui surprend le plus : la marque la mieux placée de France plafonne à
+20 citations sur 100 réponses. Personne n'est installé, le terrain est vide. Et
+les trois domaines que les modèles consultent le plus sur ce secteur —
+cosmebio.org, aroma-zone.com et yuka.io — sont des sources que vos clients
+peuvent viser directement.
+
+Le classement complet est public, la méthodologie aussi, et personne ne paie pour
+y figurer : https://mentio.fr/barometre
+
+Si l'un de vos clients y figure et que vous voulez son rapport détaillé — score
+par moteur, rang sectoriel, questions où il est absent, domaines à conquérir,
+douze actions classées par effet attendu, le tout à vos couleurs et transférable
+tel quel — dites-moi lequel et je le génère dans la journée.
+
+Luiz
+Mentio — baromètre de la visibilité des marques dans les réponses IA
+mentio.fr · Nice
+```
+
+**Relance J+4 — Je remonte ce message**
+
+```
+Direction commerciale, je remonte ce message au cas où il serait passé.
+
+Le relevé est prêt et il est à vous, sans contrepartie : https://mentio.fr/barometre
+
+Je vous le détaille, ou je laisse tomber ?
+
+Luiz
+```
+
+**Relance J+11 — Dernier message — le Baromètre est public**
+
+```
+Direction commerciale, dernier message sur le sujet.
+
+Le Baromètre est publié, gratuit et sans compte : https://mentio.fr/barometre
+Prenez ce qui vous sert.
+
+Je ne relancerai plus. Si le sujet remonte chez vous un jour, mon adresse ne
+change pas.
+
+Luiz
+```
+
+**Rapport :** https://mentio.fr/barometre — vérifié HTTP 200
+
+---
+
+## 24. Drakkar · Thomas Sénécal
+*PALIER 4 — template `palier4-growth` — sans chiffre, lien vers le Baromètre*
+
+**À :** thomas@drakkar.co
+**Objet :** Le canal d'acquisition qui n'est dans aucun de vos dashboards
+
+```
+Thomas Sénécal,
+
+Vous pilotez l'acquisition de marques e-commerce. Il existe un canal dont le
+poids augmente vite et qui ne remonte dans aucun outil de mesure — je viens d'en
+publier le relevé.
+
+Quand un acheteur demande conseil à ChatGPT, Gemini ou Perplexity plutôt que de
+chercher sur Google, trois ou quatre marques sont citées dans la réponse et les
+autres n'existent pas. Aucun clic, aucune source, rien dans vos rapports. Je
+mesure ce canal chaque semaine : 50 questions d'intention d'achat réelles par
+secteur, quatre moteurs interrogés via leurs API officielles avec recherche web,
+relevé des marques citées, de leur position dans la réponse, et des sites que les
+modèles ont consultés pour répondre.
+
+Deux éditions sont publiées : 50 marques de beauté et compléments, et 43 agences
+GEO françaises. Sur la première, la marque la mieux placée plafonne à 20
+citations sur 100 réponses — autrement dit personne n'est installé, et une marque
+qui s'y met maintenant prend une place vide.
+
+Le classement est public et personne n'y achète sa place : https://mentio.fr/barometre
+
+Si une marque de votre portefeuille y figure, je génère son rapport détaillé —
+score par moteur, rang sectoriel, questions précises où elle est absente,
+domaines à conquérir, et douze actions classées par effet attendu, chacune avec
+sa route d'entrée et le format que le domaine publie. À vos couleurs,
+transférable au client tel quel.
+
+Dites-moi laquelle et je vous l'envoie.
+
+Luiz
+Mentio — baromètre de la visibilité des marques dans les réponses IA
+mentio.fr · Nice
+```
+
+**Relance J+4 — Je remonte ce message**
+
+```
+Thomas Sénécal, je remonte ce message au cas où il serait passé.
+
+Le relevé est prêt et il est à vous, sans contrepartie : https://mentio.fr/barometre
+
+Je vous le détaille, ou je laisse tomber ?
+
+Luiz
+```
+
+**Relance J+11 — Dernier message — le Baromètre est public**
+
+```
+Thomas Sénécal, dernier message sur le sujet.
+
+Le Baromètre est publié, gratuit et sans compte : https://mentio.fr/barometre
+Prenez ce qui vous sert.
+
+Je ne relancerai plus. Si le sujet remonte chez vous un jour, mon adresse ne
+change pas.
+
+Luiz
+```
+
+**Rapport :** https://mentio.fr/barometre — vérifié HTTP 200
+
+---
+
+## 25. Growth Room · Julien Reysz
+*PALIER 4 — template `palier4-growth` — sans chiffre, lien vers le Baromètre*
+
+**À :** julien@growthroom.co
+**Objet :** Le canal d'acquisition qui n'est dans aucun de vos dashboards
+
+```
+Julien Reysz,
+
+Vous pilotez l'acquisition de marques e-commerce. Il existe un canal dont le
+poids augmente vite et qui ne remonte dans aucun outil de mesure — je viens d'en
+publier le relevé.
+
+Quand un acheteur demande conseil à ChatGPT, Gemini ou Perplexity plutôt que de
+chercher sur Google, trois ou quatre marques sont citées dans la réponse et les
+autres n'existent pas. Aucun clic, aucune source, rien dans vos rapports. Je
+mesure ce canal chaque semaine : 50 questions d'intention d'achat réelles par
+secteur, quatre moteurs interrogés via leurs API officielles avec recherche web,
+relevé des marques citées, de leur position dans la réponse, et des sites que les
+modèles ont consultés pour répondre.
+
+Deux éditions sont publiées : 50 marques de beauté et compléments, et 43 agences
+GEO françaises. Sur la première, la marque la mieux placée plafonne à 20
+citations sur 100 réponses — autrement dit personne n'est installé, et une marque
+qui s'y met maintenant prend une place vide.
+
+Le classement est public et personne n'y achète sa place : https://mentio.fr/barometre
+
+Si une marque de votre portefeuille y figure, je génère son rapport détaillé —
+score par moteur, rang sectoriel, questions précises où elle est absente,
+domaines à conquérir, et douze actions classées par effet attendu, chacune avec
+sa route d'entrée et le format que le domaine publie. À vos couleurs,
+transférable au client tel quel.
+
+Dites-moi laquelle et je vous l'envoie.
+
+Luiz
+Mentio — baromètre de la visibilité des marques dans les réponses IA
+mentio.fr · Nice
+```
+
+**Relance J+4 — Je remonte ce message**
+
+```
+Julien Reysz, je remonte ce message au cas où il serait passé.
+
+Le relevé est prêt et il est à vous, sans contrepartie : https://mentio.fr/barometre
+
+Je vous le détaille, ou je laisse tomber ?
+
+Luiz
+```
+
+**Relance J+11 — Dernier message — le Baromètre est public**
+
+```
+Julien Reysz, dernier message sur le sujet.
+
+Le Baromètre est publié, gratuit et sans compte : https://mentio.fr/barometre
+Prenez ce qui vous sert.
+
+Je ne relancerai plus. Si le sujet remonte chez vous un jour, mon adresse ne
+change pas.
+
+Luiz
+```
+
+**Rapport :** https://mentio.fr/barometre — vérifié HTTP 200
+
+---
+
+## 26. Boryl · Arthur Sotto
+*PALIER 4 — template `palier4-growth` — sans chiffre, lien vers le Baromètre*
+
+**À :** arthur@boryl.fr
+**Objet :** Le canal d'acquisition qui n'est dans aucun de vos dashboards
+
+```
+Arthur Sotto,
+
+Vous pilotez l'acquisition de marques e-commerce. Il existe un canal dont le
+poids augmente vite et qui ne remonte dans aucun outil de mesure — je viens d'en
+publier le relevé.
+
+Quand un acheteur demande conseil à ChatGPT, Gemini ou Perplexity plutôt que de
+chercher sur Google, trois ou quatre marques sont citées dans la réponse et les
+autres n'existent pas. Aucun clic, aucune source, rien dans vos rapports. Je
+mesure ce canal chaque semaine : 50 questions d'intention d'achat réelles par
+secteur, quatre moteurs interrogés via leurs API officielles avec recherche web,
+relevé des marques citées, de leur position dans la réponse, et des sites que les
+modèles ont consultés pour répondre.
+
+Deux éditions sont publiées : 50 marques de beauté et compléments, et 43 agences
+GEO françaises. Sur la première, la marque la mieux placée plafonne à 20
+citations sur 100 réponses — autrement dit personne n'est installé, et une marque
+qui s'y met maintenant prend une place vide.
+
+Le classement est public et personne n'y achète sa place : https://mentio.fr/barometre
+
+Si une marque de votre portefeuille y figure, je génère son rapport détaillé —
+score par moteur, rang sectoriel, questions précises où elle est absente,
+domaines à conquérir, et douze actions classées par effet attendu, chacune avec
+sa route d'entrée et le format que le domaine publie. À vos couleurs,
+transférable au client tel quel.
+
+Dites-moi laquelle et je vous l'envoie.
+
+Luiz
+Mentio — baromètre de la visibilité des marques dans les réponses IA
+mentio.fr · Nice
+```
+
+**Relance J+4 — Je remonte ce message**
+
+```
+Arthur Sotto, je remonte ce message au cas où il serait passé.
+
+Le relevé est prêt et il est à vous, sans contrepartie : https://mentio.fr/barometre
+
+Je vous le détaille, ou je laisse tomber ?
+
+Luiz
+```
+
+**Relance J+11 — Dernier message — le Baromètre est public**
+
+```
+Arthur Sotto, dernier message sur le sujet.
+
+Le Baromètre est publié, gratuit et sans compte : https://mentio.fr/barometre
+Prenez ce qui vous sert.
+
+Je ne relancerai plus. Si le sujet remonte chez vous un jour, mon adresse ne
+change pas.
+
+Luiz
+```
+
+**Rapport :** https://mentio.fr/barometre — vérifié HTTP 200
+
+---
+
+## 27. Noiiice · Équipe Direction
+*PALIER 4 — template `palier4-growth` — sans chiffre, lien vers le Baromètre*
+
+**À :** hello@noiiice.fr
+**Objet :** Le canal d'acquisition qui n'est dans aucun de vos dashboards
+
+```
+Équipe Direction,
+
+Vous pilotez l'acquisition de marques e-commerce. Il existe un canal dont le
+poids augmente vite et qui ne remonte dans aucun outil de mesure — je viens d'en
+publier le relevé.
+
+Quand un acheteur demande conseil à ChatGPT, Gemini ou Perplexity plutôt que de
+chercher sur Google, trois ou quatre marques sont citées dans la réponse et les
+autres n'existent pas. Aucun clic, aucune source, rien dans vos rapports. Je
+mesure ce canal chaque semaine : 50 questions d'intention d'achat réelles par
+secteur, quatre moteurs interrogés via leurs API officielles avec recherche web,
+relevé des marques citées, de leur position dans la réponse, et des sites que les
+modèles ont consultés pour répondre.
+
+Deux éditions sont publiées : 50 marques de beauté et compléments, et 43 agences
+GEO françaises. Sur la première, la marque la mieux placée plafonne à 20
+citations sur 100 réponses — autrement dit personne n'est installé, et une marque
+qui s'y met maintenant prend une place vide.
+
+Le classement est public et personne n'y achète sa place : https://mentio.fr/barometre
+
+Si une marque de votre portefeuille y figure, je génère son rapport détaillé —
+score par moteur, rang sectoriel, questions précises où elle est absente,
+domaines à conquérir, et douze actions classées par effet attendu, chacune avec
+sa route d'entrée et le format que le domaine publie. À vos couleurs,
+transférable au client tel quel.
+
+Dites-moi laquelle et je vous l'envoie.
+
+Luiz
+Mentio — baromètre de la visibilité des marques dans les réponses IA
+mentio.fr · Nice
+```
+
+**Relance J+4 — Je remonte ce message**
+
+```
+Équipe Direction, je remonte ce message au cas où il serait passé.
+
+Le relevé est prêt et il est à vous, sans contrepartie : https://mentio.fr/barometre
+
+Je vous le détaille, ou je laisse tomber ?
+
+Luiz
+```
+
+**Relance J+11 — Dernier message — le Baromètre est public**
+
+```
+Équipe Direction, dernier message sur le sujet.
+
+Le Baromètre est publié, gratuit et sans compte : https://mentio.fr/barometre
+Prenez ce qui vous sert.
+
+Je ne relancerai plus. Si le sujet remonte chez vous un jour, mon adresse ne
+change pas.
+
+Luiz
+```
+
+**Rapport :** https://mentio.fr/barometre — vérifié HTTP 200
+
+---
+
+## 28. Kiliba · Direction commerciale
+*PALIER 4 — template `palier4-growth` — sans chiffre, lien vers le Baromètre*
+
+**À :** contact@kiliba.com
+**Objet :** Le canal d'acquisition qui n'est dans aucun de vos dashboards
+
+```
+Direction commerciale,
+
+Vous pilotez l'acquisition de marques e-commerce. Il existe un canal dont le
+poids augmente vite et qui ne remonte dans aucun outil de mesure — je viens d'en
+publier le relevé.
+
+Quand un acheteur demande conseil à ChatGPT, Gemini ou Perplexity plutôt que de
+chercher sur Google, trois ou quatre marques sont citées dans la réponse et les
+autres n'existent pas. Aucun clic, aucune source, rien dans vos rapports. Je
+mesure ce canal chaque semaine : 50 questions d'intention d'achat réelles par
+secteur, quatre moteurs interrogés via leurs API officielles avec recherche web,
+relevé des marques citées, de leur position dans la réponse, et des sites que les
+modèles ont consultés pour répondre.
+
+Deux éditions sont publiées : 50 marques de beauté et compléments, et 43 agences
+GEO françaises. Sur la première, la marque la mieux placée plafonne à 20
+citations sur 100 réponses — autrement dit personne n'est installé, et une marque
+qui s'y met maintenant prend une place vide.
+
+Le classement est public et personne n'y achète sa place : https://mentio.fr/barometre
+
+Si une marque de votre portefeuille y figure, je génère son rapport détaillé —
+score par moteur, rang sectoriel, questions précises où elle est absente,
+domaines à conquérir, et douze actions classées par effet attendu, chacune avec
+sa route d'entrée et le format que le domaine publie. À vos couleurs,
+transférable au client tel quel.
+
+Dites-moi laquelle et je vous l'envoie.
+
+Luiz
+Mentio — baromètre de la visibilité des marques dans les réponses IA
+mentio.fr · Nice
+```
+
+**Relance J+4 — Je remonte ce message**
+
+```
+Direction commerciale, je remonte ce message au cas où il serait passé.
+
+Le relevé est prêt et il est à vous, sans contrepartie : https://mentio.fr/barometre
+
+Je vous le détaille, ou je laisse tomber ?
+
+Luiz
+```
+
+**Relance J+11 — Dernier message — le Baromètre est public**
+
+```
+Direction commerciale, dernier message sur le sujet.
+
+Le Baromètre est publié, gratuit et sans compte : https://mentio.fr/barometre
+Prenez ce qui vous sert.
+
+Je ne relancerai plus. Si le sujet remonte chez vous un jour, mon adresse ne
+change pas.
+
+Luiz
+```
+
+**Rapport :** https://mentio.fr/barometre — vérifié HTTP 200
 
 ---

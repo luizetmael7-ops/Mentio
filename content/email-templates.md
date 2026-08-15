@@ -112,17 +112,23 @@ de fois où ChatGPT, Gemini, Claude et Perplexity les citent en réponse à 50
 questions d'intention — « meilleure agence GEO Paris », « qui peut m'aider à être
 cité par ChatGPT » et leurs variantes.
 
-{agence} n'y figure pas encore, et c'est précisément l'information : sur ces
-questions-là, les modèles citent d'autres noms. Le classement complet est public,
-la méthodologie aussi, et personne ne paie pour y figurer : {lien}
+{agence} n'y figure pas, et c'est précisément l'information : sur ces
+questions-là, les modèles citent d'autres noms. Eskimoz sort première avec 34
+citations sur 100 réponses, et la dixième en compte encore 9 — le terrain n'est
+pas verrouillé, il est simplement occupé par ceux qui y sont.
 
-Je peux générer le relevé détaillé de n'importe quelle marque du baromètre — le
-vôtre dès la prochaine édition, ou celui d'un de vos clients dès aujourd'hui.
-Score par moteur, concurrents cités à sa place, questions perdues, domaines à
-conquérir, et douze actions classées par effet attendu, chacune avec sa route
-d'entrée concrète. À vos couleurs, transférable au client.
+Le protocole est public, intervalles de confiance et limites de la mesure
+compris. Personne ne paie pour y figurer : le classement est la mesure. Le voici
+en entier : {lien}
 
-Souhaitez-vous que j'en prépare un ?
+Deux choses possibles ensuite. La prochaine édition intègre les agences qui
+ressortent d'ici là, sans intervention de ma part. Et je peux générer dès
+aujourd'hui le rapport détaillé de n'importe quelle marque du baromètre beauté —
+score par moteur, concurrents cités à sa place, questions perdues, domaines à
+conquérir, douze actions classées par effet attendu — à vos couleurs et
+transférable à un client tel quel.
+
+Ça vous intéresse ?
 
 Luiz
 Mentio — baromètre de la visibilité des marques dans les réponses IA
@@ -157,67 +163,85 @@ Mentio — baromètre de la visibilité des marques dans les réponses IA
 mentio.fr · Nice
 
 ## palier3-sectorielle
-Objet: {client} — {n_client} citations IA contre {n_conc} pour {conc}
+Objet: Les 50 marques de soin, classées par citation IA
 
 {contact},
 
-Vous accompagnez des marques de beauté et de cosmétique sur leur visibilité.
-Voici la mesure de l'étage au-dessus du référencement classique.
+Vous accompagnez des marques de beauté et de cosmétique. Il existe un canal
+d'acquisition qui ne remonte dans aucun outil d'analytics, et je viens d'en
+publier la mesure.
 
-Chaque semaine, je pose 50 questions d'intention d'achat à ChatGPT, Gemini,
-Claude et Perplexity — les questions que vos clients finaux posent réellement —
-et je relève quelles marques sont citées, à quelle position, et depuis quelles
-sources. {client} ressort {n_client} fois sur 100 réponses ; {conc} ressort
-{n_conc} fois. Le classement est public et personne n'y achète sa place.
+Quand un consommateur demande à ChatGPT ou Gemini quelle crème solaire clean
+acheter, quel collagène choisir ou quel sérum vitamine C prendre, trois ou quatre
+marques sont citées et les autres n'existent pas. Aucun clic n'est enregistré,
+rien n'apparaît dans les statistiques du site. Je mesure ce canal chaque semaine
+depuis juillet : 50 questions d'intention d'achat fixes, posées à ChatGPT,
+Gemini, Claude et Perplexity via leurs API officielles, et relevé des marques
+citées, de leur position, et des sites que les modèles ont consultés pour
+répondre. 50 marques françaises sont classées.
 
-Le rapport complet est ici, à vos couleurs : {lien}
-Il détaille les questions où {client} n'apparaît pas, les domaines que les
-modèles consultent sur ce secteur, et douze actions priorisées avec leur route
-d'entrée concrète — contact, format attendu, angle qui fonctionne sur le site
-visé.
+Le résultat qui surprend le plus : la marque la mieux placée de France plafonne à
+20 citations sur 100 réponses. Personne n'est installé, le terrain est vide. Et
+les trois domaines que les modèles consultent le plus sur ce secteur —
+cosmebio.org, aroma-zone.com et yuka.io — sont des sources que vos clients
+peuvent viser directement.
 
-Il est à vous, sans contrepartie. Si ça vous sert pour d'autres clients,
-dites-le moi.
+Le classement complet est public, la méthodologie aussi, et personne ne paie pour
+y figurer : {lien}
+
+Si l'un de vos clients y figure et que vous voulez son rapport détaillé — score
+par moteur, rang sectoriel, questions où il est absent, domaines à conquérir,
+douze actions classées par effet attendu, le tout à vos couleurs et transférable
+tel quel — dites-moi lequel et je le génère dans la journée.
 
 Luiz
 Mentio — baromètre de la visibilité des marques dans les réponses IA
 mentio.fr · Nice
 
 ## palier4-growth
-Objet: {client} — le canal d'acquisition qui n'est pas dans vos dashboards
+Objet: Le canal d'acquisition qui n'est dans aucun de vos dashboards
 
 {contact},
 
-Vous pilotez l'acquisition de {client}. Il existe un canal qui ne remonte dans
-aucun outil d'analytics, et dont le poids augmente vite.
+Vous pilotez l'acquisition de marques e-commerce. Il existe un canal dont le
+poids augmente vite et qui ne remonte dans aucun outil de mesure — je viens d'en
+publier le relevé.
 
 Quand un acheteur demande conseil à ChatGPT, Gemini ou Perplexity plutôt que de
 chercher sur Google, trois ou quatre marques sont citées dans la réponse et les
-autres n'existent pas. Aucun clic n'est enregistré, aucune source n'apparaît dans
-vos rapports. Je mesure ce canal chaque semaine : 50 questions d'intention
-d'achat réelles par secteur, quatre moteurs, relevé des marques citées, de leur
-position, et des sites que les modèles ont consultés. {client} ressort
-{n_client} fois sur 100 réponses ; {conc} ressort {n_conc} fois.
+autres n'existent pas. Aucun clic, aucune source, rien dans vos rapports. Je
+mesure ce canal chaque semaine : 50 questions d'intention d'achat réelles par
+secteur, quatre moteurs interrogés via leurs API officielles avec recherche web,
+relevé des marques citées, de leur position dans la réponse, et des sites que les
+modèles ont consultés pour répondre.
 
-Le rapport complet est à vos couleurs et transférable à votre client : {lien}
-Il contient le score par moteur, le rang sectoriel, les questions précises où la
-marque est absente, les domaines à conquérir, et douze actions classées par effet
-attendu — chacune avec sa route d'entrée, le format que le domaine publie et
-l'angle qui y fonctionne.
+Deux éditions sont publiées : 50 marques de beauté et compléments, et 43 agences
+GEO françaises. Sur la première, la marque la mieux placée plafonne à 20
+citations sur 100 réponses — autrement dit personne n'est installé, et une marque
+qui s'y met maintenant prend une place vide.
 
-C'est à vous, sans contrepartie. Si c'est un sujet chez vous, dites-le moi.
+Le classement est public et personne n'y achète sa place : {lien}
+
+Si une marque de votre portefeuille y figure, je génère son rapport détaillé —
+score par moteur, rang sectoriel, questions précises où elle est absente,
+domaines à conquérir, et douze actions classées par effet attendu, chacune avec
+sa route d'entrée et le format que le domaine publie. À vos couleurs,
+transférable au client tel quel.
+
+Dites-moi laquelle et je vous l'envoie.
 
 Luiz
 Mentio — baromètre de la visibilité des marques dans les réponses IA
 mentio.fr · Nice
 
 ## relance-j4
-Objet: {client} — je remonte ce message
+Objet: Je remonte ce message
 
-{contact}, je remonte ce message au cas où il serait passé — le relevé de
-{client} est prêt et à vos couleurs : {lien}
+{contact}, je remonte ce message au cas où il serait passé.
 
-Je vous l'envoie, ou je laisse tomber ?
+Le relevé est prêt et il est à vous, sans contrepartie : {lien}
+
+Je vous le détaille, ou je laisse tomber ?
 
 Luiz
 
@@ -226,8 +250,8 @@ Objet: Dernier message — le Baromètre est public
 
 {contact}, dernier message sur le sujet.
 
-Le Baromètre est publié et {client} y figure : {lien}
-C'est public et gratuit, prenez ce qui vous sert.
+Le Baromètre est publié, gratuit et sans compte : {lien}
+Prenez ce qui vous sert.
 
 Je ne relancerai plus. Si le sujet remonte chez vous un jour, mon adresse ne
 change pas.

@@ -495,7 +495,14 @@ async function main() {
 
     // Sans marque rapprochée, il n'existe aucun rapport personnel : le lien
     // pointe vers le Baromètre public. Un lien réel, jamais un lien inventé.
-    const reportUrl = brand ? reportUrlFor(a) : `${BASE}/barometre`;
+    //
+    // Et vers le BON Baromètre : un email qui parle du classement des agences
+    // GEO doit y mener, pas vers celui de la beauté. C'est le palier qui décide,
+    // parce que c'est lui qui décide du sujet de l'email.
+    const barometreUrl = /palier\s*1/i.test(a.palier)
+      ? `${BASE}/barometre/agences-geo`
+      : `${BASE}/barometre`;
+    const reportUrl = brand ? reportUrlFor(a) : barometreUrl;
     const status = SKIP_CHECK ? 200 : await checkLink(reportUrl);
     if (status !== 200) {
       deadLinks.push({ a, url: reportUrl, status });
