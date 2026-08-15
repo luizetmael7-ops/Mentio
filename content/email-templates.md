@@ -70,3 +70,304 @@ de son client (paliers 3 et 4).
 COLLE TES TEMPLATES SOUS CETTE LIGNE, un `##` par clé du tableau ci-dessus.
 Le générateur refuse de tourner tant qu'une clé attendue est absente.
 -->
+
+## palier1-classee
+Objet: {client}, {rang} du classement de visibilité IA des agences GEO
+
+{contact},
+
+J'ai publié le 13 août le premier baromètre indépendant de la visibilité des
+agences GEO françaises dans les réponses des IA. Sur {total} agences classées,
+{client} ressort {rang}, avec {n_eux} citations sur 100 réponses.
+
+Le protocole : 50 questions d'intention posées chaque semaine à ChatGPT, Gemini,
+Claude et Perplexity, via leurs API officielles avec recherche web. Je relève les
+agences citées, leur position dans la réponse, et les sources que les modèles
+consultent. Personne n'achète sa place, aucun placement payant n'existe sous
+aucune forme, et la méthodologie est publique — intervalles de confiance et
+limites de la mesure compris : mentio.fr/methodologie
+
+Le relevé détaillé de {client} est ici : {lien}
+Vous y trouverez le score par moteur, les agences citées à votre place, les
+questions où vous n'apparaissez pas, les domaines que les modèles consultent sur
+ce secteur, et douze actions classées par effet attendu — chacune avec sa route
+d'entrée, le format attendu et l'angle qui fonctionne sur le domaine visé.
+
+Il est à vous, sans contrepartie. Le même rapport existe pour n'importe quelle
+marque du baromètre beauté, à vos couleurs et transférable à un client tel quel.
+Si c'est un usage qui vous intéresse, dites-le moi.
+
+Luiz
+Mentio — baromètre de la visibilité des marques dans les réponses IA
+mentio.fr · Nice
+
+## palier1-geo
+Objet: Le classement des agences GEO françaises, par la mesure
+
+{contact},
+
+J'ai publié le 13 août le premier baromètre indépendant de la visibilité des
+agences GEO françaises dans les réponses IA : 43 agences classées selon le nombre
+de fois où ChatGPT, Gemini, Claude et Perplexity les citent en réponse à 50
+questions d'intention — « meilleure agence GEO Paris », « qui peut m'aider à être
+cité par ChatGPT » et leurs variantes.
+
+{agence} n'y figure pas encore, et c'est précisément l'information : sur ces
+questions-là, les modèles citent d'autres noms. Le classement complet est public,
+la méthodologie aussi, et personne ne paie pour y figurer : {lien}
+
+Je peux générer le relevé détaillé de n'importe quelle marque du baromètre — le
+vôtre dès la prochaine édition, ou celui d'un de vos clients dès aujourd'hui.
+Score par moteur, concurrents cités à sa place, questions perdues, domaines à
+conquérir, et douze actions classées par effet attendu, chacune avec sa route
+d'entrée concrète. À vos couleurs, transférable au client.
+
+Souhaitez-vous que j'en prépare un ?
+
+Luiz
+Mentio — baromètre de la visibilité des marques dans les réponses IA
+mentio.fr · Nice
+
+## palier2-consultant
+Objet: Le classement des agences GEO, mesuré — en exclusivité
+
+{contact},
+
+Vous publiez sur la visibilité IA, et je vous écris parce que j'ai construit un
+jeu de données sur ce marché qui n'existe nulle part ailleurs en France.
+
+Mentio mesure quelles marques les IA citent réellement : 50 questions d'intention
+d'achat fixes par secteur, rejouées chaque semaine sur ChatGPT, Gemini, Claude et
+Perplexity, avec relevé des marques citées, de leur position, et des sources que
+les modèles consultent pour répondre. Méthodologie publique, intervalles de
+confiance, aucun placement payant.
+
+Deux éditions sont en ligne. Beauté, soin et compléments : 50 marques françaises
+classées, trois éditions depuis juillet, ce qui permet de suivre les mouvements
+dans le temps. Agences GEO France, publiée le 13 août : 43 agences classées selon
+leur visibilité réelle dans les réponses, Eskimoz en tête à 34 sur 100. C'est, à
+ma connaissance, la seule mesure indépendante de ce marché.
+
+Les données sont à vous si elles servent une publication — export, API, ou une
+analyse que je rédige avec vous : {lien}
+Je vous les envoie ?
+
+Luiz
+Mentio — baromètre de la visibilité des marques dans les réponses IA
+mentio.fr · Nice
+
+## palier3-sectorielle
+Objet: {client} — {n_client} citations IA contre {n_conc} pour {conc}
+
+{contact},
+
+Vous accompagnez des marques de beauté et de cosmétique sur leur visibilité.
+Voici la mesure de l'étage au-dessus du référencement classique.
+
+Chaque semaine, je pose 50 questions d'intention d'achat à ChatGPT, Gemini,
+Claude et Perplexity — les questions que vos clients finaux posent réellement —
+et je relève quelles marques sont citées, à quelle position, et depuis quelles
+sources. {client} ressort {n_client} fois sur 100 réponses ; {conc} ressort
+{n_conc} fois. Le classement est public et personne n'y achète sa place.
+
+Le rapport complet est ici, à vos couleurs : {lien}
+Il détaille les questions où {client} n'apparaît pas, les domaines que les
+modèles consultent sur ce secteur, et douze actions priorisées avec leur route
+d'entrée concrète — contact, format attendu, angle qui fonctionne sur le site
+visé.
+
+Il est à vous, sans contrepartie. Si ça vous sert pour d'autres clients,
+dites-le moi.
+
+Luiz
+Mentio — baromètre de la visibilité des marques dans les réponses IA
+mentio.fr · Nice
+
+## palier4-growth
+Objet: {client} — le canal d'acquisition qui n'est pas dans vos dashboards
+
+{contact},
+
+Vous pilotez l'acquisition de {client}. Il existe un canal qui ne remonte dans
+aucun outil d'analytics, et dont le poids augmente vite.
+
+Quand un acheteur demande conseil à ChatGPT, Gemini ou Perplexity plutôt que de
+chercher sur Google, trois ou quatre marques sont citées dans la réponse et les
+autres n'existent pas. Aucun clic n'est enregistré, aucune source n'apparaît dans
+vos rapports. Je mesure ce canal chaque semaine : 50 questions d'intention
+d'achat réelles par secteur, quatre moteurs, relevé des marques citées, de leur
+position, et des sites que les modèles ont consultés. {client} ressort
+{n_client} fois sur 100 réponses ; {conc} ressort {n_conc} fois.
+
+Le rapport complet est à vos couleurs et transférable à votre client : {lien}
+Il contient le score par moteur, le rang sectoriel, les questions précises où la
+marque est absente, les domaines à conquérir, et douze actions classées par effet
+attendu — chacune avec sa route d'entrée, le format que le domaine publie et
+l'angle qui y fonctionne.
+
+C'est à vous, sans contrepartie. Si c'est un sujet chez vous, dites-le moi.
+
+Luiz
+Mentio — baromètre de la visibilité des marques dans les réponses IA
+mentio.fr · Nice
+
+## relance-j4
+Objet: {client} — je remonte ce message
+
+{contact}, je remonte ce message au cas où il serait passé — le relevé de
+{client} est prêt et à vos couleurs : {lien}
+
+Je vous l'envoie, ou je laisse tomber ?
+
+Luiz
+
+## relance-j11
+Objet: Dernier message — le Baromètre est public
+
+{contact}, dernier message sur le sujet.
+
+Le Baromètre est publié et {client} y figure : {lien}
+C'est public et gratuit, prenez ce qui vous sert.
+
+Je ne relancerai plus. Si le sujet remonte chez vous un jour, mon adresse ne
+change pas.
+
+Luiz
+
+## cible:eskimoz
+Objet: Eskimoz, 1re du classement de visibilité IA des agences GEO
+
+{contact},
+
+J'ai publié le 13 août le premier baromètre indépendant de la visibilité des
+agences GEO françaises dans les réponses des IA. Sur {total} agences classées,
+Eskimoz sort première, avec un score de {n_eux} sur 100.
+
+Le protocole : 50 questions d'intention posées chaque semaine à ChatGPT, Gemini,
+Claude et Perplexity, via leurs API officielles avec recherche web. Je relève les
+agences citées, leur position dans la réponse, et les sources que les modèles
+consultent. Personne n'achète sa place, aucun placement payant n'existe sous
+aucune forme, et la méthodologie est publique — intervalles de confiance et
+limites de la mesure compris.
+
+Le relevé détaillé d'Eskimoz est ici : {lien}
+Vous y trouverez le score par moteur, les agences citées à votre place, les
+questions où vous n'apparaissez pas, les domaines que les modèles consultent sur
+ce secteur, et douze actions classées par effet attendu.
+
+Il est à vous, sans contrepartie. Le même rapport existe pour n'importe quelle
+marque du baromètre beauté, à vos couleurs et transférable à un client tel quel.
+Si c'est un usage qui vous intéresse, dites-le moi.
+
+Luiz
+Mentio — baromètre de la visibilité des marques dans les réponses IA
+mentio.fr · Nice
+
+## cible:natural-net
+Objet: La 4e étape de votre méthodologie, mesurée en continu
+
+{contact},
+
+Votre méthodologie GEO se conclut par le monitoring continu de la part de voix
+sur les moteurs génératifs. C'est exactement ce que je fabrique, et je vous écris
+parce que peu d'agences en France ont formulé cette étape aussi explicitement.
+
+Mentio est un baromètre indépendant de la visibilité des marques dans les
+réponses IA. Chaque semaine, je pose 50 questions d'intention d'achat fixes à
+ChatGPT, Gemini, Claude et Perplexity — via leurs API officielles, recherche web
+activée — puis je relève les marques citées, leur position, et les sources que
+les modèles ont réellement consultées pour répondre. La méthodologie est
+publique, intervalles de confiance compris : mentio.fr/methodologie
+
+J'ai publié le 13 août le premier classement des agences GEO françaises.
+Natural-Net y figure, {rang}, avec {n_eux} citations. Le rapport détaillé
+contient votre score et votre palier, les agences citées à votre place, les
+questions où vous n'apparaissez pas, les sites que les modèles consultent sur ce
+secteur, et un plan de douze actions classées par effet attendu — chacune avec sa
+route d'entrée, le format attendu et l'angle qui fonctionne sur le domaine visé.
+
+Le voici : {lien}
+
+Luiz
+Mentio — baromètre de la visibilité des marques dans les réponses IA
+mentio.fr · Nice
+
+## cible:iaba-tech
+Objet: Le chiffre de départ qui manque à un audit GEO
+
+{contact},
+
+Vous vendez de la visibilité IA en B2B avec une structure entièrement remote, ce
+qui suppose que la donnée passe avant le décor. C'est pour ça que je vous écris.
+
+Un audit GEO commence par un chiffre de départ, et il n'existe pas de source
+neutre pour ce chiffre en France. Mentio le produit : 50 questions d'intention
+d'achat fixes, rejouées chaque semaine sur ChatGPT, Gemini, Claude et Perplexity,
+avec relevé des marques citées, de leur position et des sources consultées.
+Échantillonnage stratifié, intervalles de confiance publiés, et aucun mouvement
+de rang publié sous le seuil de bruit — ce qui écarte la plupart des chiffres qui
+circulent aujourd'hui sur le sujet.
+
+iaba.tech figure au classement des agences GEO publié le 13 août, {rang}, avec
+{n_eux} citations. Le rapport contient votre score par moteur, les concurrents
+cités à votre place, les questions perdues, les domaines à conquérir, et douze
+actions priorisées avec leur route d'entrée : {lien}
+
+Le même document se génère pour n'importe lequel de vos clients, à vos couleurs.
+Je vous en envoie un ?
+
+Luiz
+Mentio — baromètre de la visibilité des marques dans les réponses IA
+mentio.fr · Nice
+
+## cible:seo-fr
+Objet: Données inédites sur les citations IA — proposition de publication
+
+{contact},
+
+Vous avez publié une étude OpinionWay sur les moteurs de recherche et les outils
+d'IA. Je vous écris parce que j'ai construit un jeu de données qui la complète
+directement, et qui n'existe nulle part ailleurs en France.
+
+Mentio relève chaque semaine ce que ChatGPT, Gemini, Claude et Perplexity
+répondent réellement à 50 questions d'intention d'achat par secteur : quelles
+marques sont citées, à quelle position, et surtout quels sites les modèles ont
+consultés pour répondre. Deux éditions sont publiées — beauté et compléments
+(50 marques), agences GEO françaises ({total} agences) — avec la méthodologie
+complète, les intervalles de confiance et les limites de la mesure. Aucun
+placement payant n'existe : le classement est la mesure.
+
+SEO.fr figure d'ailleurs dans la seconde, {rang}, avec {n_eux} citations. Votre
+relevé détaillé est ici : {lien}
+
+Les données brutes sont disponibles pour une publication commune, en accès API ou
+en export. Je peux aussi produire une édition sur un secteur de votre choix si
+l'angle vous intéresse davantage. À qui puis-je les transmettre ?
+
+Luiz
+Mentio — baromètre de la visibilité des marques dans les réponses IA
+mentio.fr · Nice
+
+## cible:jalousie-agency
+Objet: Jalousie dans le classement des agences GEO françaises
+
+Bonjour,
+
+J'ai publié le 13 août le premier baromètre indépendant de la visibilité des
+agences GEO françaises dans les réponses IA. Jalousie y figure, {rang}, avec {n_eux} citations sur 100 réponses.
+
+Le principe : 50 questions d'intention — « quelle agence peut m'aider à être cité
+par ChatGPT », « meilleure agence GEO Paris » et leurs variantes — posées chaque
+semaine à ChatGPT, Gemini, Claude et Perplexity. Je relève qui est cité, à quelle
+position, et quelles sources les modèles ont consultées. Personne ne paie pour
+être classé, et la méthode est publiée en entier.
+
+Le rapport de Jalousie détaille votre score, votre rang, les agences citées à
+votre place, les questions où vous êtes absents, et douze actions concrètes
+classées par effet attendu : {lien}
+
+À qui puis-je l'adresser ?
+
+Luiz
+Mentio — baromètre de la visibilité des marques dans les réponses IA
+mentio.fr · Nice

@@ -53,8 +53,16 @@ const SECTOR_LABELS: Record<string, string> = {
   "agences-geo": "Agences GEO France",
 };
 
-/** Les colonnes indispensables pour produire un message sans trou. */
-const REQUIRED = ["agence", "email", "client", "slug"] as const;
+/**
+ * Les colonnes sans lesquelles il n'y a pas d'email du tout.
+ *
+ * `client` et `slug` n'en font PLUS partie : un consultant du palier 2 reçoit un
+ * message sur le Baromètre lui-même, pas sur le score d'une marque, et exiger
+ * une colonne qui n'a pas de sens pour lui écartait la cible entière. Leur
+ * absence est désormais contrôlée là où elle compte vraiment — au remplissage
+ * du template, qui refuse tout email dont une variable manque.
+ */
+const REQUIRED = ["agence", "email"] as const;
 
 interface Agency {
   /** Section du fichier d'où vient la ligne : « Palier 1 — … » */
@@ -170,7 +178,10 @@ function parseAgencies(): { agencies: Agency[]; errors: ParseError[] } {
       continue;
     }
 
-    const previous = seen.get(row.slug.toLowerCase());
+    // Le doublon ne se contrôle que sur un slug RENSEIGNÉ : plusieurs cibles
+    // légitimes n'en ont pas, et les compter comme doublons les écartait toutes
+    // sauf la première.
+    const previous = row.slug ? seen.get(row.slug.toLowerCase()) : undefined;
     if (previous) {
       errors.push({
         ligne: i + 1,
@@ -180,7 +191,7 @@ function parseAgencies(): { agencies: Agency[]; errors: ParseError[] } {
       });
       continue;
     }
-    seen.set(row.slug.toLowerCase(), i + 1);
+    if (row.slug) seen.set(row.slug.toLowerCase(), i + 1);
 
     const known = new Set(["agence", "contact", "email", "client", "slug", "couleur"]);
     const extra: Record<string, string> = {};
@@ -327,7 +338,7 @@ function loadTemplates(): Map<string, Template> {
   for (const block of blocks) {
     const nl = block.indexOf("\n");
     const key = block.slice(0, nl < 0 ? undefined : nl).trim();
-    if (!(TEMPLATE_KEYS as readonly string[]).includes(key)) continue;
+    if (!(TEMPLATE_KEYS as readonly string[]).includes(key) && !key.startsWith("cible:")) continue;
 
     const rest = nl < 0 ? "" : block.slice(nl + 1);
     const subjectLine = rest.split("\n").find((l) => /^objet\s*:/i.test(l.trim()));
@@ -349,6 +360,25 @@ function loadTemplates(): Map<string, Template> {
  * suffixe « classee » ou « geo » vient de ce que le Baromètre sait réellement de
  * la cible. On ne choisit jamais un template à chiffres pour une cible dont on
  * n'a pas les chiffres.
+ */
+function slugify(v: string): string {
+  return v
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+/**
+ * Une section sur mesure prime toujours sur le template de palier.
+ *
+ * Les meilleurs emails ne sont pas des templates : ils s'ouvrent sur un fait
+ * propre à la cible — la quatrième étape de sa méthodologie, son étude
+ * OpinionWay, son article sur la mention sans lien. Le générateur cherche donc
+ * d'abord `## cible:<agence>`, et ne retombe sur le palier que faute de mieux.
+ * On garde ainsi la personnalisation là où elle convertit, sans réécrire les
+ * quinze autres.
  */
 function templateKeyFor(palier: string, classee: boolean): string {
   const p = palier.toLowerCase();
@@ -445,19 +475,27 @@ async function main() {
   for (const [i, a] of agencies.entries()) {
     const brand = brands.get(a.slug);
 
-    // CAS 3 — le client n'est dans aucun Baromètre. On exclut la ligne et on le
-    // signale : sans mesure, il n'y a ni chiffre ni rapport, donc pas d'email.
-    if (!brand) {
+    // CAS 3 — pas de marque rapprochée. Deux situations très différentes :
+    //
+    //   · la ligne DÉCLARE un client (colonne remplie) qui n'est dans aucun
+    //     Baromètre → c'est une erreur de saisie, on exclut et on signale ;
+    //   · la ligne ne déclare AUCUN client → l'email ne porte pas sur un rapport
+    //     personnel mais sur le Baromètre lui-même. C'est le cas des consultants :
+    //     on leur offre la donnée, pas leur score. Template sans chiffre, lien
+    //     vers le classement public.
+    if (!brand && a.slug) {
       orphans.push(a);
       continue;
     }
 
     // CAS 4 — la cible est elle-même première : on ne la compare pas à elle-même.
     // La référence est le second de SON Baromètre, jamais le leader global.
-    const podium = leaders.get(brand.vertical) ?? [];
-    const reference = podium.find((b) => b.slug !== brand.slug);
+    const podium = brand ? (leaders.get(brand.vertical) ?? []) : [];
+    const reference = brand ? podium.find((b) => b.slug !== brand.slug) : undefined;
 
-    const reportUrl = reportUrlFor(a);
+    // Sans marque rapprochée, il n'existe aucun rapport personnel : le lien
+    // pointe vers le Baromètre public. Un lien réel, jamais un lien inventé.
+    const reportUrl = brand ? reportUrlFor(a) : `${BASE}/barometre`;
     const status = SKIP_CHECK ? 200 : await checkLink(reportUrl);
     if (status !== 200) {
       deadLinks.push({ a, url: reportUrl, status });
@@ -466,24 +504,25 @@ async function main() {
 
     // CAS 1 — classée dans le top 5 : le rang part dans l'objet, via le template
     // « classee » que cette clé sélectionne.
-    const classee = brand.rank > 0;
-    const key = templateKeyFor(a.palier, classee);
+    const classee = Boolean(brand && brand.rank > 0);
+    const surMesure = `cible:${slugify(a.agence)}`;
+    const key = templates.has(surMesure) ? surMesure : templateKeyFor(a.palier, classee);
     const tpl = templates.get(key)!;
 
     const vars: Record<string, string | undefined> = {
       contact: a.contact || undefined,
       agence: a.agence,
-      client: brand.name,
-      rang: classee ? `${brand.rank}${brand.rank === 1 ? "re" : "e"} sur ${brand.total ?? "?"}` : undefined,
-      n_eux: classee ? String(cite(brand.citations)) : undefined,
-      n_client: classee ? String(cite(brand.citations)) : undefined,
-      palier: classee ? (TIER_LABEL[brand.tier] ?? brand.tier) : undefined,
+      client: brand?.name ?? (a.client || undefined),
+      rang: brand && classee ? `${brand.rank}${brand.rank === 1 ? "re" : "e"} sur ${brand.total}` : undefined,
+      n_eux: brand && classee ? String(cite(brand.citations)) : undefined,
+      n_client: brand && classee ? String(cite(brand.citations)) : undefined,
+      palier: brand && classee ? (TIER_LABEL[brand.tier] ?? brand.tier) : undefined,
       conc: reference?.name,
       n_conc: reference ? String(cite(reference.citations)) : undefined,
       lien: reportUrl,
-      secteur: brand.sectorLabel,
-      total: brand.total ? String(brand.total) : undefined,
-      date: brand.editionDate,
+      secteur: brand?.sectorLabel,
+      total: brand ? String(brand.total) : undefined,
+      date: brand?.editionDate,
     };
 
     const objet = render(tpl.subject, vars);
@@ -513,7 +552,9 @@ async function main() {
 
     md.push(
       `## ${i + 1}. ${a.agence}${a.contact ? ` · ${a.contact}` : ""}`,
-      `*${a.palier} — template \`${key}\` — ${brand.name}, ${cite(brand.citations)} citations, ${brand.tier}, ${brand.rank}ᵉ*`,
+      brand
+        ? `*${a.palier} — template \`${key}\` — ${brand.name}, ${cite(brand.citations)} citations, ${brand.tier}, ${brand.rank}ᵉ*`
+        : `*${a.palier} — template \`${key}\` — sans chiffre, lien vers le Baromètre*`,
       "",
       `**À :** ${a.email}`,
       `**Objet :** ${subject}`,
@@ -546,10 +587,10 @@ async function main() {
         a.agence,
         a.contact,
         a.email,
-        brand.name,
-        String(cite(brand.citations)),
-        brand.tier,
-        String(brand.rank),
+        brand?.name ?? "",
+        brand ? String(cite(brand.citations)) : "",
+        brand?.tier ?? "",
+        brand ? String(brand.rank) : "",
         subject,
         body,
         objetJ4.out,
@@ -567,20 +608,25 @@ async function main() {
     );
   }
 
-  // ── Variables non résolues : on n'écrit RIEN ───────────────────────────────
+  // ── Variables non résolues : la cible sort, les autres passent ─────────────
+  //
   // Une cible dont le template réclame un chiffre qu'on n'a pas produirait un
-  // email avec « {n_conc} » dedans. C'est irrattrapable une fois envoyé.
+  // email avec « {n_conc} » dedans — irrattrapable une fois envoyé. Elle est
+  // donc EXCLUE, nommée, avec son numéro de ligne et la liste exacte de ce qui
+  // manque.
+  //
+  // Elle n'arrête plus tout le fichier, et c'est un changement réfléchi : les
+  // paliers 3 et 4 attendent une colonne `client` qui demande de savoir quelle
+  // marque chaque agence accompagne. Bloquer les onze cibles prêtes en attendant
+  // les treize autres retarde l'envoi sans rien protéger — le trou est déjà
+  // explicite, ligne par ligne.
   if (unresolved.length > 0) {
-    console.error(`\n❌ ${unresolved.length} cible(s) avec des variables non résolues :\n`);
+    console.error(`\n⚠ ${unresolved.length} cible(s) EXCLUE(S) — variables non résolues :\n`);
     for (const u of unresolved) {
       console.error(`  ligne ${u.a.ligne} · ${u.a.agence} · template ${u.key}`);
-      console.error(`    non résolu : ${u.vars.map((v) => `{${v}}`).join(", ")}`);
+      console.error(`    manque : ${u.vars.map((v) => `{${v}}`).join(", ")}`);
     }
-    console.error(
-      `\nAucun fichier n'a été écrit. Soit le template réclame une donnée que le\n` +
-        `Baromètre n'a pas pour cette cible, soit c'est le mauvais template.\n`
-    );
-    process.exit(1);
+    console.error("");
   }
 
   // Un orphelin ou un lien mort n'est pas une erreur de format : c'est une cible
