@@ -40,3 +40,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Prospection — le CSV des emails à relire porte des adresses de tiers, il se
+# régénère à chaque exécution, et il part déjà en artefact GitHub Actions (privé,
+# 30 jours). Il n'a rien à faire dans l'historique public d'un dépôt.
+ops/emails-a-relire.csv

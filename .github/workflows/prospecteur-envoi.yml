@@ -1,0 +1,64 @@
+# L'EXPÉDITEUR — séparé de la chaîne, et volontairement.
+#
+# Trois verrous protègent l'envoi (voir l'en-tête de `expediteur.ts`) :
+#   1. le message doit avoir été APPROUVÉ à la main (`--approuver`) ;
+#   2. `PROSPECT_SMTP_PASSWORD` doit exister dans les secrets du dépôt ;
+#   3. la variable `PROSPECT_SEND_LIVE` doit valoir 1.
+#
+# Tant que ces trois-là ne sont pas réunis, ce workflow tourne en répétition et
+# n'envoie rien — il imprime ce qui partirait. C'est le comportement voulu : le
+# système doit être installé et observable AVANT de parler à qui que ce soit.
+#
+# La chauffe est portée par le code, pas par ce fichier : la semaine se calcule
+# depuis le premier envoi réel et le plafond suit 5 → 12 → 22 → 30. Aucun compteur
+# à tenir à la main, aucune journée à ne pas oublier.
+
+name: Prospecteur — oreille et envoi
+
+on:
+  schedule:
+    # Toutes les deux heures sur la plage ouvrée française, du lundi au vendredi.
+    # Le code revérifie l'heure locale du destinataire avant chaque message : ce cron
+    # ne fait qu'ouvrir des fenêtres, il ne décide de rien.
+    - cron: "0 7,9,11,13,15 * * 1-5"
+  workflow_dispatch: {}
+
+concurrency:
+  # Deux expéditeurs en parallèle enverraient deux fois le même message.
+  group: prospecteur-envoi
+  cancel-in-progress: false
+
+jobs:
+  envoi:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      PROSPECT_SMTP_USER: ${{ secrets.PROSPECT_SMTP_USER }}
+      PROSPECT_SMTP_PASSWORD: ${{ secrets.PROSPECT_SMTP_PASSWORD }}
+      PROSPECT_SEND_LIVE: ${{ vars.PROSPECT_SEND_LIVE }}
+      GEMINI_FREE_API_KEY: ${{ secrets.GEMINI_FREE_API_KEY }}
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+      - run: npm ci
+
+      # L'Oreille AVANT l'Expéditeur, et l'ordre n'est pas cosmétique : c'est elle
+      # qui met à jour le compteur des réponses en attente, lequel autorise ou
+      # bloque l'envoi. Lire après avoir envoyé reviendrait à décider sur des
+      # données périmées d'un cycle.
+      - name: L'Oreille — lire, classer, préparer les brouillons
+        continue-on-error: true
+        run: npx tsx scripts/prospection/oreille.ts
+
+      - name: État des coupe-circuits et de la boîte
+        run: npx tsx scripts/prospection/expediteur.ts --etat
+
+      - name: Expédier ce qui est dû
+        run: npx tsx scripts/prospection/expediteur.ts --armer

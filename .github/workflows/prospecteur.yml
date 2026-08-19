@@ -1,0 +1,88 @@
+# LE PROSPECTEUR — la chaîne quotidienne, sur l'ordonnanceur qu'on avait déjà.
+#
+# Le brief prévoyait un cron sur un VPS OVH. Il n'y a pas de VPS et la contrainte est
+# 0 € — mais GitHub Actions fait déjà tourner l'Éditeur du Baromètre ici même, avec
+# 2 000 minutes gratuites par mois sur un dépôt privé. La chaîne complète consomme
+# ~25 minutes par jour, soit ~750 par mois : elle tient dans le palier gratuit, et
+# les scripts tournent tels qu'ils ont été testés — pas de portage vers du
+# serverless, pas de découpage pour tenir dans un timeout.
+#
+# L'ENVOI N'EST PAS DANS CE WORKFLOW. Il vit dans `prospecteur-envoi.yml`, qui exige
+# des secrets séparés et ne part que sur des messages approuvés à la main.
+
+name: Prospecteur — chaîne quotidienne
+
+on:
+  schedule:
+    # 6 h UTC. Le Semeur d'abord, tout le reste en découle dans le même job :
+    # séparer en quatre workflows ferait tourner le Greffier sur des relevés que le
+    # Semeur n'a pas encore écrits.
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+    inputs:
+      questions:
+        description: "Questions à scanner (défaut 10)"
+        required: false
+        default: "10"
+
+concurrency:
+  # Deux chaînes en parallèle consommeraient deux fois le quota gratuit et
+  # écriraient les mêmes marques deux fois.
+  group: prospecteur
+  cancel-in-progress: false
+
+jobs:
+  chaine:
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    env:
+      NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+      GEMINI_FREE_API_KEY: ${{ secrets.GEMINI_FREE_API_KEY }}
+      PROSPECT_REPORT_BASE: https://www.mentio.fr
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+      - run: npm ci
+
+      # Chaque étape continue même si la précédente a échoué : un quota épuisé sur le
+      # Semeur ne doit pas empêcher le Facteur de travailler sur ce qui existe déjà.
+      - name: Le Semeur
+        continue-on-error: true
+        run: npx tsx scripts/prospection/semeur.ts --questions ${{ inputs.questions || '10' }}
+
+      - name: Le Greffier
+        continue-on-error: true
+        run: npx tsx scripts/prospection/greffier.ts --resolve 60
+
+      - name: Le Facteur
+        continue-on-error: true
+        run: npx tsx scripts/prospection/facteur.ts --limit 40
+
+      - name: L'Angle
+        continue-on-error: true
+        run: npx tsx scripts/prospection/angle.ts
+
+      - name: La Plume
+        continue-on-error: true
+        run: npx tsx scripts/prospection/plume.ts
+
+      - name: Le Contrôleur
+        continue-on-error: true
+        run: npx tsx scripts/prospection/controleur.ts
+
+      - name: Le bilan
+        run: npx tsx scripts/prospection/bilan.ts
+
+      # Le CSV part en artefact : c'est lui qu'on relit avant d'approuver un lot.
+      - name: Déposer le CSV à relire
+        uses: actions/upload-artifact@v4
+        with:
+          name: emails-a-relire
+          path: ops/emails-a-relire.csv
+          retention-days: 30

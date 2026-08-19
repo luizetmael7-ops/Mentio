@@ -214,6 +214,21 @@ export async function judgeAnswer(rawAnswer: string): Promise<{ extraction: Extr
   return judgeWithAnthropic(rawAnswer);
 }
 
+/**
+ * Juge STRICTEMENT gratuit — sans filet payant.
+ *
+ * `judgeAnswer` bascule sur OpenAI puis Claude quand le gratuit tombe, ce qui est
+ * le bon comportement pour le Baromètre : une édition ratée coûte plus cher que
+ * quelques centimes. Le Prospecteur, lui, a une contrainte inverse et absolue —
+ * coût 0 €, un quota épuisé arrête le module au lieu d'escalader. Il appelle donc
+ * cette porte-là, qui n'a aucune sortie payante.
+ */
+export async function judgeAnswerFree(rawAnswer: string): Promise<{ extraction: Extraction; costUsd: 0 }> {
+  if (!process.env.OPENROUTER_API_KEY) throw new Error("Juge gratuit indisponible : OPENROUTER_API_KEY manquante");
+  const { extraction } = await judgeWithOpenRouter(rawAnswer);
+  return { extraction, costUsd: 0 };
+}
+
 /** Comparaison tolérante de noms de marques ("Nutri&Co" ≈ "nutri and co" ≈ "Nutri & Co") */
 export function normalizeBrandName(name: string): string {
   return name

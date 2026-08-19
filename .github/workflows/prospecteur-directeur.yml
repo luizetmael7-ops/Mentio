@@ -1,0 +1,62 @@
+# LE DIRECTEUR — dimanche soir.
+#
+# Il crédite les bras du bandit à partir des réponses reçues, puis écrit dix lignes
+# et UNE recommandation dans `ops/rapports/`. Il ne modifie ni le gabarit, ni le
+# Contrôleur, ni les exclusions, ni les poids de la matrice.
+#
+# Le rapport est commité sur une branche et ouvert en pull request — jamais poussé
+# sur `main`. C'est la même règle que l'Éditeur du Baromètre : un agent n'écrit pas
+# dans la branche principale, un humain relit et merge.
+
+name: Prospecteur — Directeur
+
+on:
+  schedule:
+    # Dimanche 18 h UTC, soit 20 h à Paris. Le rapport est là quand commence le
+    # rituel hebdomadaire de 45 minutes.
+    - cron: "0 18 * * 0"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: prospecteur-directeur
+  cancel-in-progress: false
+
+jobs:
+  rapport:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+      - run: npm ci
+
+      - name: Le Directeur
+        run: npx tsx scripts/prospection/directeur.ts
+
+      - name: Ouvrir la pull request du rapport
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          DATE="$(date +%Y-%m-%d)"
+          BRANCH="agent/directeur-${DATE}"
+          git config user.name "Directeur (agent)"
+          git config user.email "noreply@mentio.fr"
+          git checkout -b "$BRANCH"
+          git add ops/rapports/
+          git diff --staged --quiet && echo "Rien à rapporter." && exit 0
+          git commit -m "Rapport du Directeur — ${DATE}"
+          git push origin "$BRANCH"
+          gh pr create --title "Rapport du Directeur — ${DATE}" \
+            --body "Le Directeur propose. Il n'a rien modifié. Une seule variable se change par semaine, et c'est un humain qui la change." \
+            --base main --head "$BRANCH"
