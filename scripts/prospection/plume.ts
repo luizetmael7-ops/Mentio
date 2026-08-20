@@ -230,7 +230,10 @@ async function main() {
         cta,
         pairs: brand.target === "agency" ? "agences" : "marques",
         edition_date: String(payload.edition_date ?? ""),
-        url_methodologie: `${(angle.report_url as string ?? "https://www.mentio.fr").split("/rapport/")[0]}/methodologie`,
+        // L'origine, pas le chemin : un angle de relevé pointe /barometre/..., un
+        // angle d'édition pointe /rapport/... — découper sur "/rapport/" ne marchait
+        // que pour le second.
+        url_methodologie: `${new URL((angle.report_url as string) ?? "https://www.mentio.fr").origin}/methodologie`,
         adresse_postale: POSTAL_ADDRESS,
         rang: String(payload.rank ?? ""),
         total_marques: String(payload.total_brands ?? ""),
@@ -245,6 +248,13 @@ async function main() {
         exemple: String(payload.exemple ?? ""),
         gagnant_exemple: String(payload.gagnant_exemple ?? ""),
         domaine: String(payload.domaine ?? ""),
+        questions: String(payload.questions ?? ""),
+        reponses_analysees: String(payload.reponses_analysees ?? ""),
+        citations: String(payload.citations ?? ""),
+        premier: String(payload.premier ?? ""),
+        citations_premier: String(payload.citations_premier ?? ""),
+        citations_concurrent: String(payload.citations_concurrent ?? ""),
+        citations_domaine: String(payload.citations_domaine ?? ""),
       };
 
       // Une variable présente mais VIDE est aussi dangereuse qu'une variable non

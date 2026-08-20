@@ -107,6 +107,51 @@ Il est là, sans contrepartie : {url}
 
 {signature}
 
+## absente_secteur
+Objet: {marque} dans les réponses des IA
+
+{ouverture}
+
+Mentio est un baromètre indépendant de la visibilité des marques dans les réponses IA. Chaque semaine, les mêmes questions d'intention d'achat sont posées à ChatGPT, Gemini, Claude et Perplexity, et je relève qui est cité, à quelle position, et depuis quelles sources. Personne ne paie pour y figurer, et la méthode est publique : {url_methodologie}
+
+Ce relevé porte sur {questions} questions de votre catégorie et {reponses_analysees} réponses analysées. {marque} n'apparaît dans aucune. C'est un comptage, pas une note : je ne vous attribue aucun score, et ce serait malhonnête de le faire sur cette base.
+
+L'édition publiée de votre secteur est là : {url}
+
+{cta}
+
+{signature}
+
+## concurrent_cite
+Objet: {marque} face à {concurrent} dans les réponses IA
+
+{ouverture}
+
+Mentio est un baromètre indépendant de la visibilité des marques dans les réponses IA. Chaque semaine, les mêmes questions d'intention d'achat sont posées à ChatGPT, Gemini, Claude et Perplexity, et je relève qui est cité. Personne ne paie pour y figurer, et la méthode est publique : {url_methodologie}
+
+Sur {questions} questions de votre catégorie, {marque} est citée {citations} fois. {concurrent} l'est {citations_concurrent} fois. C'est un comptage brut, sans score ni classement — l'écart parle de lui-même.
+
+L'édition publiée de votre secteur est là : {url}
+
+{cta}
+
+{signature}
+
+## domaines_sources
+Objet: {marque} et les sources que lisent les IA
+
+{ouverture}
+
+Mentio est un baromètre indépendant de la visibilité des marques dans les réponses IA. Chaque semaine, les mêmes questions d'intention d'achat sont posées à ChatGPT, Gemini, Claude et Perplexity, et je relève surtout les domaines qu'ils consultent pour répondre. Méthode publique : {url_methodologie}
+
+Sur votre catégorie, {domaine} revient {citations_domaine} fois dans les sources consultées. C'est la partie la moins documentée du sujet et la plus actionnable : ce sont ces pages que les modèles lisent avant de nommer une marque.
+
+L'édition publiée de votre secteur est là : {url}
+
+{cta}
+
+{signature}
+
 ---
 
 ## cta-ferme

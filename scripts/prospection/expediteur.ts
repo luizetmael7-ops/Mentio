@@ -198,7 +198,15 @@ async function main() {
 
   if (approving) {
     console.log(`\n  ── approbation d'un lot ──`);
-    return approve(numFlag("limit", Math.max(remaining, 10)));
+    // Défaut à 5, et JAMAIS au-delà du plafond du jour. Approuver 27 emails d'un
+    // coup sur une boîte de trois jours déclenche exactement le filtrage que la
+    // chauffe existe pour éviter — et c'est le domaine principal du produit.
+    const demande = numFlag("limit", 5);
+    const accorde = Math.min(demande, remaining);
+    if (accorde < demande) {
+      console.log(`  Demande de ${demande} ramenée à ${accorde} : plafond de chauffe semaine ${week}.`);
+    }
+    return approve(accorde);
   }
 
   if (remaining === 0) {

@@ -25,6 +25,8 @@ import { db, openLog } from "./lib/db";
 import { flag, numFlag } from "./lib/env";
 import { buildReport } from "../../src/lib/report";
 import { brandSlug } from "../../src/lib/index-edition";
+import { angleFromReleve, loadReleve, verticalForSector } from "./lib/releves";
+import { VERTICALS } from "../../src/lib/verticals";
 
 /** L'URL publique — c'est celle qui partira dans l'email, pas un localhost. */
 const REPORT_BASE = process.env.PROSPECT_REPORT_BASE ?? "https://mentio.fr";
@@ -73,7 +75,7 @@ async function main() {
   const close = await openLog("angle");
   const stats: Record<string, number> = {
     examinees: 0, depassement_nomme: 0, question_perdue: 0, domaine_a_conquerir: 0,
-    palier: 0, no_angle_hors_barometre: 0, no_angle_rapport_ko: 0, no_angle_rien_a_dire: 0,
+    palier: 0, concurrent_cite: 0, absente_secteur: 0, domaines_sources: 0, no_angle_hors_barometre: 0, no_angle_rapport_ko: 0, no_angle_rien_a_dire: 0,
   };
 
   try {
@@ -98,11 +100,41 @@ async function main() {
       const report = await buildReport(slug);
 
       if (!report) {
+        // Hors classement ne veut pas dire hors mesure. Les 989 mentions déjà en
+        // base nomment beaucoup plus de marques que les 50 d'un classement, et
+        // chaque mention est un fait daté. On retombe sur le RELEVÉ — comptages
+        // seulement, jamais de score ni de palier (§3).
+        const vertical = verticalForSector(brand.sector as string | null);
+        const releve = vertical ? await loadReleve(vertical) : null;
+        const fallback = releve ? angleFromReleve(name, releve) : null;
+
+        if (fallback) {
+          // Pas de /rapport/[slug] pour une marque hors classement — mais l'édition
+          // publique de sa verticale existe, elle est vérifiable, et c'est elle qui
+          // porte le comptage dont parle l'email.
+          const slugVerticale = VERTICALS.find((v) => v.key === vertical)?.slug;
+          const url = slugVerticale ? `${REPORT_BASE}/barometre/${slugVerticale}` : `${REPORT_BASE}/barometre`;
+
+          await db().from("prospect_angles").insert({
+            brand_id: brand.id,
+            type: fallback.type,
+            source_level: "releve",
+            payload: { ...fallback.payload, brand: name },
+            report_url: url,
+          });
+          await db().from("prospect_brands").update({ coverage_status: "couverte" }).eq("id", brand.id);
+          stats[fallback.type] = (stats[fallback.type] ?? 0) + 1;
+          console.log(`  ${name.padEnd(24).slice(0, 24)} ${fallback.type.padEnd(20)} relevé · ${fallback.payload.citations} citation(s)`);
+          continue;
+        }
+
+        // Sa catégorie n'est pas couverte : elle attend, elle n'échoue pas.
         stats.no_angle_hors_barometre += 1;
+        await db().from("prospect_brands").update({ coverage_status: "en_attente_de_couverture" }).eq("id", brand.id);
         await db().from("prospect_angles").insert({
           brand_id: brand.id,
           type: "no_angle",
-          payload: { raison: "hors Baromètre — pas de mesure réelle, donc rien de vérifiable à dire" },
+          payload: { raison: "verticale non couverte — aucun relevé de son secteur, elle attend d'être mesurée" },
         });
         continue;
       }
@@ -200,13 +232,17 @@ async function main() {
     throw error;
   }
 
-  const forts = stats.depassement_nomme + stats.question_perdue;
-  const total = stats.depassement_nomme + stats.question_perdue + stats.domaine_a_conquerir + stats.palier;
+  const forts = stats.depassement_nomme + stats.question_perdue + stats.concurrent_cite + stats.absente_secteur;
+  const total = forts + stats.domaine_a_conquerir + stats.palier + stats.domaines_sources;
   console.log(`\n── ANGLE ──`);
   console.log(`  1. dépassement nommé   : ${stats.depassement_nomme}`);
   console.log(`  2. question perdue     : ${stats.question_perdue}`);
   console.log(`  3. domaine à conquérir : ${stats.domaine_a_conquerir}`);
   console.log(`  4. palier              : ${stats.palier}`);
+  console.log(`  ── depuis les relevés (comptages, jamais de score) ──`);
+  console.log(`  concurrent cité        : ${stats.concurrent_cite}`);
+  console.log(`  absente du secteur     : ${stats.absente_secteur}`);
+  console.log(`  domaines sources       : ${stats.domaines_sources}`);
   console.log(`  NO_ANGLE               : ${stats.no_angle_hors_barometre} hors Baromètre, ${stats.no_angle_rapport_ko} rapport KO, ${stats.no_angle_rien_a_dire} rien à dire`);
   console.log(`  niveau 1 ou 2          : ${total ? Math.round((forts / total) * 100) : 0} %  (le brief en exige 80 % à 30 emails/jour)`);
   console.log(`  coût                   : 0,00 $ — aucun appel LLM\n`);

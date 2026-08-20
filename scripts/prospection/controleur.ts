@@ -108,11 +108,12 @@ async function main() {
 
       const { data: angle } = await db()
         .from("prospect_angles")
-        .select("type, payload, report_url")
+        .select("type, payload, report_url, source_level")
         .eq("id", message.angle_id as string)
         .single();
 
       const payload = (angle?.payload ?? {}) as Record<string, unknown>;
+      const body = String(message.body);
       const checks: Check[] = [];
 
       // 2. NOM — le prénom en est-il un ?
@@ -168,7 +169,6 @@ async function main() {
       // trois mots a fait échouer les 31 emails d'un coup, alors que l'information
       // légale était toujours là. Un contrôle qui casse quand on réécrit le texte
       // qu'il surveille ne contrôle rien, il fige.
-      const body = String(message.body);
       const hasProvenance = /(adresse|address)[^.]{0,40}(trouv|found)|(trouv|found)[^.]{0,40}(adresse|address)/i.test(body);
       const hasOptOut = /\bstop\b|désinscri|desinscri|ne (vous )?réécris|not write|never write|unsubscribe/i.test(body);
       const needsPostal = brand?.country === "US";
@@ -181,6 +181,20 @@ async function main() {
       // 8. ADRESSE — étiquette autorisée. La base l'impose déjà, on le revérifie ici
       //    pour que le motif de rejet soit lisible dans le journal.
       checks.push({ code: "ADRESSE", ok: contact.sendable === true, detail: String(contact.label ?? "") });
+
+      // 8bis. NIVEAU — un angle issu d'un relevé gratuit autorise des COMPTAGES,
+      // jamais un score ni un palier. C'est la protection du barème (§3) : il est
+      // l'actif de catégorie, et une mesure dégradée qui en emprunterait le
+      // vocabulaire le diluerait sans que personne ne s'en aperçoive.
+      const cite_un_score = /\b\d{1,3}\s*\/\s*100\b|\bscore de \d|\bpalier\b|\bInvisible\b|\bAperçue\b|\bCitée\b|\bRecommandée\b|\bPrescrite\b|\brang \d|\b\d+e sur \d+/i.test(body);
+      const est_releve = angle?.source_level === "releve";
+      checks.push({
+        code: "NIVEAU",
+        ok: !(est_releve && cite_un_score),
+        detail: est_releve
+          ? (cite_un_score ? "un relevé gratuit ne peut pas annoncer un score ou un palier" : "relevé — comptages seulement, conforme")
+          : "édition — score autorisé",
+      });
 
       // 1. FAIT — le seul contrôle qui mérite un modèle, et le dernier joué :
       //    inutile de dépenser du quota sur un email déjà refusé pour autre chose.

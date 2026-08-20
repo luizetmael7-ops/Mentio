@@ -104,6 +104,16 @@ async function main() {
     const sentN = sent ?? 0, repliesN = replies ?? 0, positivesN = positives ?? 0;
     const rejectedN = rejected ?? 0, pending = pendingCount ?? 0;
 
+    // La chauffe : où on en est, et combien d'emails attendent d'être envoyés.
+    const { data: firstSend } = await db().from("prospect_messages")
+      .select("sent_at").not("sent_at", "is", null).order("sent_at", { ascending: true }).limit(1).maybeSingle();
+    const warmupWeek = firstSend?.sent_at
+      ? Math.min(4, Math.floor((Date.now() - new Date(firstSend.sent_at as string).getTime()) / (7 * 86_400_000)) + 1)
+      : 1;
+    const warmupCap = ({ 1: 5, 2: 12, 3: 22, 4: 30 } as Record<number, number>)[warmupWeek] ?? 30;
+    const { count: approuves } = await db().from("prospect_messages")
+      .select("id", head).eq("qa_status", "passed").not("scheduled_at", "is", null).is("sent_at", null);
+
     const { best, worst, credible } = await ranking();
 
     // Taux d'adresse par pays — le diagnostic du Facteur.
@@ -159,6 +169,7 @@ async function main() {
       `Taux d'adresse : ${[...byCountry.entries()].map(([c, a]) => `${c} ${Math.round((a.sendable / Math.max(a.total, 1)) * 100)} %`).join(" · ") || "—"}`,
       `Rejets Contrôleur : ${rejectedN} · motifs : ${[...motifs.entries()].map(([k, v]) => `${k} ${v}`).join(", ") || "—"}`,
       `Coupe-circuits ouverts : ${tripped.length === 0 ? "aucun" : tripped.map((b) => b.code).join(", ")}`,
+      `Chauffe : semaine ${warmupWeek}/4 — plafond ${warmupCap}/jour · ${approuves ?? 0} email(s) approuvé(s) en attente d'envoi`,
       `Réponses en attente de toi : ${pending}`,
       ``,
       `RECOMMANDATION — ${reco}`,
