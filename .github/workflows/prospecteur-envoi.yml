@@ -42,12 +42,20 @@ jobs:
       OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
 
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
-          node-version: "20"
+          node-version: "22"
           cache: npm
       - run: npm ci
+
+      # Quelles variables sont posées, et lesquelles manquent. Jamais leur valeur —
+      # seulement leur présence, qui est la seule chose utile à un diagnostic.
+      - name: Vérifier la configuration
+        run: |
+          for v in NEXT_PUBLIC_SUPABASE_URL SUPABASE_SERVICE_ROLE_KEY PROSPECT_SMTP_USER PROSPECT_SMTP_PASSWORD PROSPECT_SEND_LIVE GEMINI_FREE_API_KEY OPENROUTER_API_KEY; do
+            if [ -n "${!v}" ]; then echo "  ✅ $v"; else echo "  ❌ $v — ABSENTE"; fi
+          done
 
       # L'Oreille AVANT l'Expéditeur, et l'ordre n'est pas cosmétique : c'est elle
       # qui met à jour le compteur des réponses en attente, lequel autorise ou
@@ -58,6 +66,7 @@ jobs:
         run: npx tsx scripts/prospection/oreille.ts
 
       - name: État des coupe-circuits et de la boîte
+        continue-on-error: true
         run: npx tsx scripts/prospection/expediteur.ts --etat
 
       - name: Expédier ce qui est dû
