@@ -8,6 +8,7 @@ import { supabaseAdmin } from "@/lib/supabase/admin";
 import { activeProviders, getProvider, askWithTimeout } from "@/lib/llm";
 import { PLAN_LIMITS, isRunDue, modelsDue, planModels, type Plan } from "@/lib/plans";
 import { guard, recordSpend } from "@/lib/spend-guard";
+import { sameBrand } from "@/lib/llm/judge";
 
 export const dailyRunner = inngest.createFunction(
   { id: "daily-runner", triggers: [{ cron: "TZ=Europe/Paris 0 6 * * *" }] },
@@ -113,6 +114,101 @@ export const promptRunner = inngest.createFunction(
     const budget = await step.run("check-budget", async () => guard(bucket));
     if (!budget.allowed) {
       return { skipped: true, reason: budget.reason };
+    }
+
+    // ─────────────────────────────────────────────────────────────────────
+    // MUTUALISATION — la question ne nomme jamais la marque.
+    //
+    // « Quelle est la meilleure crème solaire clean ? » ne contient aucun nom de
+    // client, et le juge extrait TOUTES les marques citées dans la réponse. Deux
+    // clients de la même verticale qui suivent cette question déclenchaient deux
+    // appels identiques la même semaine : la seconde réponse contenait déjà
+    // l'information de la première, et on la payait deux fois.
+    //
+    // Le coût cessait d'être proportionnel aux verticales mesurées pour devenir
+    // proportionnel aux marques suivies — ce qui rendait le palier Agence
+    // déficitaire à 6 % de marge, et ce qu'un baromètre ne devrait jamais faire.
+    //
+    // Bénéfice qu'on n'attendait pas : deux clients d'une même verticale obtenaient
+    // des scores légèrement différents, parce qu'une IA ne répond jamais deux fois
+    // pareil. Leurs scores n'étaient donc comparables ni entre eux ni avec le
+    // Baromètre public. Partager la réponse les rend identiques par construction —
+    // ce qu'un baromètre est précisément censé garantir (§4).
+    const brandInfo = await step.run("load-brand", async () => {
+      const { data, error } = await supabase.from("brands").select("name, vertical").eq("id", brandId).single();
+      if (error) throw new Error(error.message);
+      return data as { name: string; vertical: string };
+    });
+
+    const shared = await step.run("find-shared-run", async () => {
+      // Fenêtre : la semaine ISO en cours. Les marques d'un même plan ne tournent
+      // pas toutes le même jour ; ce qui doit coïncider est la période de mesure,
+      // pas l'horaire d'exécution.
+      const monday = new Date();
+      monday.setUTCHours(0, 0, 0, 0);
+      monday.setUTCDate(monday.getUTCDate() - ((monday.getUTCDay() + 6) % 7));
+
+      const { data } = await supabase
+        .from("prompt_runs")
+        .select("id, raw_answer, cited_sources, cost_usd, brands!inner(vertical)")
+        .eq("prompt_id", promptId)
+        .eq("model", model)
+        .eq("status", "judged")
+        .gte("run_at", monday.toISOString())
+        .limit(20);
+
+      // Même verticale seulement : deux verticales peuvent partager une question
+      // dans la bibliothèque, mais leurs agrégats de sources sont distincts.
+      return (data ?? []).find(
+        (r) => (r.brands as unknown as { vertical: string })?.vertical === brandInfo.vertical
+      ) ?? null;
+    });
+
+    if (shared) {
+      // On recopie le relevé pour cette marque, à coût nul, et on recopie ses
+      // mentions en recalculant le seul champ qui dépend de la marque.
+      const reusedId = await step.run("reuse-run", async () => {
+        const { data, error } = await supabase
+          .from("prompt_runs")
+          .insert({
+            brand_id: brandId,
+            prompt_id: promptId,
+            model,
+            raw_answer: shared.raw_answer,
+            cited_sources: shared.cited_sources,
+            status: "judged",
+            cost_usd: 0,
+          })
+          .select("id")
+          .single();
+        if (error) throw new Error(error.message);
+        return data.id as string;
+      });
+
+      await step.run("copy-mentions", async () => {
+        const { data: mentions } = await supabase
+          .from("mentions")
+          .select("name, cited, position, sentiment")
+          .eq("prompt_run_id", shared.id);
+        if (!mentions || mentions.length === 0) return;
+
+        await supabase.from("mentions").insert(
+          mentions.map((m) => ({
+            prompt_run_id: reusedId,
+            name: m.name,
+            // Le seul champ qui change d'une marque à l'autre.
+            is_target_brand: sameBrand(String(m.name), brandInfo.name),
+            cited: m.cited,
+            position: m.position,
+            sentiment: m.sentiment,
+          }))
+        );
+      });
+
+      // L'agrégat `sources` n'est PAS réincrémenté : la réponse a déjà été comptée
+      // une fois pour cette verticale. Le recompter par marque gonflait le
+      // classement des domaines à proportion du nombre de clients.
+      return { promptRunId: reusedId, costUsd: 0, mutualise: true, depuis: shared.id };
     }
 
     const answer = await step.run("ask-llm", () => askWithTimeout(provider, promptText, 60_000));

@@ -84,7 +84,18 @@ export const PLAN_LIMITS: Record<Plan, PlanLimits> = {
   },
   agency: {
     label: "Agence",
-    priceMonthlyEur: 149,
+    // 149 → 239 €. La raison a changé en cours de route, et elle mérite d'être
+    // écrite : à 149 € le palier coûtait 141 € de mesure, soit 6 % de marge, parce
+    // que chaque marque était mesurée séparément sur des questions identiques. La
+    // mutualisation par verticale (voir `runner.ts`) a réglé ça toute seule — 149 €
+    // suffirait désormais.
+    //
+    // Le prix monte donc pour une autre raison : la couverture du Baromètre est le
+    // facteur limitant de tout le reste — l'Angle ne sait écrire qu'à une marque
+    // mesurée, l'Appariement ne relie que des marques classées. Une verticale de
+    // plus coûte ~2,85 € par édition. Un seul client à 239 € finance trois
+    // verticales pendant un an, et chacune élargit le vivier commercial.
+    priceMonthlyEur: 239,
     brands: 10,
     extraBrandEur: 29,
     promptsPerBrand: 50,
