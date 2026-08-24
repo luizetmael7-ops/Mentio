@@ -29,8 +29,17 @@ export type Cadence = "weekly" | "daily";
 
 export interface PlanLimits {
   label: string;
-  /** Prix de base, marques incluses comprises */
+  /** Prix de base, marques incluses comprises — c'est ce qui est facturé */
   priceMonthlyEur: number;
+  /**
+   * Prix de référence, quand le prix facturé est temporairement plus bas.
+   *
+   * Il n'existe que s'il a été VRAI : afficher un prix barré qu'on n'a jamais
+   * pratiqué est un mensonge, et sur un produit dont l'argument est la mesure
+   * indépendante, c'est le genre de mensonge qui coûte plus qu'il ne rapporte.
+   * Ici, 239 € a été le prix affiché ; il le redeviendra.
+   */
+  listPriceMonthlyEur?: number;
   /** Marques INCLUSES dans le prix de base — pas un plafond */
   brands: number;
   /**
@@ -84,18 +93,22 @@ export const PLAN_LIMITS: Record<Plan, PlanLimits> = {
   },
   agency: {
     label: "Agence",
-    // 149 → 239 €. La raison a changé en cours de route, et elle mérite d'être
-    // écrite : à 149 € le palier coûtait 141 € de mesure, soit 6 % de marge, parce
-    // que chaque marque était mesurée séparément sur des questions identiques. La
-    // mutualisation par verticale (voir `runner.ts`) a réglé ça toute seule — 149 €
-    // suffirait désormais.
+    // 239 € de référence, 149 € facturés aujourd'hui.
     //
-    // Le prix monte donc pour une autre raison : la couverture du Baromètre est le
-    // facteur limitant de tout le reste — l'Angle ne sait écrire qu'à une marque
-    // mesurée, l'Appariement ne relie que des marques classées. Une verticale de
-    // plus coûte ~2,85 € par édition. Un seul client à 239 € finance trois
-    // verticales pendant un an, et chacune élargit le vivier commercial.
-    priceMonthlyEur: 239,
+    // Le prix était monté à 239 € pour compenser une marge de 6 % — chaque marque
+    // était alors mesurée séparément sur des questions identiques. La mutualisation
+    // par verticale (voir `runner.ts`) a ramené le coût de 141 € à 14 € : à 149 €,
+    // la marge est de 91 %, et la hausse n'a plus de justification économique.
+    //
+    // Reste une justification commerciale, et elle joue dans l'autre sens. Le produit
+    // n'a aucun client. Les premiers valent davantage comme preuve que comme revenu :
+    // ce sont eux qui amènent 10 à 30 marques au Baromètre, et le Baromètre est le
+    // facteur limitant de tout le reste. Un prix d'entrée bas accélère précisément
+    // ce qui manque.
+    //
+    // 239 € reste le prix de référence — il a été affiché, il le redeviendra.
+    priceMonthlyEur: 149,
+    listPriceMonthlyEur: 239,
     brands: 10,
     extraBrandEur: 29,
     promptsPerBrand: 50,

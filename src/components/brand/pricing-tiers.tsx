@@ -153,6 +153,13 @@ export function PricingTiers() {
             const displayPrice = annual
               ? Math.round((plan.priceMonthlyEur * 10) / 12)
               : plan.priceMonthlyEur;
+            // Prix barré : uniquement quand un prix de référence plus élevé existe
+            // vraiment. On n'invente pas une remise pour en afficher une.
+            const listPrice = plan.listPriceMonthlyEur
+              ? annual
+                ? Math.round((plan.listPriceMonthlyEur * 10) / 12)
+                : plan.listPriceMonthlyEur
+              : null;
 
             return (
               <article
@@ -191,6 +198,13 @@ export function PricingTiers() {
                 <p className="mt-3 flex items-baseline gap-1 font-metric font-bold">
                   <span className="text-4xl tabular-nums">{displayPrice}</span>
                   <span className="text-2xl">€</span>
+                  {listPrice && listPrice > displayPrice ? (
+                    <span
+                      className={`ml-1 text-lg font-normal tabular-nums line-through ${isAgencyPlus ? "text-white/40" : "text-[var(--ink-soft)]"}`}
+                    >
+                      {`${listPrice} €`}
+                    </span>
+                  ) : null}
                   <span
                     className={`ml-0.5 text-sm font-normal ${isAgencyPlus ? "text-white/50" : "text-[var(--ink-soft)]"}`}
                   >
@@ -205,7 +219,11 @@ export function PricingTiers() {
                 {/* Hauteur réservée sur TOUTES les cartes : sans ça, la phrase de Brand
                     décalait ses lignes de spécifications par rapport aux autres colonnes. */}
                 <p className="mt-1 h-8 text-xs font-medium leading-tight text-[var(--jade)]">
-                  {isBrand ? "Pour une marque qui veut entrer dans les réponses." : ""}
+                  {isBrand
+                    ? "Pour une marque qui veut entrer dans les réponses."
+                    : listPrice && listPrice > displayPrice
+                      ? "Tarif des premières agences, conservé tant que vous restez."
+                      : ""}
                 </p>
                 <dl
                   className={`mt-4 space-y-1.5 text-sm ${isAgencyPlus ? "text-white/80" : "text-[var(--ink-soft)]"}`}
