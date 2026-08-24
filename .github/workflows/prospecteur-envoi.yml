@@ -69,5 +69,23 @@ jobs:
         continue-on-error: true
         run: npx tsx scripts/prospection/expediteur.ts --etat
 
+      # APPROBATION AUTOMATIQUE — demandée explicitement, et c'est un écart assumé
+      # avec CLAUDE.md §8.1 (« l'agent prépare, un humain relit et envoie »).
+      #
+      # Ce qui disparaît : la relecture email par email avant départ.
+      # Ce qui reste, et qui fait le vrai travail de sûreté :
+      #   · le Contrôleur, neuf contrôles à droit de veto, dont la vérification que
+      #     chaque affirmation chiffrée est soutenue par la base ;
+      #   · le plafond de chauffe, qui borne à 5/12/22/30 selon l'ancienneté ;
+      #   · les cinq coupe-circuits, vérifiés avant chaque envoi ;
+      #   · l'arrêt à 15 réponses non traitées.
+      #
+      # `--limit` n'est pas passé : l'Expéditeur le ramène de lui-même au reste du
+      # plafond du jour, donc cette étape ne peut pas dépasser la chauffe même si
+      # elle tourne cinq fois par jour.
+      - name: Approuver ce que le plafond du jour autorise
+        continue-on-error: true
+        run: npx tsx scripts/prospection/expediteur.ts --approuver
+
       - name: Expédier ce qui est dû
         run: npx tsx scripts/prospection/expediteur.ts --armer

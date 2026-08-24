@@ -57,6 +57,12 @@ jobs:
           git diff --staged --quiet && echo "Rien à rapporter." && exit 0
           git commit -m "Rapport du Directeur — ${DATE}"
           git push origin "$BRANCH"
+          # La branche est poussée : le rapport EST livré. L'ouverture de la PR est
+          # un confort, et elle dépend d'un réglage du dépôt (Settings → Actions →
+          # General → « Allow GitHub Actions to create and approve pull requests »).
+          # Tant qu'il est désactivé, on imprime le lien plutôt que d'échouer — un
+          # rapport livré ne doit pas être marqué en erreur pour un bouton non coché.
           gh pr create --title "Rapport du Directeur — ${DATE}" \
             --body "Le Directeur propose. Il n'a rien modifié. Une seule variable se change par semaine, et c'est un humain qui la change." \
-            --base main --head "$BRANCH"
+            --base main --head "$BRANCH" \
+          || echo "PR non ouverte (Actions non autorisé). Le rapport est sur la branche ${BRANCH} : https://github.com/${GITHUB_REPOSITORY}/compare/${BRANCH}?expand=1"
