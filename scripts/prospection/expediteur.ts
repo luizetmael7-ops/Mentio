@@ -116,7 +116,7 @@ async function warmupState(): Promise<{ week: number; cap: number; sentToday: nu
  * Elle pose `scheduled_at` sur les messages validés, étalés sur les heures ouvrées.
  * Rien ne part sans cette date, et cette date ne se pose que par cette commande.
  */
-async function approve(limit: number) {
+async function approve(limit: number): Promise<number> {
   const { data: queue } = await db()
     .from("prospect_messages")
     .select("id, subject, contact_id, prospect_contacts(email, brand_id)")
@@ -128,7 +128,7 @@ async function approve(limit: number) {
 
   if ((queue ?? []).length === 0) {
     console.log(`\n  Aucun message validé en attente d'approbation.\n`);
-    return;
+    return 0;
   }
 
   // On planifie à partir de la prochaine heure ouvrée, jamais « maintenant » : une
@@ -157,6 +157,7 @@ async function approve(limit: number) {
 
   console.log(`\n  ${stats.approuves} message(s) approuvé(s) et planifié(s).`);
   console.log(`  Ils partiront quand l'Expéditeur tournera en mode armé, et pas avant.\n`);
+  return stats.approuves;
 }
 
 async function main() {
@@ -187,6 +188,11 @@ async function main() {
   }
 
   if (!canSend) {
+    // Journalisé, et pas seulement imprimé : une sortie anticipée invisible en base
+    // est indiscernable d'une étape qui n'a jamais tourné. C'est ce qui a rendu
+    // impossible de dire, une semaine durant, pourquoi rien ne partait.
+    const close = await openLog("expediteur");
+    await close(true, { sortie: "coupe-circuit", motif: reason ?? "" });
     console.log(`\n  Envoi bloqué : ${reason}\n`);
     return;
   }
@@ -197,6 +203,7 @@ async function main() {
   console.log(`  aujourd'hui : ${sentToday}/${cap} envoyé(s), ${remaining} restant(s)`);
 
   if (approving) {
+    const closeApprove = await openLog("expediteur-approbation");
     console.log(`\n  ── approbation d'un lot ──`);
     // Défaut à 5, et JAMAIS au-delà du plafond du jour. Approuver 27 emails d'un
     // coup sur une boîte de trois jours déclenche exactement le filtrage que la
@@ -206,10 +213,14 @@ async function main() {
     if (accorde < demande) {
       console.log(`  Demande de ${demande} ramenée à ${accorde} : plafond de chauffe semaine ${week}.`);
     }
-    return approve(accorde);
+    const approuves = await approve(accorde);
+    await closeApprove(true, { demande, accorde, approuves, semaine: week, plafond: cap });
+    return;
   }
 
   if (remaining === 0) {
+    const close = await openLog("expediteur");
+    await close(true, { sortie: "plafond du jour atteint", envoyes_aujourdhui: sentToday, plafond: cap });
     console.log(`\n  Plafond du jour atteint. Rien à faire.\n`);
     return;
   }

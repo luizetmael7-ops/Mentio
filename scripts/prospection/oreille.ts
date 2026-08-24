@@ -161,7 +161,21 @@ async function main() {
   for (const c of CATEGORIES) stats[c] = 0;
 
   try {
-    const mails = await fetchUnread(numFlag("jours", 30));
+    // Un échec IMAP doit nommer sa cause : depuis un runner, personne ne peut aller
+    // regarder, et « Command failed » n'apprend rien. Les trois causes plausibles
+    // sont un identifiant refusé, un blocage réseau du fournisseur, ou un délai.
+    let mails: Incoming[];
+    try {
+      mails = await fetchUnread(numFlag("jours", 30));
+    } catch (error) {
+      const message = String((error as Error).message);
+      const cause = /auth|invalid credentials|login/i.test(message)
+        ? "identifiants refusés par OVH — vérifier PROSPECT_SMTP_USER et PROSPECT_SMTP_PASSWORD"
+        : /timeout|ETIMEDOUT|ECONNREFUSED|ENOTFOUND|EHOSTUNREACH/i.test(message)
+          ? "connexion IMAP impossible depuis cette machine — OVH filtre peut-être les IP de datacenter"
+          : "cause inconnue";
+      throw new Error(`Lecture IMAP impossible (${cause}) : ${message.slice(0, 200)}`);
+    }
     console.log(`  ${mails.length} message(s) non lu(s)\n`);
 
     for (const mail of mails) {
