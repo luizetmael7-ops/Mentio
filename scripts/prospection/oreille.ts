@@ -168,7 +168,10 @@ async function main() {
     try {
       mails = await fetchUnread(numFlag("jours", 30));
     } catch (error) {
-      const message = String((error as Error).message);
+      // ImapFlow range ses détails hors du message : sans eux, « Command failed »
+      // ne dit rien de ce que le serveur a refusé.
+      const detail = error as { message?: string; responseText?: string; serverResponseCode?: string };
+      const message = [detail.message, detail.responseText, detail.serverResponseCode].filter(Boolean).join(" · ");
       const cause = /auth|invalid credentials|login/i.test(message)
         ? "identifiants refusés par OVH — vérifier PROSPECT_SMTP_USER et PROSPECT_SMTP_PASSWORD"
         : /timeout|ETIMEDOUT|ECONNREFUSED|ENOTFOUND|EHOSTUNREACH/i.test(message)

@@ -86,7 +86,20 @@ export function planEconomics(plan: Plan): PlanEconomics {
       perPassUsd *
       (CLIENT_CONTESTED_PASSES - 1);
 
-  const costPerBrandEur = weeklyUsd * WEEKS_PER_MONTH * USD_TO_EUR;
+  // MUTUALISATION (voir `inngest/functions/runner.ts`). Une question de la
+  // bibliothèque partagée n'est plus mesurée par marque : elle l'est une fois par
+  // verticale et par semaine, et le juge en extrait toutes les marques citées. Le
+  // coût a donc cessé d'être proportionnel aux marques suivies.
+  //
+  // L'alerte doit raisonner sur ce coût-là, sinon elle crie au loup indéfiniment sur
+  // un problème résolu — et une alerte qui sonne toujours finit par ne plus être lue.
+  //
+  // Hypothèse prudente : les marques d'un client se répartissent sur au plus trois
+  // verticales. Une agence en a rarement davantage, et deux seulement sont publiées.
+  // On majore donc le coût réel plutôt que de le flatter.
+  const costPerVerticalEur = weeklyUsd * WEEKS_PER_MONTH * USD_TO_EUR;
+  const verticalesAttendues = Math.min(limits.brands, 3);
+  const costPerBrandEur = (costPerVerticalEur * verticalesAttendues) / Math.max(limits.brands, 1);
   const pricePerBrandEur = limits.priceMonthlyEur / limits.brands;
 
   return {

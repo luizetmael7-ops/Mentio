@@ -22,9 +22,15 @@ echo "▶ Agent ${AGENT} — ${DATE}"
 
 # --max-turns borne le nombre d'aller-retours : un agent qui boucle coûte cher et
 # ne produit rien d'utile. --allowedTools interdit tout ce qui n'est pas nécessaire.
+#
+# 40 → 100. L'Éditeur du Baromètre a échoué trois semaines de suite sur « Reached max
+# turns », et le Baromètre n'a plus paru depuis le 13 août. Ce n'était pas une boucle :
+# produire une édition demande de déclencher la mesure, d'attendre, de vérifier quatre
+# invariants, de rédiger un commentaire en quatre paragraphes, de mettre à jour trois
+# fichiers, d'écrire son log et d'ouvrir une PR. 40 tours ne suffisaient pas.
 claude -p "$(cat "$BRIEF")" \
   --allowedTools "Read,Write,Edit,Grep,Glob,Bash(git*),Bash(npm*),Bash(npx*),Bash(curl*)" \
-  --max-turns 40 \
+  --max-turns 100 \
   2>&1 | tee -a "$LOG"
 
 echo "✓ Compte-rendu : ${LOG}"

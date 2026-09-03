@@ -91,7 +91,11 @@ export async function fetchUnread(sinceDays = 30, markSeen = true): Promise<Inco
           looksLikeBounce: detectBounce(fromAddress, subject, headers),
         });
 
-        if (markSeen) await client.messageFlagsAdd({ uid: String(message.uid) }, ["\\Seen"], { uid: true });
+        // La plage se passe en CHAÎNE, pas en objet. `{ uid: "123" }` était
+        // interprété comme un critère de recherche, et `uid` n'en est pas un : le
+        // serveur refusait la commande, ce qui remontait en « Command failed » et
+        // faisait échouer chaque lecture depuis le premier jour.
+        if (markSeen) await client.messageFlagsAdd(String(message.uid), ["\\Seen"], { uid: true });
       }
     } finally {
       lock.release();
