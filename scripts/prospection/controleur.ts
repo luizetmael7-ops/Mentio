@@ -182,6 +182,23 @@ async function main() {
       //    pour que le motif de rejet soit lisible dans le journal.
       checks.push({ code: "ADRESSE", ok: contact.sendable === true, detail: String(contact.label ?? "") });
 
+      // 8ter. CITATION — sans modèle, et c'est voulu. Le vérificateur de faits a laissé
+      // passer cinq questions inventées d'affilée : il tourne sur la même famille de
+      // modèles gratuits que celui qui les a écrites. Une citation entre guillemets se
+      // vérifie par comparaison de chaînes, et une vérification déterministe ne se
+      // laisse pas convaincre.
+      const donnees = Object.values(payload).map((v) => String(v ?? "").toLowerCase());
+      const norm = (t: string) => t.toLowerCase().replace(/[’']/g, "'").replace(/\s+/g, " ").trim();
+      const citations = [...body.matchAll(/«\s*([^»]{6,200}?)\s*»|"([^"]{6,200}?)"/g)]
+        .map((x) => (x[1] ?? x[2] ?? "").trim())
+        .filter((q) => /\?$/.test(q));
+      const inventees = citations.filter((q) => !donnees.some((d) => norm(d).includes(norm(q))));
+      checks.push({
+        code: "CITATION",
+        ok: inventees.length === 0,
+        detail: inventees.length === 0 ? `${citations.length} question(s) citée(s), toutes présentes dans les données` : `question absente des données : « ${inventees[0].slice(0, 80)} »`,
+      });
+
       // 8bis. NIVEAU — un angle issu d'un relevé gratuit autorise des COMPTAGES,
       // jamais un score ni un palier. C'est la protection du barème (§3) : il est
       // l'actif de catégorie, et une mesure dégradée qui en emprunterait le

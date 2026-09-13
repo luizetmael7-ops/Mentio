@@ -119,7 +119,7 @@ async function main() {
             brand_id: brand.id,
             type: fallback.type,
             source_level: "releve",
-            payload: { ...fallback.payload, brand: name },
+            payload: { ...fallback.payload, brand: name, nature: (brand.target as string) === "agency" ? "agence" : "marque" },
             report_url: url,
           });
           await db().from("prospect_brands").update({ coverage_status: "couverte" }).eq("id", brand.id);

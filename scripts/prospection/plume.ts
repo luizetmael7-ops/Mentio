@@ -84,7 +84,11 @@ ${facts}
 Règles absolues :
 - DEUX phrases, 45 mots au total maximum. Pas trois.
 - La première pose le chiffre : rang, score, ou nombre de citations, tiré des faits.
-- La seconde nomme une question réelle, ENTRE GUILLEMETS « », et qui en sort.
+- La seconde phrase cite une question entre guillemets « » UNIQUEMENT si un champ
+  « question » ou « exemple » figure dans les faits, et alors mot pour mot. S'il n'y en
+  a aucun, la seconde phrase n'en cite AUCUNE : elle reprend le comptage autrement.
+  Inventer une question est la faute la plus grave possible — le destinataire peut
+  la vérifier en une minute, et c'est la crédibilité entière de la mesure qui tombe.
 - Le champ « nature » dit si la cible est une marque ou une agence : emploie ce mot-là,
   jamais l'autre. Écrire « votre marque » à une agence disqualifie tout le message.
 - Vouvoiement. Aucune salutation : le « Bonjour » est ajouté séparément.
