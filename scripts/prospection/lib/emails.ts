@@ -46,6 +46,15 @@ const BLOCKED_LOCALS = new Set([
   "dpo", "privacy", "privacyoffice", "rgpd", "gdpr", "legal", "juridique",
   "donneespersonnelles", "cil", "compliance",
 
+  // Systèmes de tickets. Mesuré sur 67 envois : support@, customerservice@,
+  // customercare@ et orders@ ont renvoyé des accusés de réception automatiques
+  // (« Case PUL5613 », « You submitted a question to Thorne »), jamais un humain. Ces
+  // boîtes alimentent Zendesk ou Gorgias, et la personne qui les lit traite des
+  // commandes : elle n'a ni budget ni raison d'acheter un outil.
+  "support", "customerservice", "customerservices", "customercare", "serviceclient",
+  "service-client", "sav", "help", "helpdesk", "aide", "orders", "order", "ordering",
+  "commandes", "commande", "returns", "retours",
+
   // Mauvais interlocuteurs : ni décideurs, ni acheteurs, et prompts à signaler.
   "presse", "press", "media", "medias", "pressoffice", "testimonials", "temoignages",
   "jobs", "job", "emploi", "recrutement", "careers", "career", "rh", "hr", "cv",
@@ -55,12 +64,11 @@ const BLOCKED_LOCALS = new Set([
 /** Boîtes de fonction : envoyables, mais on écrit « à l'attention de » quelqu'un. */
 const ROLE_LOCALS = new Set([
   "contact", "contacts", "contactez-nous", "info", "infos", "information", "hello",
-  "bonjour", "hi", "hey", "team", "equipe", "service", "serviceclient", "clients",
-  "client", "sav", "support", "aide", "help", "customercare", "customerservice",
+  "bonjour", "hi", "hey", "team", "equipe", "clients", "client",
   "commercial", "sales", "vente", "ventes", "business", "partenariat", "partenariats",
   "partnership", "partners", "connect", "admin", "webmaster", "office", "bureau",
   "accueil", "welcome", "mentions", "devis", "reservation", "booking", "boutique",
-  "shop", "commandes", "commande", "order", "orders", "studio", "direction",
+  "shop", "studio", "direction",
 ]);
 
 /**

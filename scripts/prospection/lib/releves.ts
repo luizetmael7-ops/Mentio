@@ -55,6 +55,23 @@ export async function loadReleve(vertical: string): Promise<VerticalReleve> {
   const { data: runs } = await db().from("prompt_runs").select("id, prompt_id").in("prompt_id", promptIds);
   const runIds = (runs ?? []).map((r) => r.id as string);
 
+  // REPLI SUR L'ÉDITION PUBLIÉE. La verticale « agences » a été mesurée par un
+  // script d'étude qui écrit directement l'édition, sans passer par prompt_runs.
+  // Résultat : 50 questions en base, zéro relevé — et 30 agences françaises
+  // joignables qui n'avaient aucun angle, donc jamais d'email, alors qu'elles sont
+  // précisément l'acheteur de §1.
+  //
+  // L'édition contient pourtant les réponses extraites, une par appel, avec la
+  // liste des agences citées. C'est la même donnée que les mentions, rangée
+  // autrement : on la lit telle quelle, et le comptage reste exact.
+  if (runIds.length === 0) {
+    const fromEdition = await releveFromEdition(vertical, promptIds.length);
+    if (fromEdition) {
+      cache.set(vertical, fromEdition);
+      return fromEdition;
+    }
+  }
+
   const citations = new Map<string, { name: string; count: number }>();
   // Supabase plafonne à 1 000 lignes par requête : on pagine, sinon l'agrégat est
   // silencieusement tronqué et tous les comptages en dépendent.
@@ -94,6 +111,51 @@ export async function loadReleve(vertical: string): Promise<VerticalReleve> {
   };
   cache.set(vertical, releve);
   return releve;
+}
+
+interface EditionAnswer {
+  model?: string;
+  brands?: Array<{ name?: string; position?: number }>;
+}
+
+/** Les comptages d'une verticale, reconstruits depuis sa dernière édition publiée. */
+async function releveFromEdition(vertical: string, questions: number): Promise<VerticalReleve | null> {
+  const { data } = await db()
+    .from("index_editions")
+    .select("data")
+    .eq("vertical", vertical)
+    .order("edition_date", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  const edition = data?.data as { answers?: EditionAnswer[]; topSources?: Array<{ domain: string; count: number }> } | undefined;
+  const answers = edition?.answers ?? [];
+  if (answers.length === 0) return null;
+
+  const citations = new Map<string, { name: string; count: number }>();
+  for (const answer of answers) {
+    // Une agence citée deux fois dans la même réponse compte pour une réponse :
+    // le Score Mentio est une part de RÉPONSES, pas d'occurrences (§3).
+    const seen = new Set<string>();
+    for (const b of answer.brands ?? []) {
+      const name = String(b.name ?? "").trim();
+      if (!name || isNonBrand(name)) continue;
+      const key = canonical(name);
+      if (seen.has(key)) continue;
+      seen.add(key);
+      const acc = citations.get(key) ?? { name, count: 0 };
+      acc.count += 1;
+      citations.set(key, acc);
+    }
+  }
+
+  return {
+    vertical,
+    questions,
+    runs: answers.length,
+    citations,
+    domains: (edition?.topSources ?? []).filter((d) => d.count >= 5).slice(0, 10),
+  };
 }
 
 /** La verticale du Baromètre qui correspond à un secteur de prospection. */

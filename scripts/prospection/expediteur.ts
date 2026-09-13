@@ -35,6 +35,26 @@ import { checkBreakers, verdict } from "./lib/coupe-circuits";
 import { liveMode, sendOne, smtpConfigured, verifyMailbox } from "./lib/smtp";
 import { recordSend } from "./lib/bandit";
 
+/**
+ * LA CIBLE — CLAUDE.md §1 : « L'acheteur : les agences SEO et growth françaises. Pas
+ * les marques. »
+ *
+ * Écrit après 67 envois dont 47 à des marques et 34 à l'étranger. Les réponses
+ * étaient des accusés de réception de systèmes de tickets — Thorne, Pulsin, Paula's
+ * Choice Kundenservice — parce que le seul contact qu'une marque publie est celui de
+ * son service client. C'est l'échec des 100 DM Instagram, reproduit par email : un
+ * message lu par quelqu'un qui n'a ni budget, ni KPI, ni raison d'acheter.
+ *
+ * Réglable sans redéploiement, mais la valeur par défaut est celle de la constitution.
+ */
+const TARGETS = new Set((process.env.PROSPECT_TARGETS ?? "agency").split(",").map((t) => t.trim()));
+const COUNTRIES = new Set((process.env.PROSPECT_COUNTRIES ?? "FR").split(",").map((c) => c.trim().toUpperCase()));
+
+function inTarget(brand: { target?: string | null; country?: string | null } | null): boolean {
+  if (!brand) return false;
+  return TARGETS.has(String(brand.target ?? "brand")) && COUNTRIES.has(String(brand.country ?? "").toUpperCase());
+}
+
 /** La montée en charge. Quatre semaines, une boîte, et aucun raccourci. */
 const WARMUP: Record<number, number> = { 1: 5, 2: 12, 3: 22, 4: 30 };
 
@@ -124,7 +144,7 @@ async function approve(limit: number): Promise<number> {
     .is("scheduled_at", null)
     .is("sent_at", null)
     .order("created_at", { ascending: true })
-    .limit(limit);
+    .limit(limit * 10);
 
   if ((queue ?? []).length === 0) {
     console.log(`\n  Aucun message validé en attente d'approbation.\n`);
@@ -137,9 +157,11 @@ async function approve(limit: number): Promise<number> {
   const stats = { approuves: 0 };
 
   for (const message of queue ?? []) {
+    if (stats.approuves >= limit) break;
     const contactRow = message.prospect_contacts as Record<string, unknown> | Array<Record<string, unknown>> | null;
     const contact = (Array.isArray(contactRow) ? contactRow[0] : contactRow) ?? {};
-    const { data: brand } = await db().from("prospect_brands").select("name, country").eq("id", contact.brand_id as string).single();
+    const { data: brand } = await db().from("prospect_brands").select("name, country, target").eq("id", contact.brand_id as string).single();
+    if (!inTarget(brand)) continue;
 
     // On avance jusqu'au prochain créneau ouvré du destinataire.
     let guard = 0;
@@ -254,7 +276,13 @@ async function main() {
       stats.candidats += 1;
       const contactRow = message.prospect_contacts as Record<string, unknown> | Array<Record<string, unknown>> | null;
       const contact = (Array.isArray(contactRow) ? contactRow[0] : contactRow) ?? {};
-      const { data: brand } = await db().from("prospect_brands").select("name, country").eq("id", contact.brand_id as string).single();
+      const { data: brand } = await db().from("prospect_brands").select("name, country, target").eq("id", contact.brand_id as string).single();
+      if (!inTarget(brand)) {
+        // Planifié avant le recentrage : on le retire de la file plutôt que de
+        // l'envoyer. Il reste en base, validé, et repartira si la cible s'élargit.
+        await db().from("prospect_messages").update({ scheduled_at: null }).eq("id", message.id);
+        continue;
+      }
 
       // Une planification peut avoir vieilli : on revérifie l'heure au moment de partir.
       const timing = isBusinessTime(brand?.country ?? "FR");
