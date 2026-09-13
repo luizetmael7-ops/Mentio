@@ -27,6 +27,13 @@ méthodologie, et rien d'autre.
 
 ## Les variables
 
+La phrase de méthode n'est **jamais écrite en dur**. `{methode}` est calculée depuis la
+mesure qui a produit l'angle : moteurs réellement interrogés, recherche web ou non, date
+de l'édition. Jusqu'au 13 septembre 2026, ce paragraphe affirmait « chaque semaine, à
+ChatGPT, Gemini, Claude et Perplexity » — alors que les deux éditions n'avaient interrogé
+que ChatGPT et Gemini. Soixante-sept emails ont porté cette affirmation fausse, dont
+vingt à des agences GEO, c'est-à-dire aux lecteurs les mieux placés pour la repérer.
+
 | Variable | D'où elle vient |
 |---|---|
 | `{marque}` | `prospect_brands.name` |
@@ -39,6 +46,8 @@ méthodologie, et rien d'autre.
 | `{questions_perdues}` · `{exemple}` · `{gagnant_exemple}` | angle « question perdue » |
 | `{domaine}` | angle « domaine à conquérir » |
 | `{url}` | `/rapport/[slug]`, vérifié 200 avant envoi |
+| `{ligne_rapport}` | la phrase qui mène au rapport ; hors France, elle dit qu'aucune édition ne couvre encore ce marché |
+| `{methode}` | calculée : moteurs interrogés, recherche web ou non, marché, date |
 | `{cta}` | tiré par le bras — sections `cta-*` |
 | `{signature}` | bloc fixe, obligatoire |
 
@@ -52,7 +61,7 @@ Objet: {marque} dans le baromètre de visibilité IA
 
 {ouverture}
 
-Mentio est un baromètre indépendant de la visibilité des marques dans les réponses IA. Chaque semaine, je pose les mêmes 50 questions d'intention d'achat à ChatGPT, Gemini, Claude et Perplexity — via leurs API officielles, recherche web activée — puis je relève les marques citées, leur position dans la réponse, et les sources que les modèles ont réellement consultées. Personne ne paie pour figurer au classement, sous aucune forme, et la méthodologie est publique, intervalles de confiance et limites compris : {url_methodologie}
+Mentio est un baromètre indépendant de la visibilité des marques dans les réponses IA. {methode} Personne ne paie pour y figurer, et la méthodologie est publique : {url_methodologie}
 
 Le rapport détaillé de {marque} contient votre score par moteur, votre rang sectoriel et votre palier, les {pairs} citées à votre place, les questions précises où vous n'apparaissez pas, les domaines que les modèles consultent pour répondre sur ce secteur, et un plan de douze actions classées par effet attendu — chacune avec sa route d'entrée, le format que le domaine publie et l'angle qui y fonctionne.
 
@@ -67,7 +76,7 @@ Objet: {marque} dans le baromètre de visibilité IA
 
 {ouverture}
 
-Mentio est un baromètre indépendant de la visibilité des marques dans les réponses IA. Chaque semaine, je pose les mêmes 50 questions d'intention d'achat à ChatGPT, Gemini, Claude et Perplexity — via leurs API officielles, recherche web activée — puis je relève les marques citées, leur position, et les sources que les modèles ont consultées pour répondre. Aucune place ne s'achète et la méthodologie est publiée en entier : {url_methodologie}
+Mentio est un baromètre indépendant de la visibilité des marques dans les réponses IA. {methode} Personne ne paie pour y figurer, et la méthodologie est publique : {url_methodologie}
 
 Le rapport détaillé de {marque} liste les questions où vous êtes absent et qui est cité à votre place, votre score par moteur, votre rang sectoriel, les domaines que les modèles consultent sur ce secteur, et douze actions classées par effet attendu — avec pour chacune la route d'entrée, le format attendu et l'angle qui passe.
 
@@ -82,7 +91,7 @@ Objet: {marque} et les sources que lisent les IA
 
 {ouverture}
 
-Mentio est un baromètre indépendant de la visibilité des marques dans les réponses IA. Chaque semaine, les mêmes 50 questions d'intention d'achat sont posées à ChatGPT, Gemini, Claude et Perplexity via leurs API officielles, recherche web activée. Je relève non seulement les marques citées, mais surtout les domaines que les modèles ont consultés pour construire leur réponse — c'est la partie la moins documentée du sujet, et la plus actionnable. Méthodologie publique : {url_methodologie}
+Mentio est un baromètre indépendant de la visibilité des marques dans les réponses IA. {methode} Personne ne paie pour y figurer, et la méthodologie est publique : {url_methodologie}
 
 Le rapport détaillé de {marque} contient les cinq domaines les plus consultés sur votre secteur avec le poids de chacun, votre score par moteur, votre rang, les {pairs} citées à votre place, et douze actions classées par effet attendu — chacune avec sa route d'entrée, le format que le domaine publie et l'angle qui y fonctionne.
 
@@ -97,7 +106,7 @@ Objet: {marque} dans le baromètre de visibilité IA
 
 {ouverture}
 
-Mentio est un baromètre indépendant de la visibilité des marques dans les réponses IA. Chaque semaine, je pose les mêmes 50 questions d'intention d'achat à ChatGPT, Gemini, Claude et Perplexity — API officielles, recherche web activée — et je relève qui est cité, à quelle position, et depuis quelles sources. Le barème est public et personne ne paie pour changer de palier : {url_methodologie}
+Mentio est un baromètre indépendant de la visibilité des marques dans les réponses IA. {methode} Personne ne paie pour y figurer, et la méthodologie est publique : {url_methodologie}
 
 Le rapport détaillé de {marque} contient votre score par moteur, votre rang parmi {total_marques} marques mesurées, les {pairs} citées à votre place, les questions où vous n'apparaissez pas, les domaines que les modèles consultent sur ce secteur, et douze actions classées par effet attendu.
 
@@ -110,13 +119,11 @@ Il est là, sans contrepartie : {url}
 ## absente_secteur
 Objet: {marque} dans les réponses des IA
 
-{ouverture}
+{marque} n'est citée dans aucune des {reponses_analysees} réponses de notre dernier relevé. {premier}, la plus citée, apparaît dans {citations_premier}.
 
-Mentio est un baromètre indépendant de la visibilité des marques dans les réponses IA. Chaque semaine, les mêmes questions d'intention d'achat sont posées à ChatGPT, Gemini, Claude et Perplexity, et je relève qui est cité, à quelle position, et depuis quelles sources. Personne ne paie pour y figurer, et la méthode est publique : {url_methodologie}
+Mentio est un baromètre indépendant de la visibilité des marques dans les réponses IA. {methode} Personne ne paie pour y figurer, et la méthodologie est publique : {url_methodologie}
 
-Ce relevé porte sur {questions} questions de votre catégorie et {reponses_analysees} réponses analysées. {marque} n'apparaît dans aucune. C'est un comptage, pas une note : je ne vous attribue aucun score, et ce serait malhonnête de le faire sur cette base.
-
-L'édition publiée de votre secteur est là : {url}
+C'est un comptage, pas une note : je ne vous attribue aucun score, et ce serait malhonnête de le faire sur cette base. {ligne_rapport}
 
 {cta}
 
@@ -125,13 +132,11 @@ L'édition publiée de votre secteur est là : {url}
 ## concurrent_cite
 Objet: {marque} face à {concurrent} dans les réponses IA
 
-{ouverture}
+{marque} est citée dans {citations} des {reponses_analysees} réponses de notre dernier relevé. {concurrent} l'est dans {citations_concurrent}.
 
-Mentio est un baromètre indépendant de la visibilité des marques dans les réponses IA. Chaque semaine, les mêmes questions d'intention d'achat sont posées à ChatGPT, Gemini, Claude et Perplexity, et je relève qui est cité. Personne ne paie pour y figurer, et la méthode est publique : {url_methodologie}
+Mentio est un baromètre indépendant de la visibilité des marques dans les réponses IA. {methode} Personne ne paie pour y figurer, et la méthodologie est publique : {url_methodologie}
 
-Sur {questions} questions de votre catégorie, {marque} est citée {citations} fois. {concurrent} l'est {citations_concurrent} fois. C'est un comptage brut, sans score ni classement — l'écart parle de lui-même.
-
-L'édition publiée de votre secteur est là : {url}
+C'est un comptage brut, sans score ni classement — l'écart parle de lui-même. {ligne_rapport}
 
 {cta}
 
@@ -140,13 +145,26 @@ L'édition publiée de votre secteur est là : {url}
 ## domaines_sources
 Objet: {marque} et les sources que lisent les IA
 
+Dans votre catégorie, {domaine} revient {citations_domaine} fois parmi les sources consultées par les modèles.
+
+Mentio est un baromètre indépendant de la visibilité des marques dans les réponses IA. {methode} Personne ne paie pour y figurer, et la méthodologie est publique : {url_methodologie}
+
+C'est la partie la moins documentée du sujet, et la plus actionnable : ce sont les pages que les modèles lisent avant de nommer qui que ce soit. {ligne_rapport}
+
+{cta}
+
+{signature}
+
+## palier-agence
+Objet: {marque} dans le baromètre des agences GEO
+
 {ouverture}
 
-Mentio est un baromètre indépendant de la visibilité des marques dans les réponses IA. Chaque semaine, les mêmes questions d'intention d'achat sont posées à ChatGPT, Gemini, Claude et Perplexity, et je relève surtout les domaines qu'ils consultent pour répondre. Méthode publique : {url_methodologie}
+Mentio est un baromètre indépendant de la visibilité des marques et des agences dans les réponses IA. {methode} Personne ne paie pour y figurer, sous aucune forme.
 
-Sur votre catégorie, {domaine} revient {citations_domaine} fois dans les sources consultées. C'est la partie la moins documentée du sujet et la plus actionnable : ce sont ces pages que les modèles lisent avant de nommer une marque.
+{marque} figure au classement, {rang_ordinal} sur {total_marques} agences. C'est un classement public, que vous pouvez citer tel quel. Le badge à afficher sur votre site, qui se met à jour avec chaque édition, est ici : {url_badge}
 
-L'édition publiée de votre secteur est là : {url}
+Le rapport détaillé liste les questions où vous êtes cités, les agences nommées à côté de vous et les domaines que les modèles consultent pour répondre : {url}
 
 {cta}
 

@@ -16,6 +16,7 @@
  *   npx tsx scripts/prospection/greffier.ts
  *   npx tsx scripts/prospection/greffier.ts --resolve 40   # borne les résolutions
  *   npx tsx scripts/prospection/greffier.ts --resolve 0    # dédoublonnage seul, zéro LLM
+ *   npx tsx scripts/prospection/greffier.ts --resolve 0 --audit-agences   # écarte ce qui n'est pas une agence
  */
 import "./lib/env";
 
@@ -24,6 +25,7 @@ import { flag, intFlag, numFlag } from "./lib/env";
 import { canonical, looksLikeBrand, slugify, stripLegalSuffix } from "./lib/normalize";
 import { classifyExclusion, EXCLUDED_COUNTRIES } from "./lib/exclusions";
 import { verifyDomain } from "./lib/domain";
+import { verifierAgence } from "./lib/agence";
 import { activeFreeModels, askFree, freeModelById, quotaUsage, QuotaExhausted, type FreeModel } from "./lib/free-llm";
 
 const RESOLVE_BATCH = 20;
@@ -172,6 +174,7 @@ async function main() {
   const scanLimit = numFlag("scans", 200);
   const retry = flag("retry") === "true";
   const audit = flag("audit") === "true";
+  const auditAgences = flag("audit-agences") === "true";
 
   console.log(`\n=== LE GREFFIER — ${new Date().toISOString().slice(0, 16).replace("T", " ")} ===`);
 
@@ -296,6 +299,29 @@ async function main() {
     }
 
     console.log(`  ${stats.marques_nouvelles} nouvelle(s), ${stats.marques_revues} revue(s), ${stats.rejetees_forme} rejetée(s) sur la forme, ${stats.exclues} exclue(s)`);
+
+    // ── Audit d'identité des agences ──────────────────────────────────────
+    // Ponctuel : la Plume fait le même contrôle avant chaque premier email. Ceci
+    // rattrape d'un coup le vivier constitué avant que le contrôle existe.
+    if (auditAgences) {
+      const { data: agences } = await db()
+        .from("prospect_brands")
+        .select("id, name, domain")
+        .eq("target", "agency")
+        .eq("excluded", false)
+        .eq("domain_status", "resolved")
+        .not("domain", "is", null);
+
+      const tally = { agence: 0, pas_agence: 0, injoignable: 0 };
+      for (const a of (agences ?? []) as Array<{ id: string; name: string; domain: string }>) {
+        const { verdict, preuve } = await verifierAgence(a.domain);
+        tally[verdict] += 1;
+        if (verdict !== "pas_agence") continue;
+        await db().from("prospect_brands").update({ excluded: true, exclusion_reason: `pas_une_agence: ${preuve}`.slice(0, 200) }).eq("id", a.id);
+        console.log(`     ${a.name.padEnd(26).slice(0, 26)} ✗ ${preuve}`);
+      }
+      console.log(`\n  audit agences : ${tally.agence} confirmée(s), ${tally.pas_agence} exclue(s), ${tally.injoignable} injoignable(s)`);
+    }
 
     // ── Audit des domaines déjà résolus ───────────────────────────────────
     //

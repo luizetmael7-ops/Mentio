@@ -21,6 +21,7 @@ import { db, openLog } from "./lib/db";
 import { flag, numFlag } from "./lib/env";
 import { askFree, freeModelById, activeFreeModels, QuotaExhausted } from "./lib/free-llm";
 import { EXCLUDED_COUNTRIES } from "./lib/exclusions";
+import { adressePostaleValide } from "./lib/postal";
 
 const DEDUP_DAYS = 180;
 const POSTAL_ADDRESS = process.env.PROSPECT_POSTAL_ADDRESS ?? "";
@@ -134,7 +135,8 @@ async function main() {
       const reportUrl = String(angle?.report_url ?? "###");
       const hasReport = links.some((l) => l.startsWith(reportUrl));
       const extras = links.filter((l) => !l.startsWith(reportUrl));
-      const extrasAllowed = extras.every((l) => /^https:\/\/(www\.)?mentio\.fr\/methodologie\/?$/.test(l));
+      // Second lien autorisé : la méthodologie, ou le badge pour une agence classée.
+      const extrasAllowed = extras.every((l) => /^https:\/\/(www\.)?mentio\.fr\/(methodologie|badge)\/?$/.test(l));
       checks.push({
         code: "LIEN",
         ok: hasReport && links.length <= 2 && extrasAllowed,
@@ -172,10 +174,15 @@ async function main() {
       const hasProvenance = /(adresse|address)[^.]{0,40}(trouv|found)|(trouv|found)[^.]{0,40}(adresse|address)/i.test(body);
       const hasOptOut = /\bstop\b|désinscri|desinscri|ne (vous )?réécris|not write|never write|unsubscribe/i.test(body);
       const needsPostal = brand?.country === "US";
+      const postalOk = adressePostaleValide(POSTAL_ADDRESS) && body.includes(POSTAL_ADDRESS.trim())
+        && !/(ton|votre|your) adresse postale|postal address here/i.test(body);
       checks.push({
         code: "LEGAL",
-        ok: hasProvenance && hasOptOut && (!needsPostal || POSTAL_ADDRESS.length > 5),
-        detail: !hasProvenance ? "provenance absente" : !hasOptOut ? "opposition absente" : needsPostal && !POSTAL_ADDRESS ? "adresse postale obligatoire (CAN-SPAM)" : "conforme",
+        // L'adresse doit être réelle ET figurer dans le corps : un brouillon rédigé sur une
+        // machine où la variable valait un exemple garde cet exemple, quelle que soit la
+        // valeur au moment du contrôle.
+        ok: hasProvenance && hasOptOut && (!needsPostal || postalOk),
+        detail: !hasProvenance ? "provenance absente" : !hasOptOut ? "opposition absente" : needsPostal && !postalOk ? "adresse postale réelle obligatoire dans le corps (CAN-SPAM)" : "conforme",
       });
 
       // 8. ADRESSE — étiquette autorisée. La base l'impose déjà, on le revérifie ici
@@ -203,7 +210,11 @@ async function main() {
       // jamais un score ni un palier. C'est la protection du barème (§3) : il est
       // l'actif de catégorie, et une mesure dégradée qui en emprunterait le
       // vocabulaire le diluerait sans que personne ne s'en aperçoive.
-      const cite_un_score = /\b\d{1,3}\s*\/\s*100\b|\bscore de \d|\bpalier\b|\bInvisible\b|\bAperçue\b|\bCitée\b|\bRecommandée\b|\bPrescrite\b|\brang \d|\b\d+e sur \d+/i.test(body);
+      // Les noms de paliers sont cherchés AVEC leur majuscule : insensible à la casse,
+      // « Citée » attrapait le verbe — « n'est citée dans aucune réponse » — et bloquait
+      // tous les emails de relevé pour un mot que le barème partage avec la langue.
+      const cite_un_score = /\b\d{1,3}\s*\/\s*100\b|\bscore de \d|\bpalier\b|\brang \d|\b\d+e sur \d+/i.test(body)
+        || /(^|[^\p{L}])(Invisible|Aperçue|Citée|Recommandée|Prescrite)(?![\p{L}])/u.test(body.replace(/(^|[.!?]\s+|\n)(Invisible|Aperçue|Citée|Recommandée|Prescrite)\b/g, "$1"));
       const est_releve = angle?.source_level === "releve";
       checks.push({
         code: "NIVEAU",

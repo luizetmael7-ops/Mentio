@@ -32,6 +32,20 @@ export interface VerticalReleve {
   citations: Map<string, { name: string; count: number }>;
   /** Domaines cités au moins 5 fois. */
   domains: Array<{ domain: string; count: number }>;
+  /**
+   * Ce qui a réellement produit ces comptages. Un email ne décrit jamais la méthode
+   * de mémoire : il la lit ici. Les deux éditions publiées n'ont interrogé que
+   * ChatGPT et Gemini, et 67 emails ont affirmé quatre moteurs avant qu'on s'en aperçoive.
+   */
+  models: string[];
+  webSearch: boolean;
+  editionDate: string | null;
+  /** « edition » : Baromètre publié. « prospection » : relevé gratuit, sans recherche web. */
+  source: "edition" | "prospection";
+  /** Le marché mesuré, pour ne pas écrire à une agence londonienne sur le marché français. */
+  market: string;
+  /** Ce que les questions cherchaient : une agence, ou un produit. La phrase de méthode en dépend. */
+  target: "agency" | "brand";
 }
 
 const cache = new Map<string, VerticalReleve>();
@@ -47,7 +61,7 @@ export async function loadReleve(vertical: string): Promise<VerticalReleve> {
   const { data: prompts } = await db().from("prompts").select("id").eq("vertical", vertical);
   const promptIds = (prompts ?? []).map((p) => p.id as string);
   if (promptIds.length === 0) {
-    const empty = { vertical, questions: 0, runs: 0, citations: new Map(), domains: [] };
+    const empty: VerticalReleve = { vertical, questions: 0, runs: 0, citations: new Map(), domains: [], models: [], webSearch: false, editionDate: null, source: "edition", market: "FR", target: vertical === "agences_geo" ? "agency" : "brand" };
     cache.set(vertical, empty);
     return empty;
   }
@@ -102,12 +116,19 @@ export async function loadReleve(vertical: string): Promise<VerticalReleve> {
     .order("times_cited", { ascending: false })
     .limit(10);
 
+  const { data: runModels } = await db().from("prompt_runs").select("model").in("id", runIds.slice(0, 500));
   const releve: VerticalReleve = {
     vertical,
     questions: promptIds.length,
     runs: runIds.length,
     citations,
     domains: (sources ?? []).map((s) => ({ domain: s.domain as string, count: Number(s.times_cited) })),
+    models: [...new Set((runModels ?? []).map((r) => String(r.model)))],
+    webSearch: true,
+    editionDate: null,
+    source: "edition",
+    market: "FR",
+    target: vertical === "agences_geo" ? "agency" : "brand",
   };
   cache.set(vertical, releve);
   return releve;
@@ -122,13 +143,13 @@ interface EditionAnswer {
 async function releveFromEdition(vertical: string, questions: number): Promise<VerticalReleve | null> {
   const { data } = await db()
     .from("index_editions")
-    .select("data")
+    .select("data, edition_date")
     .eq("vertical", vertical)
     .order("edition_date", { ascending: false })
     .limit(1)
     .maybeSingle();
 
-  const edition = data?.data as { answers?: EditionAnswer[]; topSources?: Array<{ domain: string; count: number }> } | undefined;
+  const edition = data?.data as { answers?: EditionAnswer[]; models?: string[]; topSources?: Array<{ domain: string; count: number }> } | undefined;
   const answers = edition?.answers ?? [];
   if (answers.length === 0) return null;
 
@@ -155,7 +176,79 @@ async function releveFromEdition(vertical: string, questions: number): Promise<V
     runs: answers.length,
     citations,
     domains: (edition?.topSources ?? []).filter((d) => d.count >= 5).slice(0, 10),
+    models: edition?.models ?? [],
+    webSearch: true,
+    editionDate: (data?.edition_date as string) ?? null,
+    source: "edition",
+    market: "FR",
+    target: vertical === "agences_geo" ? "agency" : "brand",
   };
+}
+
+/**
+ * LES AGENCES HORS FRANCE. Aucune édition publiée ne mesure le marché britannique ou
+ * américain : écrire à une agence londonienne « vous êtes absente du classement des
+ * agences françaises » serait vrai et absurde. Le Semeur, lui, a posé les questions
+ * qu'un dirigeant pose en cherchant une agence au Royaume-Uni ou aux États-Unis, et
+ * stocké les extractions. C'est une mesure plus faible — modèles gratuits, sans
+ * recherche web — et l'email le dira tel quel. Comptages seulement, jamais de score.
+ */
+export async function loadReleveFromScans(sector: string, country: string): Promise<VerticalReleve | null> {
+  const key = `scans:${sector}:${country}`;
+  const known = cache.get(key);
+  if (known) return known;
+
+  const { data: cells } = await db().from("prospect_matrix").select("id, target").eq("sector", sector).eq("country", country);
+  const cellIds = (cells ?? []).map((c) => c.id as string);
+  const target = cells?.some((c) => c.target === "agency") ? "agency" : "brand";
+  if (cellIds.length === 0) return null;
+
+  const { data: questions } = await db().from("prospect_questions").select("id").in("matrix_id", cellIds);
+  const questionIds = (questions ?? []).map((q) => q.id as string);
+  if (questionIds.length === 0) return null;
+
+  // Gemini seul. Nemotron sert à extraire et à juger ; personne ne lui demande quelle
+  // agence choisir. Le compter reviendrait à « mesurer ce que personne n'utilise » (§7),
+  // et le nommer dans un email à une agence étrangère ruinerait la phrase de méthode.
+  const { data: scans } = await db()
+    .from("prospect_raw_scans")
+    .select("question_id, model, extracted")
+    .in("question_id", questionIds)
+    .like("model", "gemini%");
+  // Sous dix réponses, un comptage n'est plus un relevé : on n'écrit pas.
+  if (!scans || scans.length < 10) return null;
+
+  const citations = new Map<string, { name: string; count: number }>();
+  for (const scan of scans) {
+    const seen = new Set<string>();
+    for (const b of ((scan.extracted as { brands?: Array<{ name?: string }> })?.brands ?? [])) {
+      const name = String(b.name ?? "").trim();
+      if (!name || isNonBrand(name)) continue;
+      const k = canonical(name);
+      if (seen.has(k)) continue;
+      seen.add(k);
+      const acc = citations.get(k) ?? { name, count: 0 };
+      acc.count += 1;
+      citations.set(k, acc);
+    }
+  }
+
+  const releve: VerticalReleve = {
+    vertical: sector,
+    // Les questions réellement posées, pas celles prévues dans la matrice.
+    questions: new Set(scans.map((x) => String(x.question_id))).size,
+    runs: scans.length,
+    citations,
+    domains: [],
+    models: [...new Set(scans.map((s) => String(s.model)))],
+    webSearch: false,
+    editionDate: null,
+    source: "prospection",
+    market: country,
+    target,
+  };
+  cache.set(key, releve);
+  return releve;
 }
 
 /** La verticale du Baromètre qui correspond à un secteur de prospection. */
@@ -182,6 +275,15 @@ export interface ReleveAngle {
 export function angleFromReleve(brandName: string, releve: VerticalReleve): ReleveAngle | null {
   if (releve.runs === 0) return null;
 
+  const methode = {
+    modeles: releve.models,
+    recherche_web: releve.webSearch,
+    edition_date: releve.editionDate,
+    source_mesure: releve.source,
+    marche: releve.market,
+    cible_questions: releve.target,
+  };
+
   const mine = releve.citations.get(canonical(brandName))?.count ?? 0;
   const ranked = [...releve.citations.values()].sort((a, b) => b.count - a.count);
   const leader = ranked.find((r) => canonical(r.name) !== canonical(brandName));
@@ -192,6 +294,7 @@ export function angleFromReleve(brandName: string, releve: VerticalReleve): Rele
       type: "absente_secteur",
       payload: {
         nature_source: "relevé",
+        ...methode,
         questions: releve.questions,
         reponses_analysees: releve.runs,
         citations: 0,
@@ -208,6 +311,7 @@ export function angleFromReleve(brandName: string, releve: VerticalReleve): Rele
       type: "concurrent_cite",
       payload: {
         nature_source: "relevé",
+        ...methode,
         questions: releve.questions,
         reponses_analysees: releve.runs,
         citations: mine,
@@ -223,7 +327,9 @@ export function angleFromReleve(brandName: string, releve: VerticalReleve): Rele
       type: "domaines_sources",
       payload: {
         nature_source: "relevé",
+        ...methode,
         questions: releve.questions,
+        reponses_analysees: releve.runs,
         citations: mine,
         domaine: releve.domains[0].domain,
         citations_domaine: releve.domains[0].count,

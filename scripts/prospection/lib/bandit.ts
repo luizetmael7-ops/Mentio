@@ -137,6 +137,43 @@ export async function chooseCta(context: Omit<ArmDims, "cta_variant">): Promise<
   return best;
 }
 
+/**
+ * Choisit entre plusieurs angles possibles pour un même contexte.
+ *
+ * Même mécanique que le CTA, un cran plus haut : on agrège tous les bras d'un angle,
+ * toutes variantes de CTA confondues, et on tire. Un angle sous les 40 envois reste
+ * candidat plein — on ne tue pas une hypothèse qu'on n'a pas encore testée.
+ */
+export async function chooseAngle(
+  context: { sector: string; country: string; tier: string },
+  candidates: string[]
+): Promise<string> {
+  if (candidates.length <= 1) return candidates[0];
+  if (Math.random() < EXPLORATION_RATE) return candidates[Math.floor(Math.random() * candidates.length)];
+
+  const { data: arms } = await db()
+    .from("prospect_arms")
+    .select("angle_type, sends, successes")
+    .match({ sector: context.sector, country: context.country })
+    .in("angle_type", candidates);
+
+  let best = candidates[0];
+  let bestDraw = -1;
+  for (const angle of candidates) {
+    const rows = (arms ?? []).filter((a) => a.angle_type === angle);
+    const sends = rows.reduce((n, a) => n + Number(a.sends || 0), 0);
+    const successes = rows.reduce((n, a) => n + Number(a.successes || 0), 0);
+    const draw = sends < MIN_SENDS_BEFORE_DEPRIORITIZING
+      ? sampleBeta(1 + successes, 1)
+      : sampleBeta(1 + successes, 1 + Math.max(0, sends - successes));
+    if (draw > bestDraw) {
+      bestDraw = draw;
+      best = angle;
+    }
+  }
+  return best;
+}
+
 /** Un envoi de plus sur ce bras. Appelé par l'Expéditeur, jamais par la Plume. */
 export async function recordSend(armId: string | null): Promise<void> {
   if (!armId) return;

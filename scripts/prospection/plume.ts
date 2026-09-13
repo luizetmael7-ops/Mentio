@@ -26,6 +26,8 @@ import "./lib/env";
 
 import { readFileSync } from "node:fs";
 import { db, openLog } from "./lib/db";
+import { verifierAgence } from "./lib/agence";
+import { adressePostaleValide } from "./lib/postal";
 import { numFlag } from "./lib/env";
 import { askFree, freeModelById, activeFreeModels, QuotaExhausted, type FreeModel } from "./lib/free-llm";
 import { chooseCta, resolveArm } from "./lib/bandit";
@@ -35,6 +37,9 @@ import { chooseCta, resolveArm } from "./lib/bandit";
 // jour on peut se permettre le registre long, et c'est exactement ce que le petit
 // volume achète. Le plafond reste un plafond : au-delà, l'email ne part pas.
 const MAX_WORDS = Number(process.env.PROSPECT_MAX_WORDS) || 280;
+// Même cible que l'Expéditeur — les deux lisent les mêmes variables.
+const PLUME_TARGETS = new Set((process.env.PROSPECT_TARGETS || "agency").split(",").map((t) => t.trim()));
+const PLUME_COUNTRIES = new Set((process.env.PROSPECT_COUNTRIES || "FR,BE,GB,US,NL,ES,IT,PT,SE").split(",").map((c) => c.trim().toUpperCase()));
 const SIGNATURE_NAME = process.env.PROSPECT_SIGNATURE ?? "Luiz";
 const POSTAL_ADDRESS = process.env.PROSPECT_POSTAL_ADDRESS ?? "";
 
@@ -103,6 +108,93 @@ Règles absolues :
 Réponds UNIQUEMENT par les deux phrases, sans guillemets et sans commentaire.`;
 }
 
+const NOMS_MOTEURS: Record<string, string> = {
+  chatgpt: "ChatGPT", gemini: "Gemini", "gemini-free": "Gemini", claude: "Claude",
+  perplexity: "Perplexity", nemotron: "Nemotron", "mistral-small": "Mistral",
+};
+
+const MARCHES: Record<string, { fr: string; en: string }> = {
+  FR: { fr: "en France", en: "France" }, BE: { fr: "en Belgique", en: "Belgium" },
+  GB: { fr: "au Royaume-Uni", en: "the UK" }, US: { fr: "aux États-Unis", en: "the US" },
+  NL: { fr: "aux Pays-Bas", en: "the Netherlands" }, ES: { fr: "en Espagne", en: "Spain" },
+  IT: { fr: "en Italie", en: "Italy" }, PT: { fr: "au Portugal", en: "Portugal" },
+  SE: { fr: "en Suède", en: "Sweden" },
+};
+
+function joinList(items: string[], and: string): string {
+  if (items.length <= 1) return items[0] ?? "";
+  return `${items.slice(0, -1).join(", ")} ${and} ${items[items.length - 1]}`;
+}
+
+/**
+ * LA PHRASE DE MÉTHODE — calculée, jamais écrite.
+ *
+ * Jusqu'au 13 septembre 2026 elle était en dur dans le gabarit : « chaque semaine, à
+ * ChatGPT, Gemini, Claude et Perplexity ». Les deux éditions n'avaient interrogé que
+ * ChatGPT et Gemini, et 67 emails ont porté l'affirmation — dont vingt à des agences GEO,
+ * les lecteurs les mieux placés pour la vérifier. Elle se déduit désormais de la mesure
+ * qui a produit l'angle : moteurs, recherche web, date, marché.
+ */
+function methodeSentence(payload: Record<string, unknown>, language: string): string {
+  const raw = Array.isArray(payload.modeles) ? (payload.modeles as string[]) : [];
+  const moteurs = [...new Set(raw.map((m) => NOMS_MOTEURS[m] ?? m))];
+  const fr = language === "fr";
+  const liste = joinList(moteurs.length ? moteurs : [fr ? "des assistants d'IA" : "AI assistants"], fr ? "et" : "and");
+  const questions = Number(payload.questions) || 0;
+  const date = payload.edition_date ? dateLisible(String(payload.edition_date), fr) : null;
+  const marche = MARCHES[String(payload.marche ?? "FR").toUpperCase()];
+
+  if (payload.source_mesure === "prospection") {
+    const agence = payload.cible_questions === "agency";
+    // Chaque mot est vérifiable dans le payload : le Contrôleur a refusé 20 emails qui
+    // parlaient d'« agence » à des marques de cosmétique.
+    return fr
+      ? `J'ai posé à ${liste} ${questions} questions qu'${agence ? "un dirigeant pose en cherchant une agence" : "un client pose avant d'acheter"} ${marche?.fr ?? ""}, sans recherche web, et relevé ${agence ? "les agences" : "les marques"} nommées.`.replace(/\s+,/g, ",").replace(/\s{2,}/g, " ")
+      : `I asked ${liste} ${questions} questions ${agence ? "a founder asks when looking for an agency" : "a shopper asks before buying"} in ${marche?.en ?? "your market"}, without web search, and recorded which ${agence ? "agencies" : "brands"} were named.`;
+  }
+  return fr
+    ? `${date ? `Dans l'édition du ${date}, j'ai` : "J'ai"} posé ${questions || "les mêmes"} questions d'intention d'achat à ${liste}, via leurs API officielles et recherche web activée, puis relevé qui était cité et à quelle position.`
+    : `${date ? `In the ${date} edition, I` : "I"} put ${questions || "the same"} buying-intent questions to ${liste} through their official APIs with web search enabled, and recorded who was named and where.`;
+}
+
+/**
+ * La phrase qui mène au rapport. Le seul Baromètre publié mesure le marché français :
+ * écrire à une agence londonienne « l'édition de votre secteur » en pointant le
+ * classement des agences françaises serait faux. On le dit, et le lien reste utile —
+ * c'est à quoi ressemblerait une édition de son marché.
+ */
+function ligneRapport(payload: Record<string, unknown>, url: string, language: string, agence: boolean): string {
+  const marche = String(payload.marche ?? "FR").toUpperCase();
+  if (payload.source_mesure !== "prospection" || marche === "FR") {
+    return language === "fr" ? `L'édition publiée de votre secteur est là : ${url}` : `The published edition for your sector: ${url}`;
+  }
+  const nom = MARCHES[marche];
+  return language === "fr"
+    ? `Aucune édition publiée ne couvre encore le marché ${nom ? nom.fr.replace(/^(en|au|aux) /, "") : "local"}. Celle ${agence ? "des agences françaises" : "de votre catégorie en France"} montre à quoi elle ressemble : ${url}`
+    : `No published edition covers ${nom?.en ?? "your market"} yet. The French ${agence ? "agencies" : "category"} edition shows what one looks like: ${url}`;
+}
+
+/** « 2026-08-13 » ne s'écrit pas dans une phrase : « 13 août 2026 ». */
+function dateLisible(value: string, fr: boolean): string {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return value;
+  return new Date(`${value}T12:00:00Z`).toLocaleDateString(fr ? "fr-FR" : "en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" });
+}
+
+/**
+ * Le prénom n'est écrit que si l'adresse le confirme. Le Facteur le devine depuis la page
+ * où il a trouvé l'adresse, et devine mal : « Bonjour Société », « Bonjour France »,
+ * « Bonjour International » sont sortis tels quels. Une adresse maxence@ confirme
+ * Maxence ; une adresse opportunity@ ne confirme personne.
+ */
+function prenomFiable(firstName: string | null, email: string): string | null {
+  if (!firstName) return null;
+  const plier = (t: string) => t.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  const prenom = firstName.trim();
+  if (!/^[A-ZÀ-Ý][a-zà-ÿ'-]{1,20}$/.test(prenom)) return null;
+  const local = plier(email.split("@")[0] ?? "");
+  return local.startsWith(plier(prenom)) ? prenom : null;
+}
+
 function wordCount(text: string): number {
   return text.trim().split(/\s+/).filter(Boolean).length;
 }
@@ -129,12 +221,12 @@ async function main() {
   const limit = numFlag("limit", 120);
 
   console.log(`\n=== LA PLUME — ${new Date().toISOString().slice(0, 16).replace("T", " ")} ===`);
-  if (!POSTAL_ADDRESS) {
+  if (!adressePostaleValide(POSTAL_ADDRESS)) {
     console.log(`  ⚠ PROSPECT_POSTAL_ADDRESS absente — obligatoire (CAN-SPAM) pour les envois vers les États-Unis.`);
   }
 
   const close = await openLog("plume");
-  const stats = { rediges: 0, trop_longs: 0, variables_manquantes: 0, sans_contact: 0, deja_rediges: 0, quota_epuise: 0 };
+  const stats = { rediges: 0, trop_longs: 0, variables_manquantes: 0, sans_contact: 0, deja_rediges: 0, quota_epuise: 0, pas_agence: 0, non_verifiees: 0, sans_adresse_postale: 0 };
 
   const model: FreeModel | undefined = freeModelById("gemini-free") && process.env.GEMINI_FREE_API_KEY
     ? freeModelById("gemini-free")
@@ -146,7 +238,7 @@ async function main() {
     // Un angle par marque, le plus récent, et seulement les angles exploitables.
     const { data: angles } = await db()
       .from("prospect_angles")
-      .select("id, brand_id, type, payload, report_url, prospect_brands(name, country, sector, target)")
+      .select("id, brand_id, type, payload, report_url, prospect_brands(name, country, sector, target, domain)")
       .neq("type", "no_angle")
       .order("computed_at", { ascending: false })
       .limit(limit);
@@ -156,10 +248,13 @@ async function main() {
       if (seen.has(angle.brand_id as string)) continue;
       seen.add(angle.brand_id as string);
 
-      type BrandRow = { name: string; country: string | null; target?: string; sector?: string };
+      type BrandRow = { name: string; country: string | null; target?: string; sector?: string; domain?: string | null };
       const brandRow = angle.prospect_brands as BrandRow | BrandRow[] | null;
       const brand = Array.isArray(brandRow) ? brandRow[0] : brandRow;
       if (!brand) continue;
+      // Rédiger pour qui ne recevra jamais rien consomme le quota gratuit de la journée
+      // au détriment des agences : l'Expéditeur filtrait, la Plume non.
+      if (!PLUME_TARGETS.has(String(brand.target ?? "brand")) || !PLUME_COUNTRIES.has(String(brand.country ?? "").toUpperCase())) continue;
 
       const { data: contacts } = await db()
         .from("prospect_contacts")
@@ -186,11 +281,39 @@ async function main() {
         continue;
       }
 
+      // Est-ce vraiment une agence ? Vérifié une fois, au moment du premier email : un
+      // non définitif sort la structure du vivier, un site muet la laisse pour demain.
+      if (brand.target === "agency") {
+        if (!brand.domain) {
+          stats.non_verifiees += 1;
+          continue;
+        }
+        const { verdict, preuve } = await verifierAgence(brand.domain);
+        if (verdict === "injoignable") {
+          stats.non_verifiees += 1;
+          continue;
+        }
+        if (verdict === "pas_agence") {
+          await db().from("prospect_brands").update({ excluded: true, exclusion_reason: `pas_une_agence: ${preuve}`.slice(0, 200) }).eq("id", angle.brand_id);
+          stats.pas_agence += 1;
+          console.log(`  ${brand.name.padEnd(22).slice(0, 22)} ✗ pas une agence — ${preuve}`);
+          continue;
+        }
+      }
+
+      if (String(brand.country ?? "").toUpperCase() === "US" && !adressePostaleValide(POSTAL_ADDRESS)) {
+        stats.sans_adresse_postale += 1;
+        continue;
+      }
+
       const payload = (angle.payload ?? {}) as Record<string, unknown>;
       const payloadPreview = payload;
-      const language = (brand.country ?? "FR") === "FR" ? "fr" : "en";
+      const language = ["FR", "BE"].includes(String(brand.country ?? "FR").toUpperCase()) ? "fr" : "en";
       const templates = loadTemplates(language);
-      const section = templates.get(angle.type as string);
+      // Une agence classée reçoit la variante « bonne nouvelle » quand elle existe : ce
+      // n'est pas le même message qu'on adresse à une marque en retard.
+      const isAgency = brand.target === "agency";
+      const section = (isAgency && templates.get(`${angle.type as string}-agence`)) || templates.get(angle.type as string);
       if (!section) {
         console.warn(`  ⚠ gabarit manquant : ${angle.type} (${language})`);
         continue;
@@ -211,8 +334,11 @@ async function main() {
       const cta = templates.get(ctaKey)?.body ?? "";
       const signatureTemplate = templates.get("signature")?.body ?? "";
 
-      let ouverture: string;
-      try {
+      // Un relevé n'est qu'un comptage : son gabarit l'écrit lui-même, chiffres compris.
+      // Lui ajouter une ouverture rédigée par un modèle répétait les mêmes nombres trois
+      // fois dans le même email, et laissait passer « Gemini Free » ou « sur 10 questions ».
+      let ouverture = "";
+      if (section.body.includes("{ouverture}")) try {
         const answer = await askFree(model, openingPrompt(angle.type as string, payload, language), { timeoutMs: 60_000, search: false });
         // Deux phrases, donc on ne coupe plus à la première ligne : on recolle ce
         // que le modèle a renvoyé, en retirant seulement les guillemets d'emballage.
@@ -231,8 +357,11 @@ async function main() {
         marque: brand.name,
         ouverture,
         url: (angle.report_url as string) ?? "",
+        ligne_rapport: ligneRapport(payload, (angle.report_url as string) ?? "", language, brand.target === "agency"),
         cta,
         pairs: brand.target === "agency" ? "agences" : "marques",
+        methode: methodeSentence(payload, language),
+        url_badge: `${new URL((angle.report_url as string) ?? "https://www.mentio.fr").origin}/badge`,
         edition_date: String(payload.edition_date ?? ""),
         // L'origine, pas le chemin : un angle de relevé pointe /barometre/..., un
         // angle d'édition pointe /rapport/... — découper sur "/rapport/" ne marchait
@@ -240,6 +369,13 @@ async function main() {
         url_methodologie: `${new URL((angle.report_url as string) ?? "https://www.mentio.fr").origin}/methodologie`,
         adresse_postale: POSTAL_ADDRESS,
         rang: String(payload.rank ?? ""),
+        rang_ordinal: (() => {
+          const n = Number(payload.rank);
+          if (!n) return "";
+          if (language === "fr") return n === 1 ? "1re" : `${n}e`;
+          const suf = n % 100 >= 11 && n % 100 <= 13 ? "th" : ({ 1: "st", 2: "nd", 3: "rd" } as Record<number, string>)[n % 10] ?? "th";
+          return `${n}${suf}`;
+        })(),
         total_marques: String(payload.total_brands ?? ""),
         palier: String(payload.tier ?? ""),
         score: String(payload.score ?? ""),
@@ -272,12 +408,19 @@ async function main() {
       // toute façon les destinataires américains, pour qui elle est obligatoire.
       const signature = fill(signatureTemplate, { ...vars, signature: SIGNATURE_NAME })
         .replace(/^Luiz$/m, SIGNATURE_NAME);
-      const body = `Bonjour${contact.first_name ? " " + contact.first_name : ""},\n\n` + fill(section.body, { ...vars, signature });
+      const prenom = prenomFiable(contact.first_name as string | null, contact.email as string);
+      const salut = language === "fr" ? "Bonjour" : "Hello";
+      const body = `${salut}${prenom ? " " + prenom : ""},\n\n` + fill(section.body, { ...vars, signature });
       const subject = normalizeSubject(fill(section.subject, vars), brand.name);
 
       // Aucune variable ne survit à la rédaction. Un `{marque}` en clair chez un
       // prospect coûte plus cher que l'email entier ne rapporte.
-      const leftover = /\{(\w+)\}/.exec(body) ?? /\{(\w+)\}/.exec(subject);
+      // Une variable remplie par du vide est aussi manquante : « {premier}, la plus citée »
+      // deviendrait « , la plus citée ».
+      const vide = [...`${section.subject}\n${section.body}`.matchAll(/\{(\w+)\}/g)]
+        .map((m) => m[1])
+        .find((k) => k !== "signature" && k !== "ouverture" && vars[k] !== undefined && vars[k].trim() === "");
+      const leftover = /\{(\w+)\}/.exec(body) ?? /\{(\w+)\}/.exec(subject) ?? (vide ? [`{${vide}}`, vide] : null);
       if (leftover) {
         stats.variables_manquantes += 1;
         console.warn(`  ✗ ${brand.name} : variable non remplie {${leftover[1]}}`);
@@ -321,6 +464,9 @@ async function main() {
   console.log(`  refusés (variables)  : ${stats.variables_manquantes}`);
   console.log(`  sans contact         : ${stats.sans_contact}`);
   console.log(`  déjà rédigés         : ${stats.deja_rediges}`);
+  console.log(`  pas une agence       : ${stats.pas_agence}`);
+  console.log(`  agence non vérifiée  : ${stats.non_verifiees}`);
+  console.log(`  US sans adresse      : ${stats.sans_adresse_postale}`);
   console.log(`  coût                 : 0,00 $\n`);
 }
 

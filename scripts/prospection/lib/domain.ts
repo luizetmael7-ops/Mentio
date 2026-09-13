@@ -23,7 +23,7 @@ import { sectorAppearsIn } from "../config/secteurs";
  * riseatseven.com… La moitié des « sites injoignables » du premier passage étaient
  * des sites bien vivants qui refusaient la chaîne, pas la requête.
  */
-const USER_AGENT = "Mozilla/5.0 (compatible; MentioBot/1.0; +https://mentio.fr/contact)";
+export const USER_AGENT = "Mozilla/5.0 (compatible; MentioBot/1.0; +https://mentio.fr/contact)";
 
 export type DomainStatus = "resolved" | "rejected" | "unresolved";
 

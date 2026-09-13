@@ -47,8 +47,18 @@ import { recordSend } from "./lib/bandit";
  *
  * Réglable sans redéploiement, mais la valeur par défaut est celle de la constitution.
  */
-const TARGETS = new Set((process.env.PROSPECT_TARGETS ?? "agency").split(",").map((t) => t.trim()));
-const COUNTRIES = new Set((process.env.PROSPECT_COUNTRIES ?? "FR").split(",").map((c) => c.trim().toUpperCase()));
+const TARGETS = new Set((process.env.PROSPECT_TARGETS || "agency").split(",").map((t) => t.trim()));
+// Les marchés ouverts par la carte juridique du brief : RGPD avec intérêt légitime
+// (France, Belgique, Pays-Bas, Espagne, Italie, Portugal, Suède), PECR pour les sociétés
+// britanniques, CAN-SPAM aux États-Unis. Exclus : Allemagne, Autriche (UWG §7) et Canada
+// (CASL), où le consentement préalable est exigé. Tout le reste n'a pas été évalué.
+const COUNTRIES = new Set((process.env.PROSPECT_COUNTRIES || "FR,BE,GB,US,NL,ES,IT,PT,SE").split(",").map((c) => c.trim().toUpperCase()));
+
+/** La France reste prioritaire : c'est là que le Baromètre mesure, donc là que l'angle est le plus fort. */
+function countryPriority(country: string | null | undefined): number {
+  const c = String(country ?? "").toUpperCase();
+  return c === "FR" || c === "BE" ? 0 : 1;
+}
 
 function inTarget(brand: { target?: string | null; country?: string | null } | null): boolean {
   if (!brand) return false;
@@ -156,12 +166,20 @@ async function approve(limit: number): Promise<number> {
   let cursor = new Date();
   const stats = { approuves: 0 };
 
+  // Les candidats sont chargés avec leur marque, puis triés : France d'abord. À 5 ou 12
+  // envois par jour, l'ordre décide de qui reçoit quelque chose cette semaine.
+  const candidats: Array<{ message: (typeof queue extends (infer T)[] | null ? T : never); contact: Record<string, unknown>; brand: { name: string; country: string | null; target: string | null } | null }> = [];
   for (const message of queue ?? []) {
-    if (stats.approuves >= limit) break;
     const contactRow = message.prospect_contacts as Record<string, unknown> | Array<Record<string, unknown>> | null;
     const contact = (Array.isArray(contactRow) ? contactRow[0] : contactRow) ?? {};
     const { data: brand } = await db().from("prospect_brands").select("name, country, target").eq("id", contact.brand_id as string).single();
     if (!inTarget(brand)) continue;
+    candidats.push({ message, contact, brand });
+  }
+  candidats.sort((a, b) => countryPriority(a.brand?.country) - countryPriority(b.brand?.country));
+
+  for (const { message, contact, brand } of candidats) {
+    if (stats.approuves >= limit) break;
 
     // On avance jusqu'au prochain créneau ouvré du destinataire.
     let guard = 0;

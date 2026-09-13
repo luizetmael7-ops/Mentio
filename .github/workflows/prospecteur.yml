@@ -41,6 +41,9 @@ jobs:
       OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
       GEMINI_FREE_API_KEY: ${{ secrets.GEMINI_FREE_API_KEY }}
       PROSPECT_REPORT_BASE: https://www.mentio.fr
+      # Obligatoire (CAN-SPAM) pour écrire aux États-Unis. Absente ou factice : la Plume
+      # ne rédige aucun email américain, et le Contrôleur refuse ceux qui en portent une.
+      PROSPECT_POSTAL_ADDRESS: ${{ secrets.PROSPECT_POSTAL_ADDRESS }}
 
     steps:
       - uses: actions/checkout@v5

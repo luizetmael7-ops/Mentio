@@ -22,7 +22,7 @@ Objet: {marque} in the French AI-visibility barometer
 
 {ouverture}
 
-Mentio is an independent barometer of how brands surface in AI answers on the French market. Every week I put the same 50 buying-intent questions to ChatGPT, Gemini, Claude and Perplexity — through their official APIs, web search enabled — then record which brands are named, where they appear in the answer, and which sources the models actually consulted. Nobody pays to be listed, in any form, and the full method is public, confidence intervals and limitations included: {url_methodologie}
+Mentio is an independent barometer of how brands and agencies surface in AI answers. {methode} Nobody pays to be listed, and the method is public: {url_methodologie}
 
 The detailed report for {marque} covers your score per engine, your sector rank and tier, the {pairs} named in your place, the exact questions where you do not appear, the domains the models consult to answer in this category, and twelve actions ranked by expected effect — each with its way in, the format that domain publishes, and the angle that works there.
 
@@ -37,7 +37,7 @@ Objet: {marque} in the French AI-visibility barometer
 
 {ouverture}
 
-Mentio is an independent barometer of how brands surface in AI answers on the French market. Every week the same 50 buying-intent questions go to ChatGPT, Gemini, Claude and Perplexity through their official APIs, web search enabled, and I record who is named, where, and from which sources. No placement is for sale and the method is published in full: {url_methodologie}
+Mentio is an independent barometer of how brands and agencies surface in AI answers. {methode} Nobody pays to be listed, and the method is public: {url_methodologie}
 
 The detailed report for {marque} lists the questions where you are absent and who is named instead, your score per engine, your sector rank, the domains the models consult in this category, and twelve actions ranked by expected effect — each with its way in, the expected format, and the angle that works.
 
@@ -52,7 +52,7 @@ Objet: {marque} and the sources AI models read
 
 {ouverture}
 
-Mentio is an independent barometer of how brands surface in AI answers on the French market. Every week the same 50 buying-intent questions go to ChatGPT, Gemini, Claude and Perplexity through their official APIs, web search enabled. I record not only which brands are named, but which domains the models consulted to build the answer — the least documented part of this subject, and the most actionable. Method published in full: {url_methodologie}
+Mentio is an independent barometer of how brands and agencies surface in AI answers. {methode} Nobody pays to be listed, and the method is public: {url_methodologie}
 
 The detailed report for {marque} lists the five most-consulted domains in your category with the weight of each, your score per engine, your rank, the {pairs} named in your place, and twelve actions ranked by expected effect.
 
@@ -67,7 +67,7 @@ Objet: {marque} in the French AI-visibility barometer
 
 {ouverture}
 
-Mentio is an independent barometer of how brands surface in AI answers on the French market. Every week I put the same 50 buying-intent questions to ChatGPT, Gemini, Claude and Perplexity — official APIs, web search enabled — and record who is named, where, and from which sources. The scale is public and nobody pays to move up a tier: {url_methodologie}
+Mentio is an independent barometer of how brands and agencies surface in AI answers. {methode} Nobody pays to be listed, and the method is public: {url_methodologie}
 
 The detailed report for {marque} covers your score per engine, your rank among {total_marques} measured brands, the {pairs} named in your place, the questions where you do not appear, the domains the models consult in this category, and twelve actions ranked by expected effect.
 
@@ -80,13 +80,11 @@ Here it is, no strings attached: {url}
 ## absente_secteur
 Objet: {marque} in AI answers
 
-{ouverture}
+{marque} is not named in any of the {reponses_analysees} answers in our latest count. {premier}, the most cited, appears in {citations_premier}.
 
-Mentio est un baromètre indépendant de la visibilité des marques dans les réponses IA. Chaque semaine, les mêmes questions d'intention d'achat sont posées à ChatGPT, Gemini, Claude et Perplexity, et je relève qui est cité, à quelle position, et depuis quelles sources. Personne ne paie pour y figurer, et la méthode est publique : {url_methodologie}
+Mentio is an independent barometer of how brands and agencies surface in AI answers. {methode} Nobody pays to be listed, and the method is public: {url_methodologie}
 
-Ce relevé porte sur {questions} questions de votre catégorie et {reponses_analysees} réponses analysées. {marque} n'apparaît dans aucune. C'est un comptage, pas une note : je ne vous attribue aucun score, et ce serait malhonnête de le faire sur cette base.
-
-L'édition publiée de votre secteur est là : {url}
+It is a count, not a rating: I give you no score, and it would be dishonest to do so on this basis. {ligne_rapport}
 
 {cta}
 
@@ -95,13 +93,11 @@ L'édition publiée de votre secteur est là : {url}
 ## concurrent_cite
 Objet: {marque} vs {concurrent} in AI answers
 
-{ouverture}
+{marque} is named in {citations} of the {reponses_analysees} answers in our latest count. {concurrent} is named in {citations_concurrent}.
 
-Mentio est un baromètre indépendant de la visibilité des marques dans les réponses IA. Chaque semaine, les mêmes questions d'intention d'achat sont posées à ChatGPT, Gemini, Claude et Perplexity, et je relève qui est cité. Personne ne paie pour y figurer, et la méthode est publique : {url_methodologie}
+Mentio is an independent barometer of how brands and agencies surface in AI answers. {methode} Nobody pays to be listed, and the method is public: {url_methodologie}
 
-Sur {questions} questions de votre catégorie, {marque} est citée {citations} fois. {concurrent} l'est {citations_concurrent} fois. C'est un comptage brut, sans score ni classement — l'écart parle de lui-même.
-
-L'édition publiée de votre secteur est là : {url}
+It is a raw count, with no score or ranking — the gap speaks for itself. {ligne_rapport}
 
 {cta}
 
@@ -110,13 +106,26 @@ L'édition publiée de votre secteur est là : {url}
 ## domaines_sources
 Objet: {marque} and the sources AI models read
 
+In your category, {domaine} comes up {citations_domaine} times among the sources the models consulted.
+
+Mentio is an independent barometer of how brands and agencies surface in AI answers. {methode} Nobody pays to be listed, and the method is public: {url_methodologie}
+
+It is the least documented part of the subject and the most actionable: these are the pages the models read before naming anyone. {ligne_rapport}
+
+{cta}
+
+{signature}
+
+## palier-agence
+Objet: {marque} in the AI-visibility barometer of agencies
+
 {ouverture}
 
-Mentio est un baromètre indépendant de la visibilité des marques dans les réponses IA. Chaque semaine, les mêmes questions d'intention d'achat sont posées à ChatGPT, Gemini, Claude et Perplexity, et je relève surtout les domaines qu'ils consultent pour répondre. Méthode publique : {url_methodologie}
+Mentio is an independent barometer of how brands and agencies surface in AI answers. {methode} Nobody pays to be listed, in any form.
 
-Sur votre catégorie, {domaine} revient {citations_domaine} fois dans les sources consultées. C'est la partie la moins documentée du sujet et la plus actionnable : ce sont ces pages que les modèles lisent avant de nommer une marque.
+{marque} is ranked {rang_ordinal} of {total_marques} agencies. It is a public ranking, and you are free to quote it. The badge for your website, updated with every edition, is here: {url_badge}
 
-L'édition publiée de votre secteur est là : {url}
+The detailed report lists the questions where you are named, the agencies named alongside you and the domains the models consult to answer: {url}
 
 {cta}
 

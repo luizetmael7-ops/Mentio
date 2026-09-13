@@ -25,7 +25,8 @@ import { db, openLog } from "./lib/db";
 import { flag, numFlag } from "./lib/env";
 import { buildReport } from "../../src/lib/report";
 import { brandSlug } from "../../src/lib/index-edition";
-import { angleFromReleve, loadReleve, verticalForSector } from "./lib/releves";
+import { angleFromReleve, loadReleve, loadReleveFromScans, verticalForSector } from "./lib/releves";
+import { chooseAngle } from "./lib/bandit";
 import { VERTICALS } from "../../src/lib/verticals";
 
 /** L'URL publique — c'est celle qui partira dans l'email, pas un localhost. */
@@ -105,7 +106,13 @@ async function main() {
         // chaque mention est un fait daté. On retombe sur le RELEVÉ — comptages
         // seulement, jamais de score ni de palier (§3).
         const vertical = verticalForSector(brand.sector as string | null);
-        const releve = vertical ? await loadReleve(vertical) : null;
+        const country = String(brand.country ?? "FR").toUpperCase();
+        // Le marché mesuré doit être celui de l'agence. Les éditions publiées couvrent
+        // la France ; une agence londonienne se compte sur les questions que le Semeur
+        // a posées pour le Royaume-Uni, pas sur le classement français.
+        const releve = country === "FR" || country === "BE"
+          ? (vertical ? await loadReleve(vertical) : null)
+          : await loadReleveFromScans(String(brand.sector ?? ""), country);
         const fallback = releve ? angleFromReleve(name, releve) : null;
 
         if (fallback) {
@@ -153,6 +160,14 @@ async function main() {
 
       const base: AnglePayload = {
         brand: report.name,
+        // Ce qui a vraiment produit la mesure — la Plume en tire la phrase de méthode.
+        modeles: report.models,
+        recherche_web: true,
+        source_mesure: "edition",
+        marche: "FR",
+        // Les questions réellement jouées : réponses ÷ moteurs. L'édition beauté du 6
+        // septembre en couvre 25, pas 50 — le gabarit ne peut pas l'affirmer de mémoire.
+        questions: Math.round(report.runs / Math.max(report.models.length, 1)),
         // Le modèle ne devine pas à qui il écrit : « votre marque Stafe » pour une
         // agence est le genre de détail qui disqualifie tout le message.
         nature: (brand.target as string) === "agency" ? "agence" : "marque",
@@ -205,6 +220,29 @@ async function main() {
         // 4. Le palier seul. Le plus faible : il dit où on est, pas quoi faire.
         type = "palier";
         payload = { ...base, delta: report.scoreDelta };
+      }
+
+      // BONNE NOUVELLE CONTRE RETARD — et c'est le bandit qui tranche, pas nous.
+      //
+      // Pour une marque, « un concurrent passe devant vous » est l'angle le plus fort.
+      // Pour une agence, rien ne le prouve : être classée dans un baromètre public des
+      // agences GEO est une nouvelle qu'on a envie de recevoir, et le rang est ce qu'elle
+      // affichera sur son site. On ne décrète pas lequel marche : les deux sont mis en
+      // concurrence, et l'échantillonnage de Thompson apprend sur les réponses.
+      // Seuil : la première moitié du classement. « Vous êtes 40e sur 43 » n'est pas une
+      // bonne nouvelle, et la présenter comme telle serait le genre de maquillage qu'une
+      // agence repère immédiatement.
+      const dansLaPremiereMoitie = report.rank <= Math.ceil(report.totalBrands / 2);
+      if ((brand.target as string) === "agency" && type !== "no_angle" && report.tier.label && dansLaPremiereMoitie) {
+        const rangPayload: AnglePayload = { ...base, delta: report.scoreDelta, bonne_nouvelle: true };
+        const choix = await chooseAngle(
+          { sector: String(brand.sector ?? "agences_geo_seo"), country: String(brand.country ?? "FR"), tier: report.tier.label },
+          [type, "palier"]
+        );
+        if (choix === "palier") {
+          type = "palier";
+          payload = rangPayload;
+        }
       }
 
       if (type === "no_angle") stats.no_angle_rien_a_dire += 1;
