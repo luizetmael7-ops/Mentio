@@ -28,6 +28,11 @@
  *   brief), il faut les compléter, sinon tous leurs sites seront déclassés à tort —
  *   c'est exactement ce qui est arrivé à Rapunzel, dont le site est en allemand.
  */
+const AGENCES = [
+  "référencement", "referencement", "agence", "agency", "marketing", "growth",
+  "visibilité", "visibility", "consultant", "netlinking", "acquisition",
+];
+
 export const SECTOR_KEYWORDS: Record<string, string[]> = {
   beaute_soin: [
     "crème", "creme", "soin", "peau", "skincare", "skin care", "beauty", "beauté",
@@ -40,10 +45,10 @@ export const SECTOR_KEYWORDS: Record<string, string[]> = {
     "gélule", "gelule", "capsule", "comprimé", "microbiote", "microbiome",
     "spiruline", "spirulina", "collagen", "oméga", "omega", "wellness",
   ],
-  agences_geo_seo: [
-    "référencement", "referencement", "agence", "agency", "marketing", "growth",
-    "visibilité", "visibility", "consultant", "netlinking", "acquisition",
-  ],
+  agences_geo_seo: AGENCES,
+  agences_growth: AGENCES,
+  agences_seo_ecommerce: [...AGENCES, "e-commerce", "ecommerce", "shopify", "prestashop", "woocommerce"],
+  agences_seo_region: AGENCES,
 };
 
 /** Le secteur parle-t-il dans ce texte ? Null = pas de vocabulaire déclaré. */

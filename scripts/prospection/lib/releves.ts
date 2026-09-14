@@ -258,6 +258,10 @@ export function verticalForSector(sector: string | null): string | null {
     beaute_soin: "beaute_complements",
     complements_alimentaires: "beaute_complements",
     agences_geo_seo: "agences_geo",
+    // Même acheteur, autre porte d'entrée : l'édition qui les compte est celle des agences.
+    agences_growth: "agences_geo",
+    agences_seo_ecommerce: "agences_geo",
+    agences_seo_region: "agences_geo",
   }[sector] ?? null;
 }
 

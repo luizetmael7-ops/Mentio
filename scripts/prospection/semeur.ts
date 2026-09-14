@@ -234,6 +234,15 @@ async function main() {
   const wanted = numFlag("questions", 10);
   const planOnly = flag("plan") === "true";
   const only = flag("models")?.split(",").map((s) => s.trim());
+  // Budget de temps. La chaîne GitHub est coupée à 50 minutes et le Semeur en prenait
+  // 33 les bons jours : le 13 septembre il a débordé, et Greffier, Facteur, Angle,
+  // Plume et Contrôleur n'ont pas tourné du tout. Mieux vaut sept questions scannées
+  // et une chaîne complète que dix questions et rien derrière.
+  const budgetMs = numFlag("minutes", 22) * 60_000;
+  const startedAt = Date.now();
+  // Même cible que la Plume et l'Expéditeur : scanner des marques qu'on n'écrira
+  // jamais prenait 64 % du temps du Semeur.
+  const targets = new Set((process.env.PROSPECT_TARGETS || "agency").split(",").map((t) => t.trim()));
 
   const models = (only ? only.map((id) => freeModelById(id)).filter(Boolean) as FreeModel[] : activeFreeModels())
     .filter((m) => Boolean(process.env[m.envKey]));
@@ -243,14 +252,14 @@ async function main() {
   if (models.length === 0) throw new Error("Aucun modèle gratuit configuré — le Semeur ne démarre pas (il n'escalade jamais vers un moteur payant).");
 
   const close = await openLog("semeur");
-  const stats = { questions_generees: 0, questions_scannees: 0, releves: 0, marques_citees: 0, quota_epuise: false };
+  const stats = { questions_generees: 0, questions_scannees: 0, releves: 0, marques_citees: 0, quota_epuise: false, arret_budget: false };
 
   try {
     // Purge d'abord : la place se libère avant qu'on en consomme.
     const { data: purged } = await db().rpc("prospect_purge_raw_scans");
     if (purged) console.log(`  purge : ${purged} réponse(s) brute(s) de plus de 90 jours vidée(s)`);
 
-    const cells = await syncMatrix();
+    const cells = (await syncMatrix()).filter((c) => targets.has(c.target));
     const byId = new Map(cells.map((c) => [c.id, c]));
     console.log(`  matrice : ${cells.length} couples secteur × pays actifs`);
 
@@ -279,7 +288,7 @@ async function main() {
       .select("id, text, matrix_id, last_scanned_at")
       .eq("is_active", true);
 
-    const todays = pickQuestions((allQuestions ?? []) as QuestionRow[], byId, wanted);
+    const todays = pickQuestions(((allQuestions ?? []) as QuestionRow[]).filter((q) => byId.has(q.matrix_id)), byId, wanted);
     console.log(`\n  tirage du jour : ${todays.length} question(s) × ${models.length} modèle(s)\n`);
 
     if (planOnly) {
@@ -292,6 +301,11 @@ async function main() {
     }
 
     for (const question of todays) {
+      if (Date.now() - startedAt > budgetMs) {
+        stats.arret_budget = true;
+        console.log(`\n  ⏱ budget de ${Math.round(budgetMs / 60_000)} min atteint — arrêt propre, la chaîne continue`);
+        break;
+      }
       const cell = byId.get(question.matrix_id);
       console.log(`  [${cell?.sector}/${cell?.country}] ${question.text}`);
       let scanned = false;

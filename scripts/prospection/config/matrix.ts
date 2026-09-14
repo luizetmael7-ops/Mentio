@@ -82,6 +82,34 @@ export const MATRIX: MatrixCell[] = [
     weight: 2, target: "agency", is_active: true,
     hint: "SEO agencies, growth agencies, AI search visibility consultants — US",
   },
+
+  // ── Secteur 4 : d'autres portes vers les mêmes acheteurs ──────────────────
+  // Les dix questions d'un couple sont figées. Re-scannées chaque semaine, elles
+  // renvoient les mêmes agences : le 13 septembre, le vivier d'agences françaises
+  // joignables et jamais contactées tenait en cinq noms. Une agence growth, une
+  // agence SEO e-commerce ou une agence de Nantes ne sort pas sur « quelle agence
+  // pour être cité par ChatGPT ? » — mais c'est le même acheteur, avec la même
+  // raison d'acheter : vendre un retainer GEO à ses clients.
+  {
+    sector: "agences_growth", sector_label: "Agences growth & acquisition", country: "FR", language: "fr",
+    weight: 5, target: "agency", is_active: true,
+    hint: "agences growth marketing, acquisition, performance, SEA et SEO, pour PME, start-up et e-commerce — France",
+  },
+  {
+    sector: "agences_seo_ecommerce", sector_label: "Agences SEO e-commerce", country: "FR", language: "fr",
+    weight: 4, target: "agency", is_active: true,
+    hint: "agences SEO spécialisées e-commerce : Shopify, PrestaShop, WooCommerce, fiches produits, marketplaces — France",
+  },
+  {
+    sector: "agences_seo_region", sector_label: "Agences SEO en région", country: "FR", language: "fr",
+    weight: 4, target: "agency", is_active: true,
+    hint: "agences SEO et web marketing implantées en région : Lyon, Bordeaux, Nantes, Lille, Toulouse, Marseille, Rennes, Montpellier, Strasbourg — chaque question vise une ville différente",
+  },
+  {
+    sector: "agences_geo_seo", sector_label: "Agences SEO & visibilité IA", country: "BE", language: "fr",
+    weight: 2, target: "agency", is_active: true,
+    hint: "agences SEO, agences growth, prestataires de référencement et de visibilité dans les IA — Belgique francophone (Bruxelles, Wallonie)",
+  },
 ];
 
 /** Les indices de contexte ne vivent pas en base : ils ne servent qu'une fois. */
