@@ -45,3 +45,8 @@ next-env.d.ts
 # régénère à chaque exécution, et il part déjà en artefact GitHub Actions (privé,
 # 30 jours). Il n'a rien à faire dans l'historique public d'un dépôt.
 ops/emails-a-relire.csv
+
+# Fichiers de contacts nominatifs : jamais dans un dépôt, public ou non (RGPD).
+content/agences.md
+content/outreach-agences.md
+content/outreach.csv
