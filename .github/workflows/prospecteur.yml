@@ -34,7 +34,9 @@ concurrency:
 jobs:
   chaine:
     runs-on: ubuntu-latest
-    timeout-minutes: 50
+    # Chaque étape a désormais son propre plafond : la chaîne était coupée à 50
+    # minutes 9 jours sur 15 en septembre 2026, avant même d'atteindre la Plume.
+    timeout-minutes: 58
     env:
       NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
       SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
@@ -57,33 +59,45 @@ jobs:
       # Semeur ne doit pas empêcher le Facteur de travailler sur ce qui existe déjà.
       - name: Le Semeur
         continue-on-error: true
-        run: npx tsx scripts/prospection/semeur.ts --questions ${{ inputs.questions || '10' }}
+        timeout-minutes: 15
+        run: npx tsx scripts/prospection/semeur.ts --questions ${{ inputs.questions || '10' }} --minutes 12
 
       - name: Le Greffier
         continue-on-error: true
+        timeout-minutes: 10
         run: npx tsx scripts/prospection/greffier.ts --resolve 60
 
       - name: Le Facteur
         continue-on-error: true
+        timeout-minutes: 12
         run: npx tsx scripts/prospection/facteur.ts --limit 40
 
       - name: L'Angle
         continue-on-error: true
+        timeout-minutes: 5
         run: npx tsx scripts/prospection/angle.ts
 
       - name: La Plume
         continue-on-error: true
+        timeout-minutes: 6
         run: npx tsx scripts/prospection/plume.ts
 
       - name: Le Contrôleur
         continue-on-error: true
+        timeout-minutes: 5
         run: npx tsx scripts/prospection/controleur.ts
 
       - name: Le bilan
         run: npx tsx scripts/prospection/bilan.ts
 
       # Le CSV part en artefact : c'est lui qu'on relit avant d'approuver un lot.
+      #
+      # DÉSACTIVÉ PAR DÉFAUT depuis le 26 septembre 2026 : sur un dépôt public,
+      # un artefact se télécharge avec n'importe quel compte GitHub, et ce CSV
+      # contient les adresses de personnes démarchées. Poser la variable de dépôt
+      # PROSPECT_UPLOAD_CSV=1 une fois le dépôt passé en privé.
       - name: Déposer le CSV à relire
+        if: ${{ vars.PROSPECT_UPLOAD_CSV == '1' }}
         uses: actions/upload-artifact@v4
         with:
           name: emails-a-relire

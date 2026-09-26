@@ -6,10 +6,13 @@
 name: Éditeur — Baromètre
 
 on:
-  schedule:
-    # 1er et 15 de chaque mois, 6h UTC. Bimensuel : le corpus grossit sans
-    # que la facture suive.
-    - cron: "0 6 1,15 * *"
+  # PLUS DE CRON depuis le 26 septembre 2026.
+  #
+  # Cet agent tournait sur Claude Code avec une clé API payante, et échouait
+  # (« Reached max turns ») sans rien publier. La mesure elle-même ne passait
+  # jamais par lui : elle vit dans Inngest (`weekly-index.ts`, déclenchée par le
+  # Planificateur), avec le contrôle d'instrument, la Vigie et l'erratum public.
+  # On le garde en déclenchement manuel, pour une relecture éditoriale ponctuelle.
   workflow_dispatch: {}
 
 permissions:
