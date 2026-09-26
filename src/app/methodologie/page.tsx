@@ -5,7 +5,8 @@ import { BrandFooter } from "@/components/brand/footer";
 import { TierTable } from "@/components/brand/tier";
 import { modelName } from "@/lib/models";
 import { CONTEST_GAP, CONTESTED_PASSES, MAX_CONTESTED_QUESTIONS } from "@/lib/measurement";
-import { getEditions, formatEditionDate, brandScore } from "@/lib/index-edition";
+import { getEditions, getRejectedEditions, formatEditionDate, brandScore } from "@/lib/index-edition";
+import { verticalLabel } from "@/lib/verticals";
 
 export const metadata: Metadata = {
   title: "Méthodologie du Baromètre Mentio — comment la mesure est faite",
@@ -27,6 +28,7 @@ export const revalidate = 3600;
  */
 export default async function MethodologiePage() {
   const editions = await getEditions(12);
+  const rejected = await getRejectedEditions();
   const latest = editions[0];
   const sampling = latest?.sampling;
 
@@ -271,6 +273,34 @@ export default async function MethodologiePage() {
             Version Markdown
           </a>
         </p>
+
+        {/* L'ERRATUM — les éditions écartées par le contrôle d'instrument.
+            On ne fait pas disparaître une édition en silence : on dit qu'elle
+            a été écartée, quand, et pourquoi. */}
+        <section id="erratum" className="mt-12 rounded-2xl border border-[var(--line)] bg-white p-6 sm:p-7">
+          <h2 className="font-display text-2xl font-extrabold uppercase tracking-wide">Erratum</h2>
+          <p className="mt-3 text-sm leading-relaxed text-[var(--ink-soft)]">
+            Une édition n&apos;est publiée que si chaque moteur annoncé a répondu sur au moins 80 %
+            des questions. Sinon le nombre de réponses change d&apos;une édition à l&apos;autre, tous
+            les scores bougent mécaniquement, et le classement afficherait des mouvements que
+            rien n&apos;a causés. Les éditions ci-dessous ont été mesurées, puis écartées par ce
+            contrôle : l&apos;édition précédente est restée la référence.
+          </p>
+          {rejected.length > 0 ? (
+            <ul className="mt-5 space-y-3 text-sm">
+              {rejected.map((r) => (
+                <li key={`${r.vertical}-${r.date}`} className="rounded-xl bg-[var(--porcelain)]/70 px-4 py-3">
+                  <p className="font-semibold text-[var(--ink)]">
+                    {`${formatEditionDate(r.date)} — ${verticalLabel(r.vertical)}`}
+                  </p>
+                  <p className="mt-1 text-[var(--ink-soft)]">{r.issues.join(" ; ")}</p>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="mt-5 text-sm text-[var(--ink-soft)]">Aucune édition écartée à ce jour.</p>
+          )}
+        </section>
 
         {/* Une sortie. Cette page était un cul-de-sac : on y arrive pour vérifier la
             mesure — souvent avant de la revendre à un client — et il n'y avait rien

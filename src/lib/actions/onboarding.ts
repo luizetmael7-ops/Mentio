@@ -5,6 +5,7 @@ import { supabaseServer } from "@/lib/supabase/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { PLAN_LIMITS, type Plan } from "@/lib/plans";
 import { captureServer } from "@/lib/posthog-server";
+import { notifyFounder } from "@/lib/founder";
 
 /**
  * Crée l'organisation (si première visite), la marque, ses concurrents,
@@ -104,6 +105,12 @@ export async function completeOnboarding(formData: FormData) {
     competitors: competitors.length,
     plan,
   });
+
+  await notifyFounder("inscription", `${brandName} (${user.email ?? "—"})`, [
+    `Nouveau compte : ${user.email ?? "—"}`,
+    `Marque suivie : ${brandName}${domain ? ` — ${domain}` : ""}`,
+    "Un mot de bienvenue écrit à la main dans la journée est le meilleur taux de conversion du tunnel.",
+  ]);
 
   redirect("/dashboard");
 }

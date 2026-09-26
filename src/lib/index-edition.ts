@@ -1,5 +1,8 @@
 import type { ModelKey } from "@/lib/llm/types";
 import { supabaseAdmin } from "@/lib/supabase/admin";
+import { auditEdition } from "@/lib/edition-audit";
+import { fixtureEditionRows, fixturesEnabled } from "@/lib/fixtures";
+import { brandSlug } from "@/lib/edition-format";
 
 /**
  * Lecture des éditions du Baromètre — un seul endroit, pour que la landing, le
@@ -57,7 +60,7 @@ export interface Edition {
   answers?: EditionAnswer[];
 }
 
-interface EditionRow {
+export interface EditionRow {
   edition_date: string;
   vertical?: string;
   data: {
@@ -84,6 +87,38 @@ function toEdition(row: EditionRow): Edition {
 }
 
 /**
+ * Une édition est-elle publiable ? Non vide ET mesurée avec l'instrument qu'elle
+ * annonce (voir `edition-audit.ts`). C'est le seul filtre de publication : toutes
+ * les surfaces lisent par ici, donc une édition écartée l'est partout à la fois —
+ * site, rapports, badges, API, jumeaux Markdown.
+ */
+function isPublishable(edition: Edition): boolean {
+  if (edition.runs === 0 || edition.brands.length === 0) return false;
+  return auditEdition(edition).valid;
+}
+
+/**
+ * Les lignes brutes, depuis la base — ou depuis les données de démonstration
+ * quand MENTIO_FIXTURES=1 (développement local sans accès à Supabase, jamais en
+ * production).
+ */
+async function fetchRows(opts: { vertical?: string; limit: number }): Promise<EditionRow[]> {
+  if (fixturesEnabled()) {
+    return fixtureEditionRows()
+      .filter((r) => !opts.vertical || r.vertical === opts.vertical)
+      .slice(0, opts.limit);
+  }
+  let query = supabaseAdmin()
+    .from("index_editions")
+    .select("edition_date, vertical, data")
+    .order("edition_date", { ascending: false })
+    .limit(opts.limit);
+  if (opts.vertical) query = query.eq("vertical", opts.vertical);
+  const { data } = await query;
+  return (data ?? []) as EditionRow[];
+}
+
+/**
  * La verticale publiée par défaut sur le site. Les autres éditions cohabitent en
  * base sous leur propre verticale — produire le Baromètre des agences ne change
  * donc rien à ce qu'affichent /barometre, /marques et la home.
@@ -93,16 +128,35 @@ export const DEFAULT_VERTICAL = "beaute_complements";
 /** Les dernières éditions publiables d'une verticale, la plus récente d'abord. */
 export async function getEditions(limit = 6, vertical = DEFAULT_VERTICAL): Promise<Edition[]> {
   try {
-    const { data } = await supabaseAdmin()
-      .from("index_editions")
-      .select("edition_date, vertical, data")
-      .eq("vertical", vertical)
-      .order("edition_date", { ascending: false })
-      .limit(limit);
-    // On écarte les éditions vides (providers en échec) : jamais d'index à zéro
-    return ((data ?? []) as EditionRow[])
+    // On lit un peu plus large que demandé : les éditions écartées par le contrôle
+    // d'instrument ne doivent pas raccourcir l'historique affiché.
+    const rows = await fetchRows({ vertical, limit: limit + 4 });
+    // Jamais d'index à zéro, jamais d'instrument incomplet
+    return rows.map(toEdition).filter(isPublishable).slice(0, limit);
+  } catch {
+    return [];
+  }
+}
+
+export interface RejectedEdition {
+  date: string;
+  vertical: string;
+  issues: string[];
+}
+
+/**
+ * Les éditions présentes en base mais non servies, avec la raison. C'est
+ * l'erratum public : on ne fait pas disparaître une édition en silence, on dit
+ * qu'elle a été écartée et pourquoi.
+ */
+export async function getRejectedEditions(limit = 60): Promise<RejectedEdition[]> {
+  try {
+    const rows = await fetchRows({ limit });
+    return rows
       .map(toEdition)
-      .filter((e) => e.runs > 0 && e.brands.length > 0);
+      .filter((e) => e.runs > 0 && e.brands.length > 0)
+      .map((e) => ({ date: e.date, vertical: e.vertical, issues: auditEdition(e).issues }))
+      .filter((e) => e.issues.length > 0);
   } catch {
     return [];
   }
@@ -121,14 +175,10 @@ export async function getEditionsByVertical(
   limitPerVertical = 12
 ): Promise<Map<string, Edition[]>> {
   try {
-    const { data } = await supabaseAdmin()
-      .from("index_editions")
-      .select("edition_date, vertical, data")
-      .order("edition_date", { ascending: false })
-      .limit(limitPerVertical * 6);
+    const rows = await fetchRows({ limit: limitPerVertical * 6 });
     const grouped = new Map<string, Edition[]>();
-    for (const edition of ((data ?? []) as EditionRow[]).map(toEdition)) {
-      if (edition.runs === 0 || edition.brands.length === 0) continue;
+    for (const edition of rows.map(toEdition)) {
+      if (!isPublishable(edition)) continue;
       const list = grouped.get(edition.vertical) ?? [];
       if (list.length < limitPerVertical) list.push(edition);
       grouped.set(edition.vertical, list);
@@ -157,11 +207,112 @@ export async function getEditionsForBrand(
   slug: string,
   limitPerVertical = 12
 ): Promise<Edition[]> {
+  // Avec l'Index, les catégories se comptent par dizaines : la lecture groupée
+  // ne les couvre plus toutes. On cherche d'abord la catégorie de la marque dans
+  // le résumé léger, puis on charge son historique complet.
+  const vertical = await findVerticalForBrand(slug);
+  if (vertical) {
+    const list = await getEditions(limitPerVertical, vertical);
+    if (list.some((e) => e.brands.some((b) => brandSlug(b.name) === slug))) return list;
+  }
   const byVertical = await getEditionsByVertical(limitPerVertical);
   for (const list of byVertical.values()) {
     if (list.some((e) => e.brands.some((b) => brandSlug(b.name) === slug))) return list;
   }
   return [];
+}
+
+/**
+ * RÉSUMÉ LÉGER DES ÉDITIONS — sans le détail réponse par réponse.
+ *
+ * Une édition complète pèse ~150 Ko (ses 200 à 500 réponses). Le hub de l'Index
+ * affiche des dizaines de catégories : les charger en entier coûterait des
+ * mégaoctets par page. La vue `index_editions_summary` (migration du 26 septembre
+ * 2026) renvoie l'agrégat et le décompte des réponses par moteur, ce qui suffit
+ * au contrôle d'instrument.
+ *
+ * Tant que la migration n'est pas appliquée, on retombe sur la lecture complète,
+ * bornée : le site doit fonctionner avant ET après.
+ */
+export interface EditionSummary {
+  date: string;
+  vertical: string;
+  runs: number;
+  models: ModelKey[];
+  brands: EditionBrand[];
+  sources: Array<{ domain: string; count: number }>;
+}
+
+interface SummaryRow {
+  edition_date: string;
+  vertical: string;
+  runs: number | null;
+  models: ModelKey[] | null;
+  top_brands: EditionBrand[] | null;
+  top_sources: Array<{ domain: string; count: number }> | null;
+  answered_by_model: Record<string, number> | null;
+  answers_count: number | null;
+}
+
+/** La dernière édition publiable de chaque catégorie, sans le détail. */
+export async function getLatestSummaries(): Promise<Map<string, EditionSummary>> {
+  const latest = new Map<string, EditionSummary>();
+  if (!fixturesEnabled()) {
+    try {
+      const { data, error } = await supabaseAdmin()
+        .from("index_editions_summary")
+        .select("edition_date, vertical, runs, models, top_brands, top_sources, answered_by_model, answers_count")
+        .order("edition_date", { ascending: false })
+        .limit(1000);
+      if (!error && data) {
+        for (const row of data as SummaryRow[]) {
+          if (latest.has(row.vertical)) continue;
+          const models = row.models ?? [];
+          const brands = row.top_brands ?? [];
+          const runs = row.runs ?? 0;
+          if (runs === 0 || brands.length === 0) continue;
+          const audit = auditEdition({
+            models,
+            runs,
+            answeredByModel: (row.answers_count ?? 0) > 0 ? row.answered_by_model ?? {} : undefined,
+          });
+          if (!audit.valid) continue;
+          latest.set(row.vertical, {
+            date: row.edition_date,
+            vertical: row.vertical,
+            runs,
+            models: audit.answeredModels,
+            brands,
+            sources: row.top_sources ?? [],
+          });
+        }
+        return latest;
+      }
+    } catch {
+      // vue absente : lecture complète ci-dessous
+    }
+  }
+  for (const [vertical, list] of await getEditionsByVertical(1)) {
+    const e = list[0];
+    latest.set(vertical, {
+      date: e.date,
+      vertical,
+      runs: e.runs,
+      models: auditEdition(e).answeredModels,
+      brands: e.brands,
+      sources: e.sources,
+    });
+  }
+  return latest;
+}
+
+/** La catégorie où figure une marque, d'après le résumé léger. */
+async function findVerticalForBrand(slug: string): Promise<string | null> {
+  const summaries = await getLatestSummaries();
+  for (const summary of summaries.values()) {
+    if (summary.brands.some((b) => brandSlug(b.name) === slug)) return summary.vertical;
+  }
+  return null;
 }
 
 export async function getLatestEdition(): Promise<Edition | null> {
@@ -178,42 +329,6 @@ export async function getDetailedEdition(): Promise<Edition | null> {
   return editions.find((e) => (e.answers?.length ?? 0) > 0) ?? null;
 }
 
-/** « 22 juillet 2026 » — le format de date du site, partout. */
-export function formatEditionDate(date: string): string {
-  return new Date(date).toLocaleDateString("fr-FR", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
-}
-
-/** Identifiant d'URL d'une marque : « Nutri&Co » → « nutri-co ». */
-export function brandSlug(name: string): string {
-  return name
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "") // retire les accents combinés
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-}
-
-/** Le score Mentio d'une marque sur une édition : sa part des réponses, sur 100. */
-export function brandScore(brand: EditionBrand, runs: number): number {
-  return runs > 0 ? Math.round((brand.total / runs) * 100) : 0;
-}
-
-/**
- * Le nombre de citations, tel qu'on l'AFFICHE.
- *
- * `total` est une somme de taux : une question rejouée cinq fois compte pour un,
- * pondérée par la part de passages qui ont cité la marque. Le calcul est juste,
- * mais il produit « 34.4 » — et la légende juste au-dessus dit « citée dans 18
- * réponses sur 100 ». Une réponse et demie, ça n'existe pas pour un lecteur.
- *
- * On arrondit donc à l'affichage, jamais en base : l'API, les intervalles de
- * confiance et les comparaisons d'édition continuent de travailler sur la valeur
- * exacte. Le rang, lui, ne bouge pas — c'est l'ordre qui est publié, pas l'entier.
- */
-export function citationCount(total: number): number {
-  return Math.round(total);
-}
+// Les formats d'affichage vivent dans un module sans dépendance serveur, pour
+// que les composants client puissent les importer (voir `edition-format.ts`).
+export { formatEditionDate, brandSlug, brandScore, citationCount } from "@/lib/edition-format";

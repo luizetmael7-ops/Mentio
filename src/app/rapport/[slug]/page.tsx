@@ -5,7 +5,7 @@ import { BrandNav } from "@/components/brand/nav";
 import { BrandFooter } from "@/components/brand/footer";
 import { TierScale } from "@/components/brand/tier";
 import { PrintButton } from "@/components/brand/print-button";
-import { modelName } from "@/lib/models";
+import { modelName, INDEX_CADENCE } from "@/lib/models";
 import { formatEditionDate, brandSlug, citationCount } from "@/lib/index-edition";
 import { buildReport, parseBranding } from "@/lib/report";
 import { verifyShare, type ReportAccess } from "@/lib/report-access";
@@ -254,7 +254,7 @@ export default async function RapportPage({
             )}
             {/* Le durable : sans ça, le rapport est un audit qu'on paie une fois. */}
             <p className="mt-4 text-sm leading-relaxed text-[var(--ink-soft)]">
-              {`Ces actions se vérifient : les mêmes 50 questions sont reposées le ${formatEditionDate(report.nextMeasure)}, puis chaque semaine. Un mouvement de rang n'est publié que s'il dépasse le bruit de mesure — ce qui bouge ici a bougé pour de vrai.`}
+              {`Ces actions se vérifient : les mêmes questions sont reposées à partir du ${formatEditionDate(report.nextMeasure)}, puis ${INDEX_CADENCE.adverb}. Un mouvement de rang n'est publié que s'il dépasse le bruit de mesure — ce qui bouge ici a bougé pour de vrai.`}
             </p>
           </section>
         )}

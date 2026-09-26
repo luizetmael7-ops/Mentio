@@ -44,7 +44,7 @@ export function ClaimBrand({ brandName, slug }: { brandName: string; slug: strin
           type="email"
           required
           placeholder="vous@votremarque.fr"
-          className="h-11 min-w-0 flex-1 rounded-xl border border-[var(--line)] bg-[var(--porcelain)]/60 px-4 outline-none"
+          className="h-11 w-full min-w-0 shrink-0 rounded-xl sm:w-auto sm:flex-1 sm:shrink border border-[var(--line)] bg-[var(--porcelain)]/60 px-4 outline-none"
         />
         <button
           type="submit"

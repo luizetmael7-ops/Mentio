@@ -5,7 +5,7 @@ import { BrandNav } from "@/components/brand/nav";
 import { BrandFooter } from "@/components/brand/footer";
 import { Reveal } from "@/components/brand/reveal";
 import { PLAN_LIMITS, checkoutHref } from "@/lib/plans";
-import { modelsSentence } from "@/lib/models";
+import { modelsSentence, indexModels } from "@/lib/models";
 import { buildReport } from "@/lib/report";
 import { getLatestEdition, formatEditionDate, brandSlug } from "@/lib/index-edition";
 import { signShare } from "@/lib/report-access";
@@ -70,7 +70,7 @@ export default async function AgencesPage() {
             Répondez avec un chiffre.
           </h1>
           <p className="mt-6 max-w-2xl text-lg leading-relaxed text-[var(--ink-soft)]">
-            {`Mentio pose chaque semaine à ${modelsSentence()} les questions d'achat que posent les clients de vos clients, compte qui est cité, et vous rend un rapport à vos couleurs. Vous vendez le diagnostic, puis le travail qu'il déclenche.`}
+            {`Mentio pose à ${modelsSentence(indexModels())} les questions d'achat que posent les clients de vos clients — dans leur secteur, dans leur pays —, compte qui est cité, et vous rend un rapport à vos couleurs. Vous vendez le diagnostic, puis le travail qu'il déclenche.`}
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-4">
             <Link
@@ -243,7 +243,7 @@ export default async function AgencesPage() {
               {/* La limite de couverture, écrite avant que l'agence la découvre en payant. */}
               <p>
                 <strong className="text-[var(--ink)]">Les secteurs couverts aujourd&apos;hui.</strong>{" "}
-                {`La bibliothèque de questions du suivi hebdomadaire porte sur la beauté, le soin et les compléments : c'est elle qui garantit que les mêmes questions reviennent chaque semaine. Pour un autre secteur, ${agencyPlus.label} inclut une bibliothèque écrite sur mesure.`}
+                {`L'Index couvre les catégories déjà mesurées, et n'importe quel secteur peut y entrer : demandez-le depuis la page « Ajouter une marque », il rejoint la file de mesure. ${agencyPlus.label} inclut en plus une bibliothèque de questions écrite sur mesure pour vos clients.`}
               </p>
             </div>
           </Reveal>

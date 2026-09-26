@@ -6,11 +6,11 @@ import { DEFAULT_VERTICAL } from "@/lib/index-edition";
 export const metadata: Metadata = {
   title: "Le Baromètre Mentio — les marques que les IA recommandent",
   description:
-    "Chaque semaine, nous posons à ChatGPT et Gemini les mêmes 50 questions d'achat réelles et comptons les marques qu'ils recommandent. Le classement permanent de la visibilité IA.",
+    "Les mêmes 50 questions d'achat beauté, soin et compléments posées à ChatGPT et Gemini, et les marques qu'ils recommandent. Le premier classement de l'Index Mentio.",
   alternates: { canonical: "/barometre" },
 };
 
-// Une heure de cache : l'édition ne change qu'une fois par semaine
+// Une heure de cache : l'édition ne change qu'une fois par mois
 export const revalidate = 3600;
 
 /**

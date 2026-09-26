@@ -1,5 +1,10 @@
 import { PLAN_LIMITS, type Plan } from "@/lib/plans";
-import { CLIENT_CONTESTED_PASSES, CLIENT_MAX_CONTESTED_QUESTIONS } from "@/lib/measurement";
+import {
+  CLIENT_CONTESTED_PASSES,
+  CLIENT_MAX_CONTESTED_QUESTIONS,
+  CONTESTED_PASSES,
+  MAX_CONTESTED_QUESTIONS,
+} from "@/lib/measurement";
 import type { ModelKey } from "@/lib/llm/types";
 
 /**
@@ -146,4 +151,16 @@ export function plansOverCostThreshold(): PlanCostAlert[] {
       ratio: e.costPerBrandEur / e.pricePerBrandEur,
     }))
     .filter((a) => a.ratio > COST_ALERT_RATIO);
+}
+
+/**
+ * Coût estimé d'une édition de l'Index, majoré : phase 1 complète sur les deux
+ * moteurs mesurés, plus un tiers des questions rejouées en phase 2 (plafonné).
+ * Lu par le Planificateur pour tenir le budget, et affiché à côté du bouton
+ * « Mesurer » du cockpit : une dépense s'annonce avant d'être engagée (§7).
+ */
+export function estimateEditionUsd(questions: number): number {
+  const perPass = MODEL_COST_USD.chatgpt + MODEL_COST_USD.gemini;
+  const contested = Math.min(MAX_CONTESTED_QUESTIONS, Math.ceil(questions / 3));
+  return questions * perPass + contested * perPass * (CONTESTED_PASSES - 1);
 }

@@ -1,4 +1,4 @@
-import { classifySource, brandDomainHint } from "@/lib/source-types";
+import { classifySource, brandDomainHints } from "@/lib/source-types";
 import { tierOf } from "@/lib/spectrum";
 
 /**
@@ -47,9 +47,7 @@ export function buildActionPlan(input: ActionPlanInput): PlannedAction[] {
   const { brandName, visibility, shareOfVoice, sources, invisiblePrompts, topRival } = input;
   const actions: PlannedAction[] = [];
 
-  const brandDomains = [brandName, ...(input.rivalNames ?? [])]
-    .map(brandDomainHint)
-    .filter((d) => d.length > 3);
+  const brandDomains = [brandName, ...(input.rivalNames ?? [])].flatMap(brandDomainHints);
 
   // 1. La première source ACTIONNABLE. Une institution ou le site d'un concurrent
   //    apparaissent souvent en tête : ce sont des explications, pas des cibles.

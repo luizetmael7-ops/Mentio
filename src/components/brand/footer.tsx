@@ -6,7 +6,8 @@ const COPY = {
     tagline: ["La perception, ", "mesurée", "."],
     nav: "Pied de page",
     scan: "Scan gratuit",
-    index: "Le Baromètre",
+    index: "L'Index",
+    add: "Ajouter une marque",
     agencies: "Agences",
     pricing: "Tarifs",
     login: "Connexion",
@@ -26,6 +27,7 @@ const COPY = {
     nav: "Footer",
     scan: "Free scan",
     index: "The Index",
+    add: "Add a brand",
     agencies: "Agencies",
     pricing: "Pricing",
     login: "Log in",
@@ -59,8 +61,11 @@ export function BrandFooter({ locale = "fr" }: { locale?: "fr" | "en" }) {
           <Link href="/score" className="transition-colors hover:text-white">
             {t.scan}
           </Link>
-          <Link href="/barometre" className="transition-colors hover:text-white">
+          <Link href="/classements" className="transition-colors hover:text-white">
             {t.index}
+          </Link>
+          <Link href="/ajouter" className="transition-colors hover:text-white">
+            {t.add}
           </Link>
           <Link href="/agences" className="transition-colors hover:text-white">
             {t.agencies}

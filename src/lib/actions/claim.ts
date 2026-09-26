@@ -2,6 +2,7 @@
 
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { captureServer } from "@/lib/posthog-server";
+import { notifyFounder } from "@/lib/founder";
 
 /**
  * « C'est ma marque » — revendication d'une page du Baromètre.
@@ -43,6 +44,17 @@ export async function claimBrand(
       if (error) throw new Error(error.message);
     }
 
+    if (!existing) {
+      await notifyFounder(
+        "lead",
+        `« C'est ma marque » — ${brandName} (${email})`,
+        [
+          `${email} revendique ${brandName} depuis sa page du Baromètre.`,
+          "La page lui a promis un email personnel avec le détail complet : c'est à toi.",
+        ],
+        { replyTo: email }
+      );
+    }
     await captureServer("brand_claimed", email, { brand: brandName });
     return {
       ok: true,

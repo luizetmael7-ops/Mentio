@@ -10,7 +10,8 @@
  * L'Économe ne fait qu'observer et prévenir — il ne peut rien casser.
  */
 import { inngest } from "../client";
-import { resend, EMAIL_FROM, deliverableTo } from "@/lib/resend";
+import { resend, EMAIL_FROM } from "@/lib/resend";
+import { founderInbox } from "@/lib/founder";
 import { spendSummary, spentThisMonthUsd, monthlyCapUsd } from "@/lib/spend-guard";
 import {
   plansOverCostThreshold,
@@ -43,7 +44,7 @@ export const econome = inngest.createFunction(
       if (alerts.length === 0) return { ok: true as const };
       await resend().emails.send({
         from: EMAIL_FROM,
-        to: deliverableTo(process.env.CONTACT_INBOX ?? "hello@mentio.fr"),
+        to: founderInbox(),
         subject: `Mentio — marge insuffisante sur ${alerts.length} palier(s)`,
         text: [
           `Le coût d'une marque suivie dépasse ${Math.round(COST_ALERT_RATIO * 100)} % de son prix.`,
@@ -65,8 +66,30 @@ export const econome = inngest.createFunction(
 
     const report = await step.run("read-spend", async () => {
       const monthly = await spentThisMonthUsd();
-      return { monthly, cap: monthlyCapUsd(), buckets: await spendSummary() };
+      // NaN = compteur illisible. Il ne survivrait pas à la sérialisation JSON
+      // d'une étape Inngest (il deviendrait null) : on le dit explicitement.
+      return {
+        monthly: Number.isNaN(monthly) ? 0 : monthly,
+        unreadable: Number.isNaN(monthly),
+        cap: monthlyCapUsd(),
+        buckets: await spendSummary(),
+      };
     });
+
+    if (report.unreadable) {
+      await step.run("alert-unreadable", async () => {
+        await resend().emails.send({
+          from: EMAIL_FROM,
+          to: founderInbox(),
+          subject: "Mentio — compteur de dépense illisible",
+          text: [
+            "La table llm_spend ne répond pas. Par prudence, l'Index et les comptes gratuits ne dépensent plus rien tant qu'elle reste illisible.",
+            "Les scans publics continuent (déjà limités à 3 par jour et par visiteur), et les clients payants ne sont jamais coupés.",
+          ].join("\n"),
+        });
+      });
+      return { alerted: true, unreadable: true };
+    }
 
     const ratio = report.cap > 0 ? report.monthly / report.cap : 0;
     if (ratio < ALERT_AT) {
@@ -92,7 +115,7 @@ export const econome = inngest.createFunction(
         .join("\n");
       await resend().emails.send({
         from: EMAIL_FROM,
-        to: deliverableTo(process.env.CONTACT_INBOX ?? "hello@mentio.fr"),
+        to: founderInbox(),
         subject:
           ratio >= 1
             ? `Mentio — plafond mensuel ATTEINT (${report.monthly.toFixed(2)} $)`

@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
-import { getEditions, brandSlug, publishedVerticals } from "@/lib/index-edition";
-import { verticalByKey } from "@/lib/verticals";
+import { getEditions, brandSlug, getLatestSummaries } from "@/lib/index-edition";
+import { listCategories } from "@/lib/index-catalog";
 
 const BASE = "https://mentio.fr";
 
@@ -13,7 +13,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const fixed: MetadataRoute.Sitemap = [
     { url: BASE, lastModified, changeFrequency: "weekly", priority: 1 },
+    { url: `${BASE}/classements`, lastModified, changeFrequency: "weekly", priority: 0.95 },
     { url: `${BASE}/barometre`, lastModified, changeFrequency: "weekly", priority: 0.9 },
+    { url: `${BASE}/ajouter`, changeFrequency: "monthly", priority: 0.6 },
     { url: `${BASE}/score`, lastModified, changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE}/score-mentio`, lastModified, changeFrequency: "weekly", priority: 0.8 },
     { url: `${BASE}/sources`, lastModified, changeFrequency: "weekly", priority: 0.8 },
@@ -27,21 +29,25 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE}/privacy`, changeFrequency: "yearly", priority: 0.2 },
   ];
 
-  // Les Baromètres sectoriels publiés (la beauté garde son URL nue /barometre)
-  const sectors: MetadataRoute.Sitemap = (await publishedVerticals())
-    .map((key) => verticalByKey(key))
-    .filter((v) => v !== null && v.slug !== "beaute-complements")
-    .map((v) => ({
-      url: `${BASE}/barometre/${v!.slug}`,
-      lastModified,
-      changeFrequency: "weekly" as const,
+  // Toutes les catégories publiées de l'Index (la beauté garde son URL nue /barometre)
+  const summaries = await getLatestSummaries();
+  const categories = await listCategories();
+  const sectors: MetadataRoute.Sitemap = categories
+    .filter((c) => summaries.has(c.key) && c.slug !== "beaute-complements")
+    .map((c) => ({
+      url: `${BASE}/barometre/${c.slug}`,
+      lastModified: new Date(summaries.get(c.key)!.date),
+      changeFrequency: "monthly" as const,
       priority: 0.8,
     }));
 
-  // Une entrée par marque détectée, toutes éditions confondues
+  // Une entrée par marque classée, toutes catégories confondues
   const slugs = new Set<string>();
   for (const edition of editions) {
     for (const brand of edition.brands) slugs.add(brandSlug(brand.name));
+  }
+  for (const summary of summaries.values()) {
+    for (const brand of summary.brands) slugs.add(brandSlug(brand.name));
   }
   const brands: MetadataRoute.Sitemap = [...slugs].map((slug) => ({
     url: `${BASE}/marques/${slug}`,

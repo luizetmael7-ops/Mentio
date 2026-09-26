@@ -7,7 +7,7 @@ import {
 } from "@/lib/index-edition";
 import { tierOf, type Tier } from "@/lib/spectrum";
 import { modelName } from "@/lib/models";
-import { classifySource, brandDomainHint, type SourceType } from "@/lib/source-types";
+import { classifySource, brandDomainHints, type SourceType } from "@/lib/source-types";
 import { playbookFor } from "@/lib/source-playbook";
 
 /**
@@ -97,10 +97,19 @@ export interface BrandReport {
   actions: ReportAction[];
 }
 
-/** Le Baromètre reparaît chaque semaine, aux mêmes questions. */
+/**
+ * L'Index reparaît chaque mois, aux mêmes questions. La date annoncée ne peut
+ * pas être dans le passé : si l'édition a pris du retard, on annonce la
+ * prochaine date plausible plutôt qu'une promesse déjà manquée.
+ */
 function nextMeasureDate(editionDate: string): string {
   const d = new Date(`${editionDate}T00:00:00Z`);
-  d.setUTCDate(d.getUTCDate() + 7);
+  d.setUTCDate(d.getUTCDate() + 30);
+  const today = new Date();
+  if (d < today) {
+    today.setUTCDate(today.getUTCDate() + 7);
+    return today.toISOString().slice(0, 10);
+  }
   return d.toISOString().slice(0, 10);
 }
 
@@ -189,7 +198,7 @@ export async function buildReport(slug: string): Promise<BrandReport | null> {
   }
   // Les domaines des marques classées, pour reconnaître le site d'un concurrent :
   // aucune expression régulière ne devinerait que loreal.com en est un.
-  const brandDomains = edition.brands.map((b) => brandDomainHint(b.name)).filter((d) => d.length > 3);
+  const brandDomains = edition.brands.flatMap((b) => brandDomainHints(b.name));
   // Le vivier complet sert à construire le plan ; l'affichage n'en montre que la
   // tête. Tronquer à 5 avant de générer les actions limitait mécaniquement le plan
   // à trois lignes, alors que les relevés en contiennent bien plus.

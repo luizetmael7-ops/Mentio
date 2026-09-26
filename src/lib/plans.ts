@@ -83,7 +83,7 @@ export const PLAN_LIMITS: Record<Plan, PlanLimits> = {
     promptsPerBrand: 50,
     competitors: 5,
     modelCadence: { chatgpt: "weekly", gemini: "weekly", claude: "weekly", perplexity: "weekly" },
-    cadenceLabel: "Les 4 IA chaque semaine — le même relevé que le Baromètre public",
+    cadenceLabel: "Les 4 IA chaque semaine — ChatGPT, Gemini, Claude et Perplexity",
     features: [
       "Score complet, modèle par modèle",
       "Les sites que les IA lisent pour répondre",
@@ -114,7 +114,7 @@ export const PLAN_LIMITS: Record<Plan, PlanLimits> = {
     promptsPerBrand: 50,
     competitors: 5,
     modelCadence: { chatgpt: "weekly", gemini: "weekly", claude: "weekly", perplexity: "weekly" },
-    cadenceLabel: "Les 4 IA chaque semaine — le même relevé que le Baromètre public",
+    cadenceLabel: "Les 4 IA chaque semaine — ChatGPT, Gemini, Claude et Perplexity",
     features: [
       "Rapports en marque blanche, illimités",
       "Votre logo et vos couleurs sur chaque rapport",
@@ -136,7 +136,7 @@ export const PLAN_LIMITS: Record<Plan, PlanLimits> = {
     promptsPerBrand: 50,
     competitors: 10,
     modelCadence: { chatgpt: "weekly", gemini: "weekly", claude: "weekly", perplexity: "weekly" },
-    cadenceLabel: "Les 4 IA chaque semaine — le même relevé que le Baromètre public",
+    cadenceLabel: "Les 4 IA chaque semaine — ChatGPT, Gemini, Claude et Perplexity",
     features: [
       "20 marques suivies, puis 24 € par marque",
       "Accès API pour vos propres outils",

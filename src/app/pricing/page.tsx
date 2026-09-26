@@ -22,7 +22,7 @@ export const metadata: Metadata = {
 const FAQ: Array<[string, string]> = [
   [
     "Pourquoi un relevé hebdomadaire et pas quotidien ?",
-    "Parce qu'un score de visibilité IA ne bouge pas en vingt-quatre heures, et parce que le Baromètre public est hebdomadaire : vos chiffres sont ainsi directement comparables à la référence du secteur. Un relevé quotidien produirait quinze cents mesures par mois que personne ne lit, et vous rendrait incomparable à notre propre classement. Là où le classement est serré, la question est en revanche rejouée plusieurs fois dans la semaine — c'est l'échantillonnage stratifié, décrit dans la méthodologie.",
+    "Parce qu'un score de visibilité IA ne bouge pas en vingt-quatre heures. Un relevé quotidien produirait quinze cents mesures par mois que personne ne lit. Là où le classement est serré, la question est en revanche rejouée plusieurs fois — c'est l'échantillonnage stratifié, décrit dans la méthodologie. L'Index public, lui, est mensuel : c'est la référence de marché, votre suivi est la mesure fine.",
   ],
   [
     "Le relevé correspond-il à ce que voient vraiment mes clients ?",
@@ -30,7 +30,7 @@ const FAQ: Array<[string, string]> = [
   ],
   [
     "Sur quels secteurs Mentio fonctionne-t-il ?",
-    `Le scan gratuit fonctionne sur n'importe quel secteur : les questions d'achat sont générées à la volée à partir de la catégorie que vous saisissez. Le suivi hebdomadaire, lui, s'appuie aujourd'hui sur la bibliothèque beauté, soin et compléments — c'est elle qui garantit que les mêmes questions reviennent d'une semaine sur l'autre. D'autres secteurs arrivent, et ${PLAN_LIMITS.agencyplus.label} inclut dès maintenant une bibliothèque écrite sur mesure pour le vôtre.`,
+    `Tous. Le scan gratuit génère ses questions à la volée à partir de la catégorie saisie, et l'Index public s'étend catégorie par catégorie, pays par pays : n'importe qui peut demander qu'une catégorie soit mesurée, elle rejoint la file. ${PLAN_LIMITS.agencyplus.label} inclut en plus une bibliothèque de questions écrite sur mesure pour votre secteur.`,
   ],
   [
     "Que veut dire « mise en route faite par nous » ?",

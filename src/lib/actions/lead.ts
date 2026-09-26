@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { captureServer } from "@/lib/posthog-server";
+import { notifyFounder } from "@/lib/founder";
 
 /** Gate email du lead magnet : enregistre le lead et déverrouille le rapport complet. */
 export async function submitLead(formData: FormData) {
@@ -28,6 +29,20 @@ export async function submitLead(formData: FormData) {
     scan_id: scan.id,
   });
   if (error && !error.message.includes("duplicate")) throw new Error(error.message);
+
+  await notifyFounder(
+    "lead",
+    `${scan.brand_name} — score ${teaser?.score ?? "?"}/100 (${email})`,
+    [
+      `Email : ${email}`,
+      `Marque : ${scan.brand_name}`,
+      `Secteur : ${scan.category}`,
+      `Score du scan : ${teaser?.score ?? "?"}/100`,
+      "",
+      "Quelqu'un vient de laisser son adresse pour voir son rapport complet. Une réponse personnelle dans les 24 h vaut plus que tout le reste du tunnel.",
+    ],
+    { replyTo: email }
+  );
 
   await captureServer("lead_captured", email, {
     brand_name: scan.brand_name,

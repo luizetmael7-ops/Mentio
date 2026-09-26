@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { Search } from "lucide-react";
 import { tierOf } from "@/lib/spectrum";
-import { brandSlug, citationCount } from "@/lib/index-edition";
+import { brandSlug, citationCount } from "@/lib/edition-format";
 
 export interface RankingRow {
   name: string;

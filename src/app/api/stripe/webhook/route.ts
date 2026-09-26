@@ -4,6 +4,7 @@ import { stripe, planFromPrice } from "@/lib/stripe";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import type { Plan } from "@/lib/plans";
 import { captureServer } from "@/lib/posthog-server";
+import { notifyFounder } from "@/lib/founder";
 
 /**
  * Webhook Stripe → source de vérité du plan de l'organisation.
@@ -57,6 +58,13 @@ export async function POST(request: NextRequest) {
         const subscription = await stripe().subscriptions.retrieve(String(session.subscription));
         await applySubscription(subscription);
       }
+      // Le premier paiement est l'événement le plus important du projet : il ne
+      // doit pas se découvrir dans le tableau de bord Stripe trois semaines après.
+      await notifyFounder("paiement", `${((session.amount_total ?? 0) / 100).toFixed(2)} € — ${session.customer_details?.email ?? "client"}`, [
+        `Montant : ${((session.amount_total ?? 0) / 100).toFixed(2)} ${String(session.currency ?? "eur").toUpperCase()}`,
+        `Client : ${session.customer_details?.email ?? "—"}`,
+        `Mode : ${session.mode}`,
+      ]);
       break;
     }
     case "customer.subscription.updated":
@@ -66,6 +74,9 @@ export async function POST(request: NextRequest) {
       const subscription = event.data.object;
       const orgId = subscription.metadata?.org_id;
       if (orgId) {
+        await notifyFounder("paiement", `Résiliation — organisation ${orgId}`, [
+          "Un abonnement vient d'être résilié. Un message personnel pour comprendre pourquoi vaut plus qu'un sondage.",
+        ]);
         await admin.from("organizations").update({ plan: "free" }).eq("id", orgId);
         await admin
           .from("subscriptions")

@@ -4,7 +4,7 @@ import { startScan } from "@/lib/actions/scan";
 import { BrandNav } from "@/components/brand/nav";
 import { BrandFooter } from "@/components/brand/footer";
 import { ReadingSwatch } from "@/components/brand/reading-swatch";
-import { activeModels } from "@/lib/models";
+import { indexModels } from "@/lib/models";
 
 export const metadata: Metadata = {
   title: "Score de visibilité IA gratuit — Mentio",
@@ -79,7 +79,7 @@ export default function ScorePage() {
         <ReadingSwatch
           title="Exemple de relevé"
           caption="Valeurs illustratives"
-          readings={activeModels().map((model, i) => ({
+          readings={indexModels().map((model, i) => ({
             model: model.name,
             value: [8, 42, 25, 71][i] ?? 30,
           }))}

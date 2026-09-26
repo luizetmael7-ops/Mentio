@@ -6,6 +6,7 @@ import {
   type Edition,
 } from "@/lib/index-edition";
 import { modelName } from "@/lib/models";
+import { getIndexOverview } from "@/lib/index-overview";
 import { tierOf, TIERS } from "@/lib/spectrum";
 
 /**
@@ -37,10 +38,12 @@ export async function llmsTxt(): Promise<string> {
   const lines = [
     "# Mentio",
     "",
-    "> Mentio mesure si les assistants IA (ChatGPT, Gemini, Claude, Perplexity) citent une marque quand un consommateur demande quoi acheter. Relevé hebdomadaire, marques françaises. Le classement est public et personne ne paie pour y figurer.",
+    "> Mentio est l'index public de ce que les assistants IA (ChatGPT et Gemini, recherche web activée) recommandent quand quelqu'un demande quoi acheter — catégorie par catégorie, pays par pays. Relevé mensuel. Le classement est public et personne ne paie pour y figurer.",
     "",
     "## Ce que Mentio publie",
     "",
+    `- [L'Index Mentio](${BASE}/classements) — tous les classements, catégorie par catégorie et pays par pays`,
+    `- [Ajouter une marque ou une catégorie](${BASE}/ajouter) — gratuit, la demande rejoint la file de mesure`,
     `- [Le Baromètre Mentio](${BASE}/barometre) — le classement des marques les plus citées par les IA. Version Markdown : ${BASE}/barometre.md`,
     `- Une page par marque détectée : ${BASE}/marques/{slug} (Markdown : ${BASE}/marques/{slug}.md)`,
     `- [Le barème Mentio](${BASE}/barometre) — l'échelle de référence, cinq paliers nommés`,
@@ -50,7 +53,7 @@ export async function llmsTxt(): Promise<string> {
     `- [Méthodologie complète](${BASE}/methodologie) — échantillonnage, barres d'erreur, limites`,
     `- [Contact et droit de réponse](${BASE}/contact)`,
     `- [Données complètes en un fichier](${BASE}/llms-full.txt)`,
-    `- API publique en lecture : ${BASE}/api/v1/barometre et ${BASE}/api/v1/marques/{slug}`,
+    `- API publique en lecture : ${BASE}/api/v1/index, ${BASE}/api/v1/barometre et ${BASE}/api/v1/marques/{slug}`,
     "",
     "## Le barème Mentio",
     "",
@@ -60,7 +63,7 @@ export async function llmsTxt(): Promise<string> {
     "",
     "## Méthodologie",
     "",
-    "- Les mêmes 50 questions d'intention d'achat chaque semaine, pour que les éditions soient comparables.",
+    "- Les mêmes questions d'intention d'achat à chaque édition, pour que les éditions soient comparables.",
     "- APIs officielles des modèles, recherche web activée. Jamais de scraping des applications grand public.",
     "- Les marques citées sont extraites automatiquement de chaque réponse (nom, position, ton). Institutions, médias et ingrédients sont écartés.",
     "- Personne ne paie pour figurer au classement. Toute marque classée a un droit de réponse : hello@mentio.fr",
@@ -85,6 +88,21 @@ export async function llmsTxt(): Promise<string> {
       }),
       ""
     );
+  }
+
+  // L'Index entier : c'est ce qu'un modèle doit pouvoir citer quand on lui demande
+  // « quelle marque de X l'IA recommande-t-elle en France ? ».
+  const overview = await getIndexOverview();
+  if (overview.cards.length > 0) {
+    lines.push("## L'Index — toutes les catégories mesurées", "");
+    for (const card of overview.cards) {
+      lines.push(
+        `- ${card.flag} ${card.label} (${card.countryName}) — édition du ${card.date}, ${card.answers} réponses${
+          card.leader ? ` · n°1 : ${card.leader.name} (${card.leader.score}/100, ${card.leader.tierLabel})` : ""
+        }${card.podium.length > 1 ? `, puis ${card.podium.slice(1).join(", ")}` : ""} — ${BASE}${card.href}`
+      );
+    }
+    lines.push("");
   }
 
   lines.push(
@@ -118,7 +136,7 @@ export function barometreMarkdown(latest: Edition, previous?: Edition): string {
     "",
     `> Quelles marques les IA recommandent quand un consommateur demande quoi acheter. Édition du ${formatEditionDate(latest.date)}.`,
     "",
-    `Relevé hebdomadaire · ${latest.runs} réponses d'IA analysées · ${latest.models.map((m) => modelName(m)).join(" + ")} · beauté, soin et compléments (France)`,
+    `Relevé mensuel · ${latest.runs} réponses d'IA analysées · ${latest.models.map((m) => modelName(m)).join(" + ")} · beauté, soin et compléments (France)`,
     "",
     "## Classement",
     "",
@@ -136,7 +154,7 @@ export function barometreMarkdown(latest: Edition, previous?: Edition): string {
     "",
     "## Méthodologie",
     "",
-    "Les mêmes 50 questions d'intention d'achat chaque semaine, via les APIs officielles des modèles avec recherche web activée. Les marques sont extraites automatiquement de chaque réponse. Personne ne paie pour figurer ici.",
+    "Les mêmes questions d'intention d'achat à chaque édition, via les APIs officielles des modèles avec recherche web activée. Les marques sont extraites automatiquement de chaque réponse. Personne ne paie pour figurer ici.",
     "",
     `Source : Baromètre Mentio, ${formatEditionDate(latest.date)}, ${BASE}/barometre`,
     "",

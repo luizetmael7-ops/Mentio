@@ -92,7 +92,7 @@ const ANNUAIRE = /cosmebio|ecocert|label|annuaire|guide-|observatoire|\.org$/i;
  */
 export function classifySource(domain: string, brandDomains: string[] = []): SourceType {
   const d = domain.toLowerCase();
-  const kind: SourceKind = brandDomains.some((b) => b && d.includes(b))
+  const kind: SourceKind = brandDomains.some((b) => domainMatchesBrand(d, b))
     ? "marque"
     : INSTITUTION.test(d)
       ? "institution"
@@ -109,14 +109,66 @@ export function classifySource(domain: string, brandDomains: string[] = []): Sou
 /**
  * Le fragment de domaine d'une marque, déduit de son nom.
  *
- * « La Roche-Posay » → « larocheposay », qui reconnaît larocheposay.fr comme
- * laroche-posay.com. Approximatif par construction, et c'est assumé : le coût
- * d'une erreur est qu'une source change d'étiquette, pas qu'un chiffre soit faux.
+ * « La Roche-Posay » → « larocheposay ». Approximatif par construction, et c'est
+ * assumé : le coût d'une erreur est qu'une source change d'étiquette, pas qu'un
+ * chiffre soit faux. Pour les variantes (« & » écrit « and »), voir
+ * `brandDomainHints`.
  */
 export function brandDomainHint(brandName: string): string {
-  return brandName
+  return flatten(brandName);
+}
+
+const STOPWORDS = /\b(de|du|des|la|le|les|l|the|of)\b/g;
+
+function flatten(text: string): string {
+  return text
     .toLowerCase()
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .replace(/[^a-z0-9]/g, "");
+}
+
+/**
+ * Toutes les formes sous lesquelles le nom d'une marque apparaît dans un domaine.
+ *
+ * Un seul fragment ne suffisait pas. « Nutri&Co » donnait « nutrico », qui ne
+ * reconnaît pas nutriandco.com : le rapport vitrine de la page d'accueil
+ * conseillait alors à La Roche-Posay de « se faire citer » sur la boutique d'une
+ * autre marque — exactement le conseil qui disqualifie un plan d'action entier
+ * aux yeux d'une agence. Même défaut pour « Laboratoires de Biarritz » face à
+ * laboratoires-biarritz.com.
+ */
+export function brandDomainHints(brandName: string): string[] {
+  const lower = brandName.toLowerCase();
+  const variants = [
+    lower,
+    lower.replace(/&/g, " and "),
+    lower.replace(/&/g, " et "),
+    lower.replace(/&/g, " and ").replace(STOPWORDS, " "),
+    lower.replace(/&/g, " et ").replace(STOPWORDS, " "),
+  ].map(flatten);
+  return [...new Set(variants)].filter((v) => v.length >= 4);
+}
+
+/**
+ * Ce domaine est-il celui de cette marque ?
+ *
+ * On compare le nom du domaine aplati — « laroche-posay.com » devient
+ * « larocheposay » — et non le domaine brut : l'ancienne comparaison cherchait
+ * « larocheposay » dans « laroche-posay.com » et ne le trouvait jamais, alors que
+ * le commentaire promettait l'inverse.
+ *
+ * Un fragment court (« aime », « nuxe ») n'est accepté qu'en correspondance
+ * exacte avec le nom du domaine : cherché comme sous-chaîne, « aime » ferait de
+ * jaimelesbonsplans.fr le site d'une marque.
+ */
+export function domainMatchesBrand(domain: string, hint: string): boolean {
+  if (!hint || hint.length < 4) return false;
+  const labels = domain.toLowerCase().replace(/^www\./, "").split(".");
+  const base = labels.slice(0, Math.max(1, labels.length - 1));
+  const name = flatten(base.join(""));
+  if (hint.length >= 6) return name.includes(hint);
+  // Fragment court : un mot entier du domaine (eau-thermale-avene.fr → « avene »).
+  const words = base.flatMap((label) => label.split("-")).map(flatten);
+  return name === hint || words.includes(hint);
 }
