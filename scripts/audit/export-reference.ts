@@ -25,9 +25,15 @@ async function main() {
   const seen = new Set<string>();
   const picked: Array<{ id: string; model: string; prompt: string; answer: string }> = [];
   for (const model of ["chatgpt", "gemini"]) {
-    for (const r of (data ?? []) as Array<{ id: string; model: string; raw_answer: string; prompts: { text: string } | null }>) {
+    for (const r of (data ?? []) as unknown as Array<{
+      id: string;
+      model: string;
+      raw_answer: string;
+      prompts: { text: string } | Array<{ text: string }> | null;
+    }>) {
       if (r.model !== model) continue;
-      const prompt = r.prompts?.text ?? "";
+      const joined = Array.isArray(r.prompts) ? r.prompts[0] : r.prompts;
+      const prompt = joined?.text ?? "";
       const key = `${model}|${prompt}`;
       if (!prompt || seen.has(key) || r.raw_answer.length < 80) continue;
       seen.add(key);
