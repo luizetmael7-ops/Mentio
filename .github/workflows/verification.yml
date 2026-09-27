@@ -1,6 +1,6 @@
 # LA VÉRIFICATION — ce qui doit être vert avant toute fusion dans main.
 #
-# Deux jobs :
+# Trois jobs :
 #   qualite     — typage, lint, tests unitaires, installeur SQL rejoué sur un vrai
 #                 Postgres, build, et parcours de bout en bout dans un navigateur.
 #                 Sur les données de démonstration : aucun appel payant, aucune base.
@@ -8,6 +8,7 @@
 #                 chiffre affiché recalculé par un autre chemin (scripts/audit/prod.ts).
 #                 Uniquement sur un push : les secrets ne sont jamais donnés à une PR
 #                 venue d'ailleurs.
+#   juge        — le lecteur automatique noté sur le jeu de référence (gratuit).
 #
 # Les journaux de ce dépôt sont publics : l'audit n'imprime que des marques et des
 # scores, déjà publics. Jamais une adresse, jamais un message.
@@ -111,8 +112,21 @@ jobs:
         if: hashFiles('tests/reference/annotations.json') == ''
         run: npx tsx scripts/audit/export-reference.ts
 
-      # Le juge noté sur 20 réponses réelles annotées à la main. Modèle gratuit
-      # uniquement : 0 $. Sans la clé en secret du dépôt, l'étape le dit et passe.
+  # Le juge noté sur 20 réponses réelles annotées à la main. Modèle gratuit
+  # uniquement : 0 $. Job à part : le palier gratuit est lent (jusqu'à plusieurs
+  # minutes par réponse) et ne doit pas retarder l'audit. Sans la clé en secret
+  # du dépôt, l'étape le dit et passe.
+  juge:
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
       - name: Le juge noté sur le jeu de référence (gratuit)
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
