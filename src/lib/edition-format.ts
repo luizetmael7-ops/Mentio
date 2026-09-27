@@ -9,11 +9,13 @@ import type { EditionBrand } from "@/lib/index-edition";
 
 /** « 22 juillet 2026 » — le format de date du site, partout. */
 export function formatEditionDate(date: string): string {
-  return new Date(date).toLocaleDateString("fr-FR", {
+  const text = new Date(date).toLocaleDateString("fr-FR", {
     day: "numeric",
     month: "long",
     year: "numeric",
   });
+  // L'usage français : « 1er septembre », jamais « 1 septembre ».
+  return text.replace(/^1 /, "1er ");
 }
 
 /** Identifiant d'URL d'une marque : « Nutri&Co » → « nutri-co ». */

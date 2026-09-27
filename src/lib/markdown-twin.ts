@@ -54,6 +54,7 @@ export async function llmsTxt(): Promise<string> {
     `- [Contact et droit de réponse](${BASE}/contact)`,
     `- [Données complètes en un fichier](${BASE}/llms-full.txt)`,
     `- API publique en lecture : ${BASE}/api/v1/index, ${BASE}/api/v1/barometre et ${BASE}/api/v1/marques/{slug}`,
+    `- Serveur MCP (Model Context Protocol, HTTP, sans clé) : ${BASE}/api/mcp — outils search_index, get_category_ranking, get_brand_visibility, explain_score_mentio`,
     "",
     "## Le barème Mentio",
     "",

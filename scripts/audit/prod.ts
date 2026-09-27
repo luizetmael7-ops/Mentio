@@ -17,6 +17,7 @@
 import { appendFileSync } from "node:fs";
 import { createClient } from "@supabase/supabase-js";
 import { auditEdition } from "@/lib/edition-audit";
+import { formatEditionDate } from "@/lib/edition-format";
 import { tierOf } from "@/lib/spectrum";
 import { sameBrand, normalizeBrandName } from "@/lib/llm/judge";
 import type { ModelKey } from "@/lib/llm/types";
@@ -224,7 +225,7 @@ async function main() {
       for (const r of rows) {
         const audit = auditEdition({ models: r.data?.models ?? [], runs: r.data?.runs ?? 0, answers: r.data?.answers });
         if (audit.valid) continue;
-        const d = new Date(r.edition_date).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
+        const d = formatEditionDate(r.edition_date);
         for (const [path, label] of pages) {
           if ((html.get(path) ?? "").includes(`dition du ${d}`)) {
             ecarts.push({ ou: `${label} — édition écartée`, attendu: "non servie", trouve: `« édition du ${d} » affichée` });

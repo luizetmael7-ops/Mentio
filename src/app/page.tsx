@@ -15,6 +15,7 @@ import { buildReport } from "@/lib/report";
 import { getLatestEdition, formatEditionDate, brandSlug, citationCount, brandScore } from "@/lib/index-edition";
 import { getIndexOverview } from "@/lib/index-overview";
 import { ScanLimitNotice } from "@/components/brand/scan-limit-notice";
+import { getLecture } from "@/lib/lecture";
 
 export const metadata: Metadata = {
   title: "Mentio — ce que les IA recommandent, mesuré",
@@ -55,6 +56,7 @@ export default async function LandingPage() {
   const leader = edition?.brands[0];
   const samplePlan = leader ? await buildReport(brandSlug(leader.name)) : null;
   const { stats } = overview;
+  const lecture = getLecture();
   // Le classement du héros : l'édition complète la plus récente.
   const hero = edition
     ? {
@@ -187,6 +189,71 @@ export default async function LandingPage() {
             </div>
           ) : null}
         </section>
+
+        {/* ---------- 1 bis. UNE RÉPONSE, LUE ---------- */}
+        {lecture ? (
+          <section className="mx-auto max-w-6xl px-4 pb-16 sm:px-5">
+            <Reveal>
+              <p className="eyebrow">Comment on mesure</p>
+              <h2 className="mt-3 max-w-3xl font-display text-3xl font-extrabold uppercase tracking-wide sm:text-4xl">
+                {`${modelName(lecture.model)} a répondu`}
+                <span className="text-[var(--poppy)]">.</span> Voici ce que Mentio en lit.
+              </h2>
+            </Reveal>
+            <Reveal className="mt-8 grid gap-4 lg:grid-cols-[1.3fr_0.7fr]">
+              <figure className="rounded-3xl border border-[var(--line)] bg-white p-5 sm:p-7">
+                <figcaption className="font-metric flex flex-wrap items-center gap-2 text-[0.65rem] uppercase tracking-widest text-[var(--ink-soft)]">
+                  <span aria-hidden className="size-2 rounded-full bg-[var(--jade)]" />
+                  {`${modelName(lecture.model)} · recherche web activée · réponse réelle, été 2026`}
+                </figcaption>
+                <p className="mt-4 font-display text-lg font-extrabold leading-snug sm:text-xl">
+                  {`« ${lecture.prompt} »`}
+                </p>
+                <ul className="mt-5 space-y-2.5 border-l-2 border-[var(--line)] pl-4 text-sm leading-relaxed text-[var(--ink-soft)]">
+                  {lecture.lines.map((line, i) => (
+                    <li key={i}>
+                      {line.map((seg, k) =>
+                        seg.brand ? (
+                          <mark
+                            key={k}
+                            className="lecture-mark bg-transparent px-0.5"
+                            style={{ "--i": seg.brand } as React.CSSProperties}
+                          >
+                            {seg.text}
+                          </mark>
+                        ) : (
+                          <span key={k}>{seg.text}</span>
+                        )
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </figure>
+              <aside className="flex flex-col rounded-3xl bg-[var(--plum)] p-5 text-white sm:p-7">
+                <p className="eyebrow text-white/60">Ce que Mentio en retient</p>
+                <ol className="mt-4 grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+                  {lecture.brands.map((b, i) => (
+                    <li key={b} className="flex items-baseline gap-2">
+                      <span className="font-metric w-5 shrink-0 text-xs tabular-nums text-white/50">
+                        {String(i + 1).padStart(2, "0")}
+                      </span>
+                      <span className="truncate font-semibold">{b}</span>
+                    </li>
+                  ))}
+                </ol>
+                <p className="mt-6 flex-1 text-sm leading-relaxed text-white/75">
+                  {`Une réponse, ${lecture.brands.length} marques citées, dans l'ordre. Posez les mêmes questions à chaque édition, aux mêmes moteurs, et comptez : c'est le score. Une marque absente de la liste n'a rien gagné sur cette question.`}
+                </p>
+                <Link
+                  href="/methodologie"
+                  className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-white"
+                >
+                  La méthode, en entier <ArrowRight aria-hidden className="size-4" />
+                </Link>
+              </aside>
+            </Reveal>
+          </section>
+        ) : null}
 
         {/* ---------- 2. LES CHIFFRES DE L'INDEX ---------- */}
         <section className="bg-[var(--plum)] px-4 py-16 text-white sm:px-5">

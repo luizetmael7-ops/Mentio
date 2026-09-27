@@ -151,3 +151,34 @@ test("espace agence : réservé, redirige vers la connexion", async ({ page }) =
   expect(page.url()).toContain("/login");
   expect(response?.status()).toBeLessThan(500);
 });
+
+test("accueil : une vraie réponse de ChatGPT, et les marques qu'on y lit", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByText("Voici ce que Mentio en lit")).toBeVisible();
+  await expect(page.locator("mark.lecture-mark")).toHaveCount(11);
+  await expectNoGluedWords(page);
+  await expectNoHorizontalScroll(page);
+});
+
+test("statut : public, daté, et les ratés affichés", async ({ page }) => {
+  await page.goto("/statut");
+  await expect(page.getByRole("heading", { name: /Les moteurs mesurés/ })).toBeVisible();
+  // L'édition défectueuse de démonstration (Gemini seul, 6 septembre) est listée, pas cachée.
+  await expect(page.getByText(/6 septembre 2026/).first()).toBeVisible();
+  await expectNoGluedWords(page);
+  await expectNoHorizontalScroll(page);
+});
+
+test("serveur MCP : un assistant peut lire l'Index", async ({ request }) => {
+  const rpc = (method: string, params: object = {}, id = 1) =>
+    request.post("/api/mcp", { data: { jsonrpc: "2.0", id, method, params } }).then((r) => r.json());
+  const init = await rpc("initialize", { protocolVersion: "2025-06-18", capabilities: {}, clientInfo: { name: "test", version: "1" } });
+  expect(init.result.serverInfo.name).toBe("mentio-index");
+  const list = await rpc("tools/list");
+  expect(list.result.tools.map((t: { name: string }) => t.name)).toContain("get_category_ranking");
+  const ranking = await rpc("tools/call", { name: "get_category_ranking", arguments: { category: "crème solaire", country: "FR" } });
+  expect(ranking.result.content[0].text).toMatch(/\/100/);
+  expect(ranking.result.content[0].text).toContain("mentio.fr");
+  const unknown = await rpc("tools/call", { name: "nope", arguments: {} });
+  expect(unknown.error.code).toBe(-32602);
+});

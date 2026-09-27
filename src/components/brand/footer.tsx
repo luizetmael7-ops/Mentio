@@ -15,6 +15,7 @@ const COPY = {
     scale: "Le barème",
     badge: "Le badge",
     method: "Méthodologie",
+    status: "Statut",
     contact: "Contact",
     terms: "CGU",
     privacy: "Confidentialité",
@@ -35,6 +36,7 @@ const COPY = {
     scale: "Le barème",
     badge: "Le badge",
     method: "Méthodologie",
+    status: "Status",
     contact: "Contact",
     terms: "Terms",
     privacy: "Privacy",
@@ -82,6 +84,9 @@ export function BrandFooter({ locale = "fr" }: { locale?: "fr" | "en" }) {
           <Link href="/methodologie" className="transition-colors hover:text-white">
             {t.method}
           </Link>
+          <Link href="/statut" className="transition-colors hover:text-white">
+            {t.status}
+          </Link>
           <Link href="/pricing" className="transition-colors hover:text-white">
             {t.pricing}
           </Link>
@@ -106,6 +111,7 @@ export function BrandFooter({ locale = "fr" }: { locale?: "fr" | "en" }) {
         <a href="/llms-full.txt" className="transition-colors hover:text-white">llms-full.txt</a>
         <a href="/barometre.md" className="transition-colors hover:text-white">barometre.md</a>
         <a href="/api/v1/barometre" className="transition-colors hover:text-white">API</a>
+        <a href="/api/mcp" className="transition-colors hover:text-white">MCP</a>
         <a href="/sitemap.xml" className="transition-colors hover:text-white">sitemap</a>
       </div>
       <div className="mx-auto mt-6 flex max-w-6xl items-center gap-3 text-xs text-white/40">

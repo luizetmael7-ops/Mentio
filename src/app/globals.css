@@ -261,3 +261,31 @@
   outline: 2px solid var(--poppy);
   outline-offset: 2px;
 }
+/* « Une réponse, lue » — les marques se surlignent une à une, comme au feutre.
+   Visible par défaut ; le balayage n'existe que si Reveal a armé le bloc (JS
+   actif, mouvement autorisé). */
+.lecture-mark {
+  background-image: linear-gradient(
+    transparent 55%,
+    color-mix(in srgb, var(--spectrum-amber) 45%, transparent) 55%
+  );
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  color: var(--ink);
+  font-weight: 600;
+  border-radius: 2px;
+}
+.reveal-armed .lecture-mark {
+  background-size: 0% 100%;
+}
+.is-visible .lecture-mark {
+  transition: background-size 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: calc(var(--i, 0) * 110ms + 250ms);
+}
+@media (prefers-reduced-motion: reduce) {
+  .lecture-mark,
+  .reveal-armed .lecture-mark {
+    background-size: 100% 100% !important;
+    transition: none !important;
+  }
+}

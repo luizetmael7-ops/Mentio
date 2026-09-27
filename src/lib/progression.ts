@@ -1,4 +1,5 @@
 import { tierOf, type Tier } from "@/lib/spectrum";
+import { formatEditionDate } from "@/lib/edition-format";
 import type { ScorePoint } from "@/lib/placements";
 
 /**
@@ -94,11 +95,7 @@ export function tierChangeSubject(brandName: string, change: TierChange): string
 /** La phrase du corps — le fait, sa date, et ce qu'il signifie sur le barème. */
 export function tierChangeSentence(change: TierChange): string {
   const sens = change.direction === "montee" ? "franchi" : "repassé sous";
-  return `Le relevé du ${new Date(change.on).toLocaleDateString("fr-FR", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  })} a ${sens} le seuil ${de(change.to.label)} : ${change.scoreBefore} → ${change.scoreAfter} sur 100. ${change.to.meaning}`;
+  return `Le relevé du ${formatEditionDate(change.on)} a ${sens} le seuil ${de(change.to.label)} : ${change.scoreBefore} → ${change.scoreAfter} sur 100. ${change.to.meaning}`;
 }
 
 /** La série, seulement quand elle mérite d'être dite. */
