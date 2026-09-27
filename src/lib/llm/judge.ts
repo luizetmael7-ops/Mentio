@@ -239,9 +239,25 @@ export function normalizeBrandName(name: string): string {
     .replace(/[^a-z0-9]/g, "");
 }
 
+/**
+ * Deux noms désignent-ils la même marque ?
+ *
+ * Égalité après normalisation, ou le nom court PRÉFIXE du long (« Nuxe » et
+ * « NUXE Paris », « SVR » et « SVR Sun Secure »), ou le nom court contenu dans
+ * le long s'il fait au moins 6 caractères (« Roche-Posay » et « La Roche-Posay »).
+ *
+ * Jusqu'au 27 septembre 2026, n'importe quelle sous-chaîne suffisait : « RoC »
+ * était contenu dans « La Roche-Posay » (larocheposay), « Cien » dans
+ * « Science ». Le Mesureur pouvait donc attribuer les citations d'une marque à
+ * une autre. Trouvé par le jeu de référence (tests/reference).
+ */
+export const MIN_INNER_MATCH = 6;
+
 export function sameBrand(a: string, b: string): boolean {
   const na = normalizeBrandName(a);
   const nb = normalizeBrandName(b);
   if (!na || !nb) return false;
-  return na === nb || na.includes(nb) || nb.includes(na);
+  if (na === nb) return true;
+  const [short, long] = na.length <= nb.length ? [na, nb] : [nb, na];
+  return long.startsWith(short) || (short.length >= MIN_INNER_MATCH && long.includes(short));
 }

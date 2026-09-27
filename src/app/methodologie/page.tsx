@@ -7,6 +7,15 @@ import { modelName } from "@/lib/models";
 import { CONTEST_GAP, CONTESTED_PASSES, MAX_CONTESTED_QUESTIONS } from "@/lib/measurement";
 import { getEditions, getRejectedEditions, formatEditionDate, brandScore } from "@/lib/index-edition";
 import { verticalLabel } from "@/lib/verticals";
+import reference from "../../../tests/reference/annotations.json";
+
+/** Le jeu de référence, compté depuis le fichier annoté — jamais recopié. */
+const REFERENCE = {
+  answers: reference.items.length,
+  brands: reference.items.reduce((n, i) => n + i.expected.length, 0),
+  empty: reference.items.filter((i) => i.expected.length === 0).length,
+  validated: reference.validatedByFounder,
+};
 
 export const metadata: Metadata = {
   title: "Méthodologie du Baromètre Mentio — comment la mesure est faite",
@@ -206,6 +215,32 @@ export default async function MethodologiePage() {
               <strong className="text-[var(--ink)]">Les modèles évoluent.</strong> Une mise à jour
               chez un éditeur peut déplacer un classement sans que rien n&apos;ait changé côté
               marques. C&apos;est précisément pourquoi on mesure dans la durée.
+            </li>
+          </ul>
+        </section>
+
+        {/* 7. L'instrument, vérifié */}
+        <section className="mt-12">
+          <h2 className="font-display text-2xl font-extrabold uppercase tracking-wide">
+            7. L&apos;instrument, lui aussi, est vérifié
+          </h2>
+          <ul className="mt-4 space-y-3 text-sm leading-relaxed text-[var(--ink-soft)]">
+            <li>
+              <strong className="text-[var(--ink)]">Un audit indépendant à chaque changement.</strong>{" "}
+              Avant toute modification du code, chaque score publié est recalculé depuis les réponses
+              brutes par un autre programme que celui qui l&apos;a produit, et comparé à ce que le site
+              affiche. Un écart bloque la modification.
+            </li>
+            <li>
+              <strong className="text-[var(--ink)]">Un jeu de référence annoté à la main.</strong>{" "}
+              {`${REFERENCE.answers} réponses réelles de ChatGPT et Gemini, relues une à une : ${REFERENCE.brands} marques à trouver, et ${REFERENCE.empty} réponses pièges qui ne citent que des autorités de santé, des médias ou des ingrédients — le lecteur automatique doit les rendre vides. Il est noté dessus (précision, rappel) avant chaque changement.${
+                REFERENCE.validated ? "" : " Les scores seront publiés ici dès la validation des annotations."
+              }`}
+            </li>
+            <li>
+              <strong className="text-[var(--ink)]">Ce qu&apos;il a déjà trouvé.</strong> Une marque au
+              nom court pouvait être confondue avec une autre qui le contient (« RoC » dans « La
+              Roche-Posay ») : la règle de rapprochement des noms a été resserrée le 27 septembre 2026.
             </li>
           </ul>
         </section>

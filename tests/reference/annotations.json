@@ -1,0 +1,641 @@
+{
+ "version": 1,
+ "annotated": "2026-09-27",
+ "annotator": "agent (première passe, à valider)",
+ "validatedByFounder": false,
+ "source": "prompt_runs.raw_answer, production, lecture seule — réponses réelles de ChatGPT et Gemini, août-septembre 2026",
+ "rules": [
+  "Une marque = une marque ou entreprise qui VEND dans la catégorie (règle du juge, src/lib/llm/judge.ts).",
+  "Jamais : institutions et autorités (ANSES, NIH, AAD, Mayo Clinic), médias et sites d'avis (Allure, Forbes, EWG, Consumer Reports, Yuka), labels et certifications (COSMOS, Ecocert, MSC), ingrédients et formes chimiques, personnes.",
+  "expected : dans l'ordre d'apparition ; aliases = autre nom accepté pour la même entité (gamme ou fabricant cité à côté).",
+  "tolerated : ni exigé ni pénalisé (ingrédients brevetés vendus en B2B, fabricant cité entre parenthèses, distributeur qui est aussi une marque).",
+  "traps : ce qu'un mauvais juge extrait à tort ; en extraire un compte comme faux positif, comme toute marque hors expected."
+ ],
+ "items": [
+  {
+   "id": "54d9b72d-6b99-4724-9ff5-efbdf182e948",
+   "model": "chatgpt",
+   "prompt": "Quelles sont les meilleures marques de cosmétiques bio ?",
+   "expected": [
+    {
+     "name": "Evolve Organic Beauty",
+     "aliases": [
+      "Evolve"
+     ]
+    },
+    {
+     "name": "Santarome"
+    },
+    {
+     "name": "Douglas Natural"
+    },
+    {
+     "name": "BIO-T"
+    },
+    {
+     "name": "Ogee"
+    }
+   ],
+   "traps": [
+    "COSMOS",
+    "Ecocert",
+    "Forbes"
+   ],
+   "tolerated": [
+    "Sephora",
+    "Douglas"
+   ],
+   "answer": "Si vous cherchez des **marques de cosmétiques bio fiables**, le meilleur critère n’est pas seulement “bio” sur l’étiquette, mais la présence d’une **certification reconnue** comme **COSMOS ORGANIC** ou **COSMOS NATURAL**. Le standard COSMOS est un référentiel international pour les cosmétiques naturels et biologiques, géré par une association indépendante, et des milliers de produits certifiés existent dans le monde. ([cosmos-standard.org](https://www.cosmos-standard.org/en/?utm_source=openai))\n\n### Marques souvent considérées comme de bonnes options en bio/naturel certifié\nVoici quelques marques connues qui proposent des gammes certifiées ou référencées dans les bases COSMOS :\n\n- **Evolve Organic Beauty** — présente dans l’annuaire officiel COSMOS. ([cosmos-standard.org](https://www.cosmos-standard.org/en/databases/products-directory/?country=GB&page=1&utm_source=openai))\n- **Santarome** — plusieurs produits figurent dans le répertoire COSMOS. ([cosmos-standard.org](https://www.cosmos-standard.org/en/databases/products-directory/?company=135916&page=41&utm_source=openai))\n- **Douglas Natural** — certaines références sont listées comme certifiées. ([cosmos-standard.org](https://www.cosmos-standard.org/en/databases/products-directory/?brand=38768&page=17&utm_source=openai))\n- **BIO-T** — également présent dans l’annuaire COSMOS. ([cosmos-standard.org](https://www.cosmos-standard.org/en/databases/products-directory/?brand=38768&page=17&utm_source=openai))\n- **Ogee** — marque de clean beauty haut de gamme, mise en avant récemment pour son positionnement bio/clean. ([forbes.com](https://www.forbes.com/sites/dahvishira/2026/06/11/ogee-is-entering-sephora-for-the-evolved-clean-beauty-consumer/?utm_source=openai))\n\n### Comment choisir la “meilleure” marque pour vous\n- **Pour la certification la plus sérieuse** : privilégiez les produits avec **COSMOS ORGANIC** ou **Ecocert/COSMOS**. ([ecocert.com](https://www.ecocert.com/en-US/certification-detail/natural-and-organic-cosmetics-cosmos?utm_source=openai))\n- **Pour le maquillage bio** : vérifiez la certification sur le produit précis, pas seulement sur la marque. ([cosmos-standard.org](https://www.cosmos-standard.org/en/databases/?utm_source=openai))\n- **Pour les soins visage/corps** : les marques avec plusieurs références certifiées sont souvent plus fiables que celles qui n’ont qu’un seul produit “bio”. ([cosmos-standard.org](https://www.cosmos-standard.org/en/databases/products-directory/?country=GB&page=1&utm_source=openai))\n\n### En pratique\nSi vous voulez, je peux vous faire une **sélection plus utile selon votre besoin** :\n1. **meilleures marques de maquillage bio**,  \n2. **meilleures marques de soins visage bio**,  \n3. **marques bio accessibles en pharmacie / en France**,  \n4. **marques bio haut de gamme**.\n\nSi vous me dites votre **budget** et si vous cherchez plutôt **maquillage** ou **soins**, je vous fais une liste plus ciblée."
+  },
+  {
+   "id": "d13630f3-29c5-4469-8ab0-ff7cbf4d82e7",
+   "model": "chatgpt",
+   "prompt": "Quelles sont les meilleures marques françaises de soins de la peau ?",
+   "expected": [
+    {
+     "name": "La Roche-Posay"
+    },
+    {
+     "name": "Avène",
+     "aliases": [
+      "Avene"
+     ]
+    },
+    {
+     "name": "Caudalie"
+    },
+    {
+     "name": "NUXE"
+    },
+    {
+     "name": "Bioderma"
+    },
+    {
+     "name": "SVR"
+    },
+    {
+     "name": "Embryolisse"
+    },
+    {
+     "name": "Patyka"
+    },
+    {
+     "name": "L'Occitane"
+    },
+    {
+     "name": "Niod"
+    },
+    {
+     "name": "Typology"
+    }
+   ],
+   "traps": [],
+   "tolerated": [],
+   "answer": "Si tu cherches les **meilleures marques françaises de soins de la peau**, voici celles qui reviennent le plus souvent pour leur réputation, leur efficacité et leur ancrage en France :\n\n- **La Roche-Posay** — très reconnue en dermocosmétique, surtout pour les peaux sensibles et à problèmes. La marque met en avant ses soins recommandés par des dermatologues. ([laroche-posay.fr](https://www.laroche-posay.fr/nos-engagements/brandhub.html?utm_source=openai))\n- **Avène** — autre grande référence dermo, particulièrement appréciée pour les peaux sensibles grâce à son eau thermale et ses gammes apaisantes.  \n- **Caudalie** — marque française axée sur des formules d’origine naturelle, créée en France selon son site, avec une forte notoriété en soins visage. ([fr.caudalie.com](https://fr.caudalie.com/?utm_source=openai))\n- **NUXE** — très connue pour ses soins sensoriels et naturels, avec une identité “pharmacie française” et une fabrication/ formulation associée à Paris. ([fr.nuxe.com](https://fr.nuxe.com/pages/gamme-huile-prodigieuse?utm_source=openai))\n- **Bioderma** — excellent choix si ta priorité est la tolérance cutanée, les peaux réactives et les nettoyants doux.\n- **SVR** — bonne marque dermocosmétique, souvent choisie pour les peaux mixtes, grasses, sensibles ou sujettes à l’acné.\n- **Embryolisse** — marque culte pour les soins simples, hydratants et polyvalents.\n- **Patyka** — plus orientée clean beauty / naturel, avec une image premium.\n- **L’Occitane** — plus “beauté” que dermo, mais très solide sur l’hydratation et les textures agréables.\n- **Niod / Typology** — plus “formules ciblées et modernes” que traditionnelles, à considérer si tu veux des actifs précis.\n\n**En pratique :**\n- Pour **peaux sensibles** : La Roche-Posay, Avène, Bioderma. ([laroche-posay.fr](https://www.laroche-posay.fr/nos-engagements/brandhub.html?utm_source=openai))\n- Pour **soins naturels / sensoriels** : Caudalie, NUXE. ([fr.nuxe.com](https://fr.nuxe.com/pages/gamme-huile-prodigieuse?utm_source=openai))\n- Pour **acné / imperfections** : La Roche-Posay, SVR, Bioderma.\n\nSi tu veux, je peux aussi te faire un **top 5 selon ton type de peau** :\n- peau sèche\n- peau grasse/acnéique\n- peau sensible\n- anti-âge\n- routines petit budget"
+  },
+  {
+   "id": "f5efd58a-270d-4a0d-ade3-ee2c209d0f98",
+   "model": "chatgpt",
+   "prompt": "Quelle est la meilleure crème solaire visage clean ?",
+   "expected": [
+    {
+     "name": "Vanicream"
+    },
+    {
+     "name": "Babo Botanicals"
+    },
+    {
+     "name": "Love Sun Body"
+    }
+   ],
+   "traps": [
+    "EWG",
+    "Consumer Reports"
+   ],
+   "tolerated": [],
+   "answer": "Si tu veux une **crème solaire visage “clean”**, le plus simple est de viser une **minérale** : **zinc oxide** et/ou **titanium dioxide**, souvent sans parfum et adaptée aux peaux sensibles. EWG met en avant plusieurs écrans solaires visage minéraux et des soins SPF “daily use” notés selon ses critères, dont des options comme **Vanicream Facial Moisturizer Mineral Sunscreen With Ceramides SPF 30**, **Babo Botanicals Hydrating Milk Mineral Face Sunscreen Lotion SPF 30** et **Love Sun Body Glow Natural Daily Tinted Mineral Face Sunscreen & Moisturizer SPF 30**. ([ewg.org](https://www.ewg.org/news-insights/news/2026/06/bang-your-buck-safer-moisturizing-face-sunscreens-under-30?utm_source=openai))\n\nSi tu veux une réponse courte en mode “meilleure option” :\n- **Peau sensible / réactive** : **Vanicream Facial Moisturizer Mineral Sunscreen SPF 30**. ([ewg.org](https://www.ewg.org/news-insights/news/2026/06/bang-your-buck-safer-moisturizing-face-sunscreens-under-30?utm_source=openai))\n- **Fini teinté / plus joli sur le visage** : **Love Sun Body Glow Tinted Mineral Face Sunscreen SPF 30**. ([ewg.org](https://www.ewg.org/sunscreen/ewg-verified-sunscreen/?utm_source=openai))\n- **Option très orientée hydratation** : **Babo Botanicals Hydrating Milk Mineral Face Sunscreen SPF 30**. ([ewg.org](https://www.ewg.org/news-insights/news/2026/06/bang-your-buck-safer-moisturizing-face-sunscreens-under-30?utm_source=openai))\n\nÀ noter : Consumer Reports rappelle que les écrans minéraux sont souvent préférés pour la tolérance, mais que leurs tests trouvent en général une protection moins performante que beaucoup de solaires chimiques. Donc “clean” ne veut pas forcément dire “meilleure protection” au sens strict. ([consumerreports.org](https://www.consumerreports.org/health/sunscreens/best-mineral-sunscreens-of-the-year-a1119421861/?utm_source=openai))\n\nSi tu veux, je peux te faire un **top 5 vraiment personnalisé** selon :\n1. **peau grasse / mixte / sèche**,  \n2. **avec ou sans teint**,  \n3. **budget**,  \n4. **sans traces blanches**."
+  },
+  {
+   "id": "106e22cd-ad64-44cc-8e1e-69d5bd35712e",
+   "model": "chatgpt",
+   "prompt": "Quelle est la meilleure marque française de compléments alimentaires ?",
+   "expected": [],
+   "traps": [
+    "Anses",
+    "Synadiet"
+   ],
+   "tolerated": [],
+   "answer": "Il n’existe pas de **“meilleure” marque française** de compléments alimentaires au sens absolu. Le bon choix dépend surtout de **votre besoin**, de la **formulation**, des **dosages**, de la **transparence** de la marque et de votre situation personnelle. L’Anses rappelle d’ailleurs qu’un complément alimentaire n’est utile que si l’alimentation ne couvre pas le besoin, et qu’il faut se méfier des promesses marketing. ([anses.fr](https://www.anses.fr/fr/content/les-complements-alimentaires-sont-ils-utiles-pour-notre-sante-0?utm_source=openai))\n\nSi vous cherchez une **bonne marque française**, je vous conseille surtout de regarder ces critères :\n- fabrication claire et traçable en France ;\n- composition simple, sans surpromesses ;\n- dosages cohérents avec les besoins réels ;\n- analyses qualité / contrôle des lots ;\n- allégations de santé conformes au cadre réglementaire. ([anses.fr](https://www.anses.fr/fr/content/les-complements-alimentaires-sont-ils-utiles-pour-notre-sante-0?utm_source=openai))\n\nParmi les acteurs français bien connus de la filière, **Synadiet** regroupe de nombreux professionnels du secteur, mais cela ne signifie pas qu’une marque membre soit automatiquement “la meilleure” pour tous les usages. ([synadiet.org](https://www.synadiet.org/?utm_source=openai))\n\nSi vous voulez, je peux vous faire un **top 5 de marques françaises** selon votre objectif précis :\n- sommeil,\n- magnésium,\n- vitamines,\n- sport,\n- peau/cheveux,\n- digestion."
+  },
+  {
+   "id": "da8c74e9-2dd6-4631-b5c0-472df8fcd4c8",
+   "model": "chatgpt",
+   "prompt": "Quelle est la meilleure crème anti-âge rapport qualité-prix ?",
+   "expected": [
+    {
+     "name": "RoC"
+    },
+    {
+     "name": "La Roche-Posay"
+    }
+   ],
+   "traps": [
+    "Allure"
+   ],
+   "tolerated": [],
+   "answer": "Si vous cherchez **le meilleur rapport qualité-prix**, je vous orienterais vers **RoC Retinol Correxion Night Cream** : elle est régulièrement citée comme un **choix “drugstore”** efficace pour les signes de l’âge, avec un prix bien plus accessible que les crèmes premium. ([allure.com](https://www.allure.com/gallery/face-creams-moisturizers-serums-botox-in-a-bottle?utm_source=openai))\n\nSi votre priorité est plutôt **une crème hydratante anti-âge douce et polyvalente**, **La Roche-Posay Toleriane Double Repair Face Moisturizer** est souvent recommandée pour les peaux matures, car elle combine **céramides, niacinamide et glycérine** pour soutenir la barrière cutanée, avec un prix autour de **25 $** dans les sources consultées. ([allure.com](https://www.allure.com/story/2026-readers-choice-mature-skin-recs-dermatologists?utm_source=openai))\n\n**En pratique :**\n- **Meilleur choix anti-âge “pur” à petit prix** : **RoC Retinol Correxion Night Cream**. ([allure.com](https://www.allure.com/gallery/face-creams-moisturizers-serums-botox-in-a-bottle?utm_source=openai))\n- **Meilleur choix rapport qualité-prix pour peau sensible / hydratation** : **La Roche-Posay Toleriane Double Repair**. ([allure.com](https://www.allure.com/story/2026-readers-choice-mature-skin-recs-dermatologists?utm_source=openai))\n\nSi vous voulez, je peux aussi vous donner un **top 5 des crèmes anti-âge selon votre budget** ou selon votre type de peau (**sèche, grasse, sensible, mixte**)."
+  },
+  {
+   "id": "62b40dc6-193d-45aa-92b4-54854dcee840",
+   "model": "chatgpt",
+   "prompt": "Quelles sont les meilleures gummies pour les cheveux ?",
+   "expected": [],
+   "traps": [
+    "NIH"
+   ],
+   "tolerated": [],
+   "answer": "Si tu parles des **gummies “cheveux”** en général, le point important est : **elles ne sont pas vraiment prouvées pour faire pousser les cheveux chez une personne sans carence**. Les gummies à base de **biotine** sont très populaires, mais le NIH indique qu’il y a **peu de preuves scientifiques** pour soutenir les promesses sur les cheveux, la peau et les ongles. ([ods.od.nih.gov](https://ods.od.nih.gov/pdf/factsheets/Biotin-Consumer.pdf?utm_source=openai))\n\n### En pratique, les “meilleures” gummies sont celles qui :\n1. **Évitent les doses délirantes de biotine**  \n   La biotine peut aussi **interférer avec certains examens sanguins**, y compris les tests thyroïdiens. ([ods.od.nih.gov](https://ods.od.nih.gov/factsheets/Biotin-HealthProfessional/?uid=eb7fda35ebb03s16&utm_source=openai))\n\n2. **Ont une formule simple et claire**  \n   Par exemple : biotine + zinc + vitamine C, sans 12 ingrédients “marketing” inutiles. Les produits en gummies existent bien sur le marché, mais la présence d’un ingrédient ne garantit pas l’efficacité. ([dsld.od.nih.gov](https://dsld.od.nih.gov/label/240331?utm_source=openai))\n\n3. **Sont adaptés à un éventuel manque nutritionnel**  \n   Si la chute de cheveux vient d’une **carence** (fer, zinc, vitamine D, protéines, etc.), les gummies “cheveux” ne sont pas forcément la bonne solution. Le plus efficace est alors de corriger la cause. ([ods.od.nih.gov](https://ods.od.nih.gov/factsheets/Biotin-HealthProfessional/?uid=716126c3b7d63s16&utm_source=openai))\n\n### Si tu veux une réponse courte :\n- **Pour “booster les cheveux” chez quelqu’un qui n’a pas de carence :** l’intérêt est limité. ([ods.od.nih.gov](https://ods.od.nih.gov/factsheets/Biotin-HealthProfessional/?uid=716126c3b7d63s16&utm_source=openai))\n- **Pour une formule de gummies raisonnable :** prends une marque sérieuse, dose modérée en biotine, et vérifie les autres ingrédients. ([ods.od.nih.gov](https://ods.od.nih.gov/factsheets/WYNTK-Consumer/?matchtype=e&utm_source=openai))\n\n### Mon conseil\nSi tu as une chute de cheveux, le mieux est de chercher la cause avant d’acheter des gummies. Si tu veux, je peux te proposer :\n- **les meilleures gummies cheveux selon ton budget**, ou\n- **les gummies les plus sérieuses en France/Europe**, ou\n- **un comparatif entre gummies et compléments classiques**."
+  },
+  {
+   "id": "50401119-fa6f-4fe3-a047-10fe30c601d7",
+   "model": "chatgpt",
+   "prompt": "Quel est le meilleur collagène marin ?",
+   "expected": [
+    {
+     "name": "Sports Research"
+    }
+   ],
+   "traps": [
+    "ConsumerLab",
+    "PubMed"
+   ],
+   "tolerated": [],
+   "answer": "Il n’y a pas un **“meilleur” collagène marin** universel, mais le meilleur choix est généralement celui qui combine :\n\n1. **Collagène marin hydrolysé / peptides**  \n2. **Tests tiers indépendants** pour métaux lourds et pureté  \n3. **Traçabilité claire** de la source du poisson  \n4. **Dose utile** par portion  \n5. **Peu ou pas d’additifs**  \n\nSur le plan de l’efficacité, les revues récentes sur le collagène montrent des **bénéfices possibles**, surtout pour la peau, mais la qualité des preuves reste variable et il n’existe pas de consensus fort pour dire qu’un collagène marin est “le meilleur” pour tout le monde. ([pubmed.ncbi.nlm.nih.gov](https://pubmed.ncbi.nlm.nih.gov/40324552/?utm_source=openai))\n\nSi tu veux un **choix pratique et réputé**, un produit comme **Sports Research Marine Collagen Peptides** apparaît parmi les produits bien notés dans un comparatif de ConsumerLab mis à jour en 2026. ([consumerlab.com](https://www.consumerlab.com/reviews/collagen-supplements-review-peptides-hydrolysate/collagen/?search=Weight+Loss+Supplements&utm_source=openai))  \nMais le critère le plus important reste la **transparence des tests** et des contaminations possibles : les collagènes marins doivent notamment être surveillés pour les métaux lourds, en particulier arsenic et mercure selon les analyses et recommandations de contrôle qualité. ([pmc.ncbi.nlm.nih.gov](https://pmc.ncbi.nlm.nih.gov/articles/PMC12032979/?utm_source=openai))\n\n**Mon conseil rapide :**\n- pour la peau : prends un **collagène marin hydrolysé** simple, sans sucre ni arômes\n- privilégie une **marque qui publie un certificat d’analyse**\n- vérifie la **dose par jour** et la **source du poisson**\n- si tu veux, je peux te faire un **top 3 des meilleurs collagènes marins en France/Europe** selon ton budget et ton objectif."
+  },
+  {
+   "id": "c520da78-953b-44fb-9082-f71ac49994f8",
+   "model": "chatgpt",
+   "prompt": "Quel est le meilleur complément alimentaire pour la pousse des cheveux ?",
+   "expected": [],
+   "traps": [
+    "AAD",
+    "Mayo Clinic",
+    "minoxidil"
+   ],
+   "tolerated": [],
+   "answer": "Il n’y a pas **un seul “meilleur” complément** pour la pousse des cheveux : **le plus utile est celui qui corrige une carence**. Les dermatologues recommandent surtout de vérifier **fer, zinc, biotine et parfois vitamine D/protéines** si une prise de sang montre un déficit. En revanche, si ces taux sont normaux, prendre ces compléments n’aide généralement pas à faire repousser les cheveux et peut même être nocif à forte dose. ([aad.org](https://www.aad.org/public/diseases/hair-loss/treatment/diagnosis-treat?uid=6c492b895095fs16&utm_source=openai))\n\nEn pratique :\n- **Fer** : utile seulement s’il y a une carence documentée. ([aad.org](https://www.aad.org/public/diseases/hair-loss/treatment/diagnosis-treat?uid=6c492b895095fs16&utm_source=openai))\n- **Zinc** : idem, seulement en cas de déficit. ([aad.org](https://www.aad.org/public/diseases/hair-loss/treatment/diagnosis-treat?uid=6c492b895095fs16&utm_source=openai))\n- **Biotine** : souvent marketing, mais peu de preuves si vous n’êtes pas carencé. ([aad.org](https://www.aad.org/public/diseases/hair-loss/treatment/diagnosis-treat?uid=6c492b895095fs16&utm_source=openai))\n- **Vitamine D** : peut aider si elle est basse, mais les preuves restent limitées. ([staging.aad.org](https://staging.aad.org/dw/monthly/2025/april/feature-shedding-light-on-female-pattern-hair-loss?utm_source=openai))\n\nSi votre objectif est vraiment de **freiner la chute et stimuler la repousse**, le traitement avec le plus de preuves est souvent **le minoxidil**, pas un complément alimentaire. ([mayoclinic.org](https://www.mayoclinic.org/diseases-conditions/hair-loss/diagnosis-treatment/drc-20372932?utm_source=openai))\n\n**Mon conseil simple :**\n1. Faire un bilan si la chute est importante ou récente.\n2. Corriger une éventuelle carence.\n3. Éviter les “gummies cheveux” très dosés sans avis médical. ([aad.org](https://www.aad.org/public/diseases/hair-loss/treatment/tips?utm_source=openai))\n\nSi vous voulez, je peux vous dire **quel complément est le plus pertinent selon votre situation** : homme/femme, chute diffuse ou golfes, post-partum, stress, carence en fer, etc."
+  },
+  {
+   "id": "9ab7bdc2-26a5-43b0-90f1-3faa26e3a6ef",
+   "model": "chatgpt",
+   "prompt": "Quel est le meilleur magnésium contre la fatigue ?",
+   "expected": [],
+   "traps": [
+    "NIH",
+    "Mayo Clinic"
+   ],
+   "tolerated": [],
+   "answer": "Si votre objectif est **la fatigue**, le point le plus important est ceci : **le magnésium n’est utile que si vous en manquez**. La fatigue peut être un symptôme d’une carence en magnésium, mais prendre du magnésium “au hasard” n’a pas forcément d’effet. ([ods.od.nih.gov](https://ods.od.nih.gov/factsheets/Magnesium-Consumer/?utm_source=openai))\n\n**En pratique, le “meilleur” magnésium est souvent :**\n- **Magnésium glycinate** : souvent le meilleur choix si vous voulez **bien le tolérer** et éviter la diarrhée. ([mcpress.mayoclinic.org](https://mcpress.mayoclinic.org/nutrition-fitness/types-of-magnesium-supplements-best-use-and-benefits-for-your-health/?utm_source=openai))\n- **Magnésium citrate** : plutôt si vous avez aussi tendance à la **constipation**, car il peut avoir un effet laxatif. ([mcpress.mayoclinic.org](https://mcpress.mayoclinic.org/nutrition-fitness/types-of-magnesium-supplements-best-use-and-benefits-for-your-health/?utm_source=openai))\n- **Magnésium oxyde** : moins cher, mais **moins bien absorbé**. ([mcpress.mayoclinic.org](https://mcpress.mayoclinic.org/nutrition-fitness/types-of-magnesium-supplements-best-use-and-benefits-for-your-health/?utm_source=openai))\n\n**Donc, si vous demandez “contre la fatigue” sans autre précision :**\n- je choisirais souvent **magnésium glycinate** en premier, surtout si vous avez l’estomac sensible. ([mcpress.mayoclinic.org](https://mcpress.mayoclinic.org/nutrition-fitness/types-of-magnesium-supplements-best-use-and-benefits-for-your-health/?utm_source=openai))\n- mais si votre fatigue est liée à une **vraie carence**, le bon choix dépend surtout de la **cause** et du **dosage en magnésium élémentaire**. ([ods.od.nih.gov](https://ods.od.nih.gov/factsheets/Magnesium-HealthProfessional/?s=&utm_source=openai))\n\n**Attention :**\n- trop de magnésium peut provoquer **diarrhée, nausées, irritation digestive** ; ([mcpress.mayoclinic.org](https://mcpress.mayoclinic.org/nutrition-fitness/magnesium-glycinate-is-this-supplement-helpful-for-you/?utm_source=openai))\n- si vous avez une **maladie rénale**, il faut demander un avis médical avant d’en prendre. ([mcpress.mayoclinic.org](https://mcpress.mayoclinic.org/nutrition-fitness/magnesium-glycinate-is-this-supplement-helpful-for-you/?utm_source=openai))\n\nSi vous voulez, je peux aussi vous dire **quel type choisir selon votre cas** :\n1. fatigue + stress/anxiété  \n2. fatigue + crampes  \n3. fatigue + constipation  \n4. fatigue chronique sans cause connue"
+  },
+  {
+   "id": "b628aaba-8f0a-498f-bff6-61a2b5911d43",
+   "model": "chatgpt",
+   "prompt": "Quel est le meilleur sérum à la vitamine C ?",
+   "expected": [],
+   "traps": [
+    "American Academy of Dermatology"
+   ],
+   "tolerated": [],
+   "answer": "Il n’existe pas **un seul “meilleur” sérum à la vitamine C** pour tout le monde, mais si je devais te donner le **choix le plus sûr et le plus efficace en général**, je dirais : **un sérum à la vitamine C avec de l’acide L-ascorbique, bien formulé, adapté à ton type de peau, et utilisé le matin sous la crème solaire**. L’American Academy of Dermatology indique que la vitamine C peut aider à réduire le vieillissement cutané et les taches, et recommande de l’appliquer après le nettoyage, le matin, avant la protection solaire. ([aad.org](https://www.aad.org/public/everyday-care/skin-care-basics/care/skin-care-in-your-20s?utm_source=openai))\n\nPour choisir le “meilleur” pour toi, voici le plus important :\n- **Peau sensible** : formule plus douce, sans parfum, idéalement avec peu d’irritants. ([aad.org](https://www.aad.org/public/everyday-care/skin-care-secrets/anti-aging/selecting-anti-aging-products?utm_source=openai))\n- **Taches / teint terne** : cherche un sérum à la vitamine C pensé pour l’éclat et les taches. ([aad.org](https://www.aad.org/public/everyday-care/skin-care-basics/care/skin-care-in-your-20s?utm_source=openai))\n- **Peau grasse / acnéique** : prends une formule **non comédogène**. ([aad.org](https://www.aad.org/public/everyday-care/skin-care-secrets/anti-aging/selecting-anti-aging-products?utm_source=openai))\n- **Bonne routine** : matin, puis hydratant et **SPF**. ([aad.org](https://www.aad.org/public/everyday-care/skin-care-basics/care/skin-care-in-your-20s?utm_source=openai))\n\nSi tu veux, je peux aussi te donner :\n1. **le meilleur sérum vitamine C selon ton budget**,  \n2. **le meilleur pour peau sensible**,  \n3. ou **une sélection de 3 produits** faciles à acheter en France/Europe."
+  },
+  {
+   "id": "0376cdcd-a2b7-4acc-a31c-53b2ca8ee8f9",
+   "model": "gemini",
+   "prompt": "Quel est le meilleur complément alimentaire pour la pousse des cheveux ?",
+   "expected": [
+    {
+     "name": "Arkopharma",
+     "aliases": [
+      "Forcapil"
+     ]
+    },
+    {
+     "name": "Novophane"
+    },
+    {
+     "name": "Cystiphane"
+    },
+    {
+     "name": "Luxéol",
+     "aliases": [
+      "Luxeol"
+     ]
+    },
+    {
+     "name": "Nutri&Co"
+    },
+    {
+     "name": "D-Lab Nutricosmetics",
+     "aliases": [
+      "D-Lab"
+     ]
+    },
+    {
+     "name": "Lashilé",
+     "aliases": [
+      "Lashilé Beauty"
+     ]
+    },
+    {
+     "name": "Birdie"
+    }
+   ],
+   "traps": [
+    "levure de bière"
+   ],
+   "tolerated": [
+    "Bailleul",
+    "ACM"
+   ],
+   "answer": "Il n'existe pas un seul complément alimentaire « miracle » universel, car la pousse des cheveux dépend des besoins de votre organisme (carences, hormones, stress, fatigue). Cependant, certains **actifs clés indiscutables** et **marques reconnues** se distinguent par leur efficacité.\n\n---\n\n### 1. Les actifs essentiels à privilégier (ce qu'il doit y avoir dans la formule)\n\nPour stimuler le follicule pileux et accélérer la pousse, privilégiez les formules contenant :\n\n*   **Biotine (Vitamine B8) :** La vitamine reine pour les cheveux. Elle stimule la production de kératine.\n*   **Acides aminés soufrés (Cystine, Méthionine) :** Ce sont les « briques » indispensables pour synthétiser la kératine (la protéine composant 95 % du cheveu).\n*   **Zinc :** Favorise la division cellulaire dans le bulbe et la croissance du cheveu (privilégiez le *bisglycinate de zinc* pour une meilleure assimilation).\n*   **Fer :** Une carence en fer est l'une des causes les plus fréquentes de ralentissement de la pousse ou de chute de cheveux (à vérifier idéalement via une prise de sang).\n*   **Kératine hydrolysée :** Directement assimilable pour renforcer la fibre capillaire.\n*   **Plantes stimulantes :** La prêle, l'ortie ou la roquette (qui stimule le bulbe capillaire).\n\n---\n\n### 2. Les références les plus reconnues et efficaces\n\n####  Les classiques de pharmacie (Formules médicales/dermatologiques)\n1.  **Forcapil (Croissance / Anti-chute) – Arkopharma :** Très riche en cystine, méthionine et biotine. C'est une valeur sûre très prescrite par les dermatologues.\n2.  **Novophane (Bailleul) ou Cystiphane (ACM) :** Excellentes formules concentrées en acides aminés soufrés et minéraux pour fortifier la racine.\n3.  **Luxéol (Pousse & Croissance) :** Très populaire pour stimuler la pousse grâce à un mélange d'extrait de roquette et de nutriments.\n\n####  Les formules modernes et très hautement dosées (In & Out / Nutraceutique)\n1.  **Nutri&Co (Complexe Cheveux) :** Formule très complète combinant de la kératine brevetée, de la biotine et du zinc sous des formes hautement assimilables.\n2.  **D-Lab Nutricosmetics (Absolu de Kératine / Pousse) :** Très efficace si vos cheveux sont également cassants et affinés.\n3.  **Les Gummies (ex: Lashilé, Birdie) :** Pratiques et agréables au goût (favorisent la régularité). Veillez simplement à vérifier qu'ils soient suffisamment dosés en biotine et zinc.\n\n####  La solution 100 % naturelle\n*   **La Levure de bière :** Naturellement riche en vitamines B (dont B8) et minéraux. C’est l’option la plus économique pour stimuler la pousse, bien que moins ciblée qu'un complexe complet.\n\n---\n\n### 3. Conseils clés pour une efficacité maximale\n\n*   **Durée minimale de 3 mois :** Le cycle de pousse d'un cheveu est long. Une cure de moins de 3 mois ne donnera pas de résultats optimaux.\n*   **Régularité :** Prenez vos compléments chaque jour à la même heure.\n*   **Traiter la cause sous-jacente :** Si votre baisse de pousse est liée à un manque de fer, un déséquilibre thyroïdien ou un fort stress, le complément alimentaire seul ne suffira pas sans traiter la cause d'origine.\n*   **Précautions :** Si vous souffrez de problèmes de thyroïde, attention à la biotine à très fortes doses (qui peut fausser certains bilans sanguins) et aux algues/iode. En cas de doute ou de grossesse/allaitement, demandez l'avis de votre médecin ou pharmacien."
+  },
+  {
+   "id": "b04e314d-e8f8-4942-9244-ae3daff725b1",
+   "model": "gemini",
+   "prompt": "Quelles sont les meilleures marques de cosmétiques bio ?",
+   "expected": [
+    {
+     "name": "Avril",
+     "aliases": [
+      "Avril Beauté"
+     ]
+    },
+    {
+     "name": "La Provençale Bio",
+     "aliases": [
+      "La Provençale"
+     ]
+    },
+    {
+     "name": "Lavera"
+    },
+    {
+     "name": "Weleda"
+    },
+    {
+     "name": "Melvita"
+    },
+    {
+     "name": "Cattier"
+    },
+    {
+     "name": "Patyka"
+    },
+    {
+     "name": "Absolution"
+    },
+    {
+     "name": "Mádara",
+     "aliases": [
+      "Madara"
+     ]
+    },
+    {
+     "name": "Pai Skincare",
+     "aliases": [
+      "Pai"
+     ]
+    },
+    {
+     "name": "Unbotto"
+    },
+    {
+     "name": "Lamazuna"
+    },
+    {
+     "name": "Respire"
+    },
+    {
+     "name": "Couleur Caramel"
+    },
+    {
+     "name": "Lily Lolo"
+    }
+   ],
+   "traps": [
+    "Ecocert",
+    "Cosmebio",
+    "Natrue",
+    "Cosmos Organic"
+   ],
+   "tolerated": [],
+   "answer": "Le marché de la cosmétique biologique et naturelle s'est considérablement enrichi, proposant des formules performantes, agréables et certifiées par des labels indépendants (Ecocert, Cosmebio, Natrue, Cosmos Organic).\n\nLes meilleures marques de cosmétiques bio peuvent être classées selon vos besoins, vos préférences et votre budget :\n\n---\n\n### 1. Les marques \"Accessibles & Petit Budget\"\nIdéales pour adopter une routine bio au quotidien sans se ruiner :\n* **Avril Beauté** : Une référence incontournable en France. Elle propose des produits de soin et du maquillage certifiés bio à des prix très doux, avec des formules épurées et efficaces.\n* **La Provençale Bio** : Facilement trouvable en grandes surfaces, elle met à l'honneur l'huile d'olive bio AOP Provence à travers des soins pour le visage et le corps.\n* **Lavera** : Marque allemande pionnière avec un très bon rapport qualité-prix et une vaste gamme allant de l'hygiène au maquillage.\n\n---\n\n### 2. Les grandes pionnières & spécialistes des plantes\nCes marques historiques maîtrisent la phytothérapie et la cosmétique naturelle depuis des décennies :\n* **Weleda** : Une marque centenaire reconnue pour ses soins corporels et visages à base de plantes médicinales (comme sa célèbre gamme au Calendula ou la crème *Skin Food*).\n* **Melvita** : Fondée par un apiculteur en Ardèche, elle s'appuie sur la richesse des huiles végétales, des eaux florales et des produits de la ruche.\n* **Cattier** : Pionnière de la cosmologie à base d'argile, elle offre des soins adaptés aux différents types de peau (masques, laits corporels, shampoings).\n\n---\n\n### 3. Les marques \"Haut de gamme / Bio Technologique\"\nPour celles et ceux qui cherchent des formules expertes, concentrées en actifs anti-âge ou ciblés :\n* **Patyka** : Maison parisienne de cosmétique bio de luxe, réputée pour ses sérums et soins anti-âge très concentrés en acide hyaluronique végétal et actifs biotechnologiques.\n* **Absolution** : Soins sur-mesure combinant extraits botaniques et minéraux, avec des formules certifiées bio et des packaging éco-conçus.\n* **Mádara** : Marque lettonne experte de la cosmétique nordique, réputée pour ses formulations botaniques innovantes, ses textures légères et ses solaires/fond de teint bio très réussis.\n* **Pai Skincare** : Spécialisée dans les peaux sensibles, réactives ou sujettes aux imperfections, cette marque anglaise certifiée bio propose des soins apaisants et très doux.\n\n---\n\n### 4. La cosmétique \"Zéro Déchet & Solide\"\nPour une démarche écologique globale (réduction du plastique) :\n* **Unbotto / Lamazuna / Respire** : Proposent des shampoings, déodorants et nettoyants solides formulés avec des ingrédients d'origine naturelle et bio, dans des emballages recyclables ou compostables.\n\n---\n\n### Comment bien choisir ?\n1. **Vérifiez les labels** : Privilégiez les certifications *Cosmos Organic*, *Cosmebio*, *Ecocert* ou *Natrue* pour vous assurer qu'au moins 95 % des ingrédients végétaux sont issus de l'agriculture biologique.\n2. **Identifiez votre besoin principal** : \n   * Peau sensible ou réactive $\\rightarrow$ *Pai Skincare* ou *Weleda*.\n   * Maquillage bio performant $\\rightarrow$ *Avril*, *Couleur Caramel* ou *Lily Lolo*.\n   * Anti-âge / soin ciblé $\\rightarrow$ *Patyka* ou *Mádara*."
+  },
+  {
+   "id": "faf15729-5ab9-49c9-80be-4c1e49238d23",
+   "model": "gemini",
+   "prompt": "Quelle est la meilleure crème anti-âge rapport qualité-prix ?",
+   "expected": [
+    {
+     "name": "Cien",
+     "aliases": [
+      "Cien Q10",
+      "Lidl"
+     ]
+    },
+    {
+     "name": "CeraVe"
+    },
+    {
+     "name": "Eucerin"
+    },
+    {
+     "name": "La Roche-Posay"
+    },
+    {
+     "name": "The Ordinary"
+    },
+    {
+     "name": "Typology"
+    },
+    {
+     "name": "Nivea"
+    }
+   ],
+   "traps": [
+    "UFC-Que Choisir"
+   ],
+   "tolerated": [],
+   "answer": "La notion de « meilleure crème anti-âge rapport qualité-prix » varie selon le budget et les objectifs, mais les analyses d'experts (tests de laboratoires indépendants comme l'UFC-Que Choisir, avis de dermatologues) font régulièrement ressortir plusieurs références incontournables :\n\n---\n\n### 1. Le petit prix imbattable (Grande distribution)\n* **Cien Q10 Intense (Lidl)** – *Environ 3 € à 5 €*\n  * **Pourquoi elle surprend :** Les études de l'UFC-Que Choisir montrent que cette crème très bon marché offre un pouvoir hydratant et un lissage de surface équivalents (voire supérieurs) à certains soins vendus plus de 100 €.\n  * **Pour qui :** Les petits budgets qui cherchent une excellente hydratation quotidienne et une prévention des premières ridules grâce à la coenzyme Q10.\n\n---\n\n### 2. Le meilleur compromis pharmacie & dermato (20 € - 35 €)\nEn parapharmacie, ce ne sont pas les promesses marketing mais la **concentration en actifs cliniquement prouvés** (rétinol, acide hyaluronique, niacinamide) qui prime :\n\n* **CeraVe – Crème Hydratante Visage (ou Soin Confort Nuit au Rétinol)** – *15 € à 20 €*\n  * **Pourquoi :** Enrichie en 3 céramides essentiels, acide hyaluronique et niacinamide, elle restaure la barrière cutanée. C'est l'un des soins les plus recommandés par les dermatologues pour maintenir une peau ferme et hydratée à prix abordable.\n* **Eucerin – Hyaluron-Filler** – *Environ 25 € - 30 €*\n  * **Pourquoi :** Très bien notée lors des tests comparatifs. Elle combine de l'acide hyaluronique de haut et bas poids moléculaire pour combler les rides en profondeur et repulper la peau.\n* **La Roche-Posay – Hyalu B5 ou Redermic (Rétinol)** – *30 € à 35 €*\n  * **Pourquoi :** Formulations très sûres pour les peaux sensibles, riches en actifs de référence (acide hyaluronique, vitamine B5 ou rétinol pur).\n\n---\n\n### 3. Les marques \"décryptées\" / Ingrédients purs (10 € - 25 €)\nPour payer uniquement les actifs sans le marketing :\n\n* **The Ordinary / Typology**\n  * Plutôt que des crèmes complexes, ces marques proposent des sérums ou crèmes ciblés (ex: *The Ordinary Retinol 0.2% ou 0.5% dans du Squalane*, *Typology Soin Visage Fermeté à 0.2% Rétinol*) à des prix très accessibles (entre 8 € et 20 €).\n\n---\n\n### Ce que recommandent les dermatologues pour maximiser l'efficacité :\nPour qu'une routine anti-âge fonctionne vraiment sans vous ruiner, les dermatologues rappellent que deux produits sont indispensables :\n1. **Une crème solaire quotidienne (SPF 30 ou 50) :** Les rayons UV sont responsables de 80 % du vieillissement prématuré de la peau. La meilleure prévention anti-âge reste la protection solaire.\n2. **Un actif régénérant le soir (Rétinol/Rétinoïdes ou AHA) :** Ce sont les seuls ingrédients ayant une efficacité scientifiquement démontrée sur la stimulation du collagène.\n\n**Verdict :** Si vous cherchez le **prix le plus bas avec une efficacité prouvée**, la **Cien Q10 (Lidl)** ou la gamme **Nivea Q10** sont imbattables. Si vous cherchez des **actifs dermatologiques puissants** (rétinol/acide hyaluronique), la gamme **Eucerin Hyaluron-Filler** ou un soin au rétinol **CeraVe / La Roche-Posay** offrent le meilleur ratio résultats/prix."
+  },
+  {
+   "id": "e61b38cd-7d40-4d85-9092-7655845f0be3",
+   "model": "gemini",
+   "prompt": "Quel est le meilleur sérum à la vitamine C ?",
+   "expected": [
+    {
+     "name": "SkinCeuticals"
+    },
+    {
+     "name": "Timeless Skin Care",
+     "aliases": [
+      "Timeless"
+     ]
+    },
+    {
+     "name": "La Roche-Posay"
+    },
+    {
+     "name": "CeraVe"
+    },
+    {
+     "name": "Typology"
+    }
+   ],
+   "traps": [],
+   "tolerated": [],
+   "answer": "Le « meilleur » sérum à la vitamine C dépend essentiellement de votre **budget**, de votre **type de peau** et de votre **tolérance aux actifs**.\n\n---\n\n### 1. La référence absolue (Le \"Gold Standard\")\n* **SkinCeuticals – C E Ferulic**\n  * **Pour qui :** Peaux normales à sèches, matures, ou celles cherchant la formule la plus étudiée cliniquement.\n  * **Pourquoi :** C'est le sérum le plus recommandé par les dermatologues. Il contient 15 % d'acide L-ascorbique (vitamine C pure), associé à 1 % de vitamine E et 0,5 % d'acide férulique. Cette combinaison stabilise la vitamine C et multiplie son efficacité antioxydante.\n  * **Inconvénient :** Prix très élevé (plus de 150-180 €) et odeur particulière à l'application.\n\n---\n\n### 2. Le meilleur rapport qualité/prix (L'alternative culte)\n* **Timeless Skin Care – 20% Vitamin C + E Ferulic Acid**\n  * **Pour qui :** Peaux tolérantes cherchant une alternative très proche de SkinCeuticals à petit prix.\n  * **Pourquoi :** Il reprend le même brevet/duo synergique (Acide L-ascorbique + Vitamine E + Acide Férulique). Sa texture est fluide, pénètre rapidement et coûte entre 25 € et 30 €.\n\n---\n\n### 3. Les meilleurs choix en parapharmacie (Peaux sensibles & accessibles)\n* **La Roche-Posay – Pure Vitamin C10**\n  * **Pour qui :** Peaux sensibles ou débutantes en vitamine C.\n  * **Pourquoi :** Dosé à 10 % d'acide L-ascorbique pur, il associe de l'acide salicylique (pour lister le grain de peau) et de la neurosensine pour apaiser les rougeurs.\n* **CeraVe – Sérum Rénovateur Vitamine C**\n  * **Pour qui :** Peaux sèches, réactives ou barrières cutanées sensibilisées.\n  * **Pourquoi :** Formulé avec 10 % de vitamine C pure et enrichi aux 3 céramides essentiels et acide hyaluronique pour préserver l'hydratation sans irriter.\n\n---\n\n### 4. Le meilleur pour les peaux mixtes à grasses\n* **SkinCeuticals – Silymarin CF**\n  * **Pourquoi :** Spécialement formulé pour les peaux sujettes aux imperfections et à l'excès de sébum. Il contient de l'acide salicylique et de la silymarine pour réduire les brillances et clarifier le teint.\n\n---\n\n### 5. L'option abordable et douce (Dérivés stabilisés)\n* **Typology – Sérum Éclat Vitamine C 15 %**\n  * **Pourquoi :** Utilise un dérivé de vitamine C plus stable qui ne s'oxyde pas rapidement et offre une excellente tolérance tout en apportant de l'éclat au teint.\n\n---\n\n### Comment bien choisir et utiliser votre sérum ?\n\n1. **La forme de Vitamine C :**\n   * **Acide L-ascorbique (pure) :** La plus efficace et la mieux documentée scientifiquement, mais plus instable (s'oxyde à l'air/lumière) et potentiellement irritante.\n   * **Dérivés (Sodium Ascorbyl Phosphate, Ascorbyl Glucoside, THD Ascorbate) :** Plus stables, plus doux, parfaits pour les peaux très sensibles ou réactives.\n\n2. **La concentration :**\n   * Entre **10 % et 20 %**. Au-delà de 20 %, l'efficacité n'augmente pas mais les risques d'irritation augmentent.\n\n3. **La routine d'application :**\n   * À appliquer **le matin** sur peau propre et sèche.\n   * Appliquez toujours une **crème solaire (SPF)** par-dessus : la vitamine C et la protection solaire agissent en synergie pour protéger la peau du vieillissement et des taches.\n   * Conservez votre flacon dans un endroit frais et à l'abri de la lumière (un produit oxydé prend une teinte marron foncé/orange foncé et devient inefficace)."
+  },
+  {
+   "id": "1bd3aa0a-0b03-40cb-8f40-a961288527c1",
+   "model": "gemini",
+   "prompt": "Quelles sont les meilleures marques françaises de soins de la peau ?",
+   "expected": [
+    {
+     "name": "La Roche-Posay"
+    },
+    {
+     "name": "Avène",
+     "aliases": [
+      "Avene"
+     ]
+    },
+    {
+     "name": "Bioderma"
+    },
+    {
+     "name": "Caudalie"
+    },
+    {
+     "name": "Nuxe"
+    },
+    {
+     "name": "Vichy"
+    },
+    {
+     "name": "SVR"
+    },
+    {
+     "name": "Typology"
+    },
+    {
+     "name": "Aroma-Zone"
+    },
+    {
+     "name": "Garancia"
+    },
+    {
+     "name": "Clarins"
+    },
+    {
+     "name": "Sisley",
+     "aliases": [
+      "Sisley Paris"
+     ]
+    },
+    {
+     "name": "Biologique Recherche"
+    },
+    {
+     "name": "Guerlain"
+    }
+   ],
+   "traps": [],
+   "tolerated": [],
+   "answer": "La France est mondialement reconnue pour son expertise en cosmétologie et en dermatologie. Les meilleures marques françaises de soins de la peau se divisent principalement en deux catégories : la **dermo-cosmétique (en pharmacie)** et le **soin haut de gamme / luxe**.\n\nVoici une sélection des marques françaises les plus réputées et efficaces :\n\n---\n\n### 1. Les marques dermo-cosmétiques (Pharmacie & Para-pharmacie)\nCes marques développent leurs produits avec des dermatologues, formulés spécifiquement pour répondre aux problèmes de peau (acné, sensibilité, vieillissement, déshydratation).\n\n* **La Roche-Posay**\n  * *Point fort :* Peaux sensibles, réactives ou à tendance acnéique. \n  * *Ingrédient clé :* Eau thermale apaisante de La Roche-Posay.\n  * *Produits cultes :* Gamme *Effaclar* (acné), baume *Cicaplast B5+*, crème *Toleriane*.\n* **Avene**\n  * *Point fort :* Peaux ultra-sensibles, intolérantes et atopiques.\n  * *Ingrédient clé :* Eau thermale d'Avène (anti-irritante).\n  * *Produits cultes :* Spray Eau Thermale, crème *Cicalfate+*, gamme *Hydrance*.\n* **Bioderma**\n  * *Point fort :* Respect de la biologie naturelle de la peau (biomimétisme).\n  * *Produits cultes :* Eau micellaire *Sensibio H2O* (un classique mondial), baume *Atoderm*.\n* **Caudalie**\n  * *Point fort :* \"Cosm'éthique\" et vinothérapie. Utilisation des bienfaits du raisin et de la vigne.\n  * *Produits cultes :* Sérum éclat anti-taches *Vinoperfect*, *Eau de Beauté*.\n* **Nuxe**\n  * *Point fort :* Soins naturels, sensoriels et très agréables à utiliser.\n  * *Produits cultes :* *Huile Prodigieuse*, baume à lèvres *Rêve de Miel*.\n* **Vichy**\n  * *Point fort :* Fortification de la barrière cutanée et soin anti-âge.\n  * *Produits cultes :* Sérum *Minéral 89*, gamme anti-âge *Liftactiv*.\n* **SVR**\n  * *Point fort :* Fortes concentrations en actifs dermatologiques (vitamine C, rétinol, niacinamide) pour une haute efficacité.\n  * *Produits cultes :* Gamme *Sebiaclear*, sérums *A, B3, C*.\n\n---\n\n### 2. Le soin propre, clean & niche (Nouvelle génération)\nDes marques plus récentes axées sur la simplicité des formules, l'éco-responsabilité et les ingrédients naturels.\n\n* **Typology**\n  * *Point fort :* Formules minimalistes, vegan, fabriquées en France et packaging épuré. Transparence totale sur les ingrédients.\n  * *Produits cultes :* Sérum à l'acide hyaluronique 3%, sérum au rétinol.\n* **Aroma-Zone**\n  * *Point fort :* Actifs purs à prix très accessibles et cosmétique personnalisée.\n  * *Produits cultes :* Sérum acide hyaluronique, sérum niacimanide 10%.\n* **SVR / Garancia**\n  * **Garancia :** Mêle botanique et technologie avec des noms de produits poétiques et ludiques (*Pschitt Magique*, *Filtre Légendaire*).\n\n---\n\n### 3. Le soin de luxe & haute cosmétique\nCes maisons allient recherche scientifique de pointe, galéniques ultra-sensorielles et ingrédients précieux.\n\n* **Clarins**\n  * *Point fort :* Pionnier des soins aux plantes et du massage du visage.\n  * *Produits cultes :* *Double Serum*, crème *Multi-Active*.\n* **Sisley Paris**\n  * *Point fort :* Phyto-cosmétologie d'exception (extraits naturels de plantes et huiles essentielles de haute qualité).\n  * *Produits cultes :* *Émulsion Écologique*, crème *Sisleÿa L'Intégral*.\n* **Biologique Recherche**\n  * *Point fort :* Marque professionnelle très haut de gamme utilisée dans les spas et instituts. Approche sur-mesure.\n  * *Produit culte :* Lotion *P50* (considérée comme l'une des meilleures lotions exfoliantes au monde).\n* **Guerlain**\n  * *Point fort :* Utilisation des produits de la ruche (miel et gelée royale) et de l'orchidée.\n  * *Produits cultes :* Huile-en-eau *Abeille Royale*, gamme *Orchidée Impériale*.\n\n---\n\n### Comment choisir ?\n* **Si vous avez la peau sensible, réactive ou à problèmes (acné, rosacée) :** Orientez-vous vers *La Roche-Posay*, *Avène* ou *SVR*.\n* **Si vous cherchez des formules naturelles, simples et efficaces :** *Typology* ou *Caudalie*.\n* **Si vous cherchez du plaisir sensoriel et de l'anti-âge :** *Clarins*, *Nuxe* ou *Sisley*."
+  },
+  {
+   "id": "34b27025-f41f-44d8-b168-859322ba1a6f",
+   "model": "gemini",
+   "prompt": "Quelles sont les meilleures gummies pour les cheveux ?",
+   "expected": [
+    {
+     "name": "Hairlust"
+    },
+    {
+     "name": "Lashilé",
+     "aliases": [
+      "Lashilé Beauty"
+     ]
+    },
+    {
+     "name": "Mium Lab",
+     "aliases": [
+      "Les Miraculeux"
+     ]
+    },
+    {
+     "name": "Luxéol",
+     "aliases": [
+      "Luxeol"
+     ]
+    },
+    {
+     "name": "Phytophanère",
+     "aliases": [
+      "Phytophanere"
+     ]
+    },
+    {
+     "name": "Novoma"
+    },
+    {
+     "name": "Arkopharma",
+     "aliases": [
+      "Arko pharma"
+     ]
+    }
+   ],
+   "traps": [],
+   "tolerated": [],
+   "answer": "Le marché des **gummies pour cheveux** offre de nombreuses options. Pour choisir les meilleures, il est important de comparer leur composition, leur concentration en actifs et la présence (ou l'absence) de sucre.\n\n---\n\n### 1. Les marques incontournables et les plus populaires\n\n* **Hairlust (*Hair Formula Gummies*) :** Souvent citée parmi les meilleures références.\n  * **Points forts :** Formule **sans sucre**, 100 % végane. Riche en biotine (vitamine B8), zinc et sélénium.\n  * **Idéal pour :** Stimuler la pousse tout en évitant les calories inutiles ou les pics de glycémie.\n\n* **Lashilé Beauty (*Good Hair*) :** L'une des marques pionnières et les plus vendues en France.\n  * **Points forts :** Très bon goût de fruit, riche en biotine, zinc, acide folique (vitamine B9) et vitamine B6.\n  * **Idéal pour :** Accélérer la pousse et redonner de la brillance. Existe aussi en version sans sucre (*Good Hair Light*).\n\n* **Mium Lab (anciennement Les Miraculeux) :**\n  * **Points forts :** Fabrication française, gommes réduites en sucre ou sans sucre selon les gammes, à base de pectine de fruit (sans gélatine animale).\n  * **Idéal pour :** Fortifier la fibre capillaire de manière naturelle et tolérante pour la digestion.\n\n* **Luxéol (*Gummies Force et Croissance*) :**\n  * **Points forts :** Formulées à base de prêle des champs, de zinc et de vitamines. Faciles à trouver en pharmacie.\n  * **Idéal pour :** Lutter contre la casse et renforcer les cheveux dévitalisés.\n\n---\n\n### 2. Que doit contenir une bonne gummies pour cheveux ?\n\nPour garantir l'efficacité, vérifiez la présence de ces ingrédients clés sur l'étiquette :\n1. **La Biotine (Vitamine B8) :** L'actif indispensable pour la pousse et la synthèse de la kératine.\n2. **Le Zinc et le Sélénium :** Oligo-éléments essentiels pour maintenir des cheveux et ongles forts.\n3. **Les vitamines B6, B9 (acide folique) et B12 :** Elles contribuent au renouvellement cellulaire du cuir chevelu et à la nutrition de la racine.\n4. **Des extraits de plantes :** La prêle des champs (riche en silice) ou la roquette pour stimuler le bulbe capillaire.\n\n---\n\n### 3. Conseils pour bien choisir et utiliser vos gummies\n\n* **Préférez les formules « sans sucre » :** Les gummies classiques contiennent souvent du sirop de glucose et du sucre de canne. Si vous suivez une cure de 3 mois, les versions sans sucre ou édulcorées au maltitol sont plus adaptées.\n* **Respectez la durée de cure :** Le cycle de pousse du cheveu est lent. Une cure doit durer **au minimum 3 mois** pour observer des résultats significatifs sur la densité et la longueur.\n* **Différence gélules vs gummies :** Les gummies sont très agréables à consommer, mais elles sont généralement **moins concentrées en actifs** que des gélules classiques. Si vous souffrez d'une chute de cheveux sévère ou réactionnelle (post-partum, stress intense), des compléments sous forme de gélules (ex: *Phytophanère*, *Novoma*, *Arko pharma*) seront souvent plus concentrés."
+  },
+  {
+   "id": "bfda74c1-4769-4cd6-af76-6f759d4f1a61",
+   "model": "gemini",
+   "prompt": "Quelle est la meilleure marque française de compléments alimentaires ?",
+   "expected": [
+    {
+     "name": "Nutri&Co"
+    },
+    {
+     "name": "Novoma",
+     "aliases": [
+      "NutriVita"
+     ]
+    },
+    {
+     "name": "Dynveo"
+    },
+    {
+     "name": "Nutripure"
+    },
+    {
+     "name": "Nutrimuscle"
+    },
+    {
+     "name": "PiLeJe",
+     "aliases": [
+      "Lactibiane"
+     ]
+    },
+    {
+     "name": "Laboratoire Lescuyer",
+     "aliases": [
+      "Lescuyer"
+     ]
+    },
+    {
+     "name": "Arkopharma"
+    },
+    {
+     "name": "Cuure"
+    },
+    {
+     "name": "Aime"
+    },
+    {
+     "name": "D-Lab Nutricosmetics",
+     "aliases": [
+      "D-Lab"
+     ]
+    }
+   ],
+   "traps": [
+    "Christophe Carrio"
+   ],
+   "tolerated": [],
+   "answer": "Il est difficile de désigner une seule « meilleure » marque française, car le choix dépend avant tout de vos besoins spécifiques (santé générale, nutrition sportive, phytothérapie, etc.) et de vos critères prioritaires (traçabilité, bio, rapport qualité/prix).\n\nCependant, plusieurs marques françaises se distinguent régulièrement par la qualité de leurs formulations, la transparence de leur traçabilité et leurs normes de fabrication.\n\n---\n\n### 1. Pour la santé au quotidien, le bien-être et la vitalité\n* **Nutri&Co :** Très réputée pour sa transparence, la haute biodisponibilité de ses ingrédients (ex. magnésium bisglycinate, oméga-3 bien concentrés) et ses formules sans additifs controversés.\n* **Novoma (anciennement NutriVita) :** Basée dans le Sud-Ouest, cette marque propose des dosages élevés, une grande transparence sur la provenance des matières premières et un excellent rapport qualité/prix.\n* **Dynveo :** Spécialisée dans les formules ultra-pures et haut de gamme, sans aucun excipient ni additif synthétique, avec un accent fort sur les extraits de plantes standardisés.\n\n### 2. Pour les sportifs et la nutrition active\n* **Nutripure :** Fondée par le champion du monde de karaté Christophe Carrio, elle privilégie les ingrédients bio ou naturels, sans édulcorants artificiels, avec une excellente traçabilité et des formules très digestes.\n* **Nutrimuscle :** Marque historique du fitness en France, reconnue pour la pureté de ses matières premières (marques déposées certifiées, absence de mélanges propriétaires cachés).\n\n### 3. Pour la micronutrition et la santé en pharmacie\n* **PiLeJe :** Pionnier français de la micronutrition et de la santé microbiotique (gammes de probiotiques *Lactibiane*). La marque travaille en étroite collaboration avec les professionnels de santé.\n* **Laboratoire Lescuyer :** Spécialiste de la micronutrition depuis plus de 30 ans, proposant des produits formulés avec des actifs rigoureusement testés.\n* **Arkopharma :** Leader de la phytothérapie et des compléments à base de plantes bio en pharmacie.\n\n### 4. Pour les cures personnalisées et la nutricosmétique\n* **Cuure :** Propose des cures sur-mesure sous forme de sachets quotidiens, basées sur un questionnaire de santé approfondi.\n* **Aime / D-Lab Nutricosmetics :** Spécialisées dans la beauté de la peau, des cheveux et le bien-être intestinal, avec des formules combinant phytothérapie et micronutrition.\n\n---\n\n### 💡 Comment reconnaître une bonne marque ?\nPour vérifier la qualité d'une marque :\n1. **Forme des nutriments :** Privilégiez les formes assimilables (ex. magnésium *bisglycinate* ou *citrate* plutôt qu'oxyde de magnésium).\n2. **Absence d'additifs inutiles :** Évitez le stéarate de magnésium, le dioxyde de titane ou les colorants artificiels.\n3. **Traçabilité et analyses :** Les meilleures marques mettent à disposition leurs certificats d'analyse ou précisent le pays d'origine de chaque ingrédient."
+  },
+  {
+   "id": "8c3d3421-3ef6-4137-a71c-b0c77ed049a2",
+   "model": "gemini",
+   "prompt": "Quelle est la meilleure crème solaire visage clean ?",
+   "expected": [
+    {
+     "name": "Laboratoires de Biarritz",
+     "aliases": [
+      "Alga Maris"
+     ]
+    },
+    {
+     "name": "Patyka"
+    },
+    {
+     "name": "SVR"
+    },
+    {
+     "name": "La Rosée",
+     "aliases": [
+      "La Rosee"
+     ]
+    },
+    {
+     "name": "Acorelle"
+    },
+    {
+     "name": "SeventyOne Percent"
+    }
+   ],
+   "traps": [
+    "Yuka",
+    "INCI Beauty"
+   ],
+   "tolerated": [],
+   "answer": "Il n'existe pas une seule « meilleure » crème solaire clean pour le visage, car le choix dépend avant tout de votre **type de peau** et de ce que vous recherchez (filtres 100 % minéraux bio ou filtres organiques/chimiques de nouvelle génération non controversés). \n\nVoici les références les plus recommandées, sûres pour la santé (sans filtres perturbateurs endocriniens) et très bien notées sur les applications d'analyse (Yuka, INCI Beauty) :\n\n---\n\n### 1. Pour les peaux normales à sèches ou sensibles (Filtres Minéraux / Bio)\n* **Laboratoires de Biarritz – Alga Maris Crème Solaire Visage SPF 50+**\n  * **Composition :** Certifiée bio, 100 % filtres minéraux (dioxyde de titane, oxyde de zinc), enrichie en algue rouge antioxydante.\n  * **Pourquoi elle est top :** C'est la référence ultime en cosmétique clean. Très protectrice, elle est respectueuse de l'océan et des peaux réactives.\n  * *À savoir :* Comme toute protection 100 % minérale SPF50, elle demande à être bien étalée pour éviter un léger voile blanc sur les peaux matifiées.\n\n### 2. Pour les peaux mixtes à grasses (Texture fluide & fini mat)\n* **Patyka – Crème Solaire Visage SPF 50+**\n  * **Composition :** Certifiée Bio, filtres minéraux non nano, acide hyaluronique.\n  * **Pourquoi elle est top :** Formulée par une marque de cosmétique bio haut de gamme, elle offre un fini plus fluide et moins gras que la plupart des solaires minéraux, parfaite sous le maquillage.\n\n* **SVR – Sun Secure Fluide SPF 50+ (ou Sun Secure Blur)**\n  * **Composition :** Clean en matière de filtres organiques de nouvelle génération (sans filtres suspectés d'être des perturbateurs endocriniens comme l'octocrylène ou l'oxybenzone).\n  * **Pourquoi elle est top :** Si vous ne supportez pas le fini blanc des crèmes bio/minérales, cette formule offre un fini complètement invisible, matifiante et au « toucher sec ». \n\n### 3. Le meilleur rapport qualité/prix & Éco-conçu\n* **La Rosée – Lait Solaire Visage & Corps SPF 50**\n  * **Composition :** Composition très courte (clean), filtres organiques sains et biodégradables.\n  * **Pourquoi elle est top :** Elle ne colle pas, sent bon, protège efficacement et est notée 100/100 sur Yuka.\n\n### 4. Le format Stick (Ideal pour les retouches au quotidien)\n* **Acorelle ou SeventyOne Percent – Stick Solaire Invisible SPF 50+**\n  * **Pourquoi c'est pratique :** Parfait pour réappliquer de la protection solaire par-dessus le maquillage en cours de journée ou pour protéger des zones ciblées (cicatrices, pommettes, taches).\n\n---\n\n### Comment bien choisir ?\n\n1. **Si vous voulez le 100 % Naturel / Bio (Filtres Minéraux) :** Choisissez **Alga Maris** ou **Patyka**. Ils agissent comme un bouclier physique (réfléchissent les rayons UV).\n2. **Si vous voulez 0 trace blanche (Filtres Synthétiques Clean) :** Choisissez **SVR Sun Secure** ou **La Rosée**. Ils absorbent les rayons UV sans utiliser les filtres chimiques anciens et toxiques."
+  },
+  {
+   "id": "4274fb92-d95b-4624-b9b5-739ddbe1986b",
+   "model": "gemini",
+   "prompt": "Quel est le meilleur collagène marin ?",
+   "expected": [
+    {
+     "name": "Novoma"
+    },
+    {
+     "name": "Nutri&Co"
+    },
+    {
+     "name": "Nutripure"
+    },
+    {
+     "name": "Dynveo"
+    },
+    {
+     "name": "Aroma-Zone"
+    }
+   ],
+   "traps": [
+    "Friend of the Sea",
+    "MSC"
+   ],
+   "tolerated": [
+    "Naticol",
+    "Peptan"
+   ],
+   "answer": "Le « meilleur » collagène marin n'existe pas sous une seule marque universelle, mais il se définit par **des critères de qualité et d'assimilation stricts**. Pour qu'un collagène marin soit réellement efficace, voici les critères essentiels à vérifier avant d'acheter :\n\n---\n\n### 1. Les critères clés pour choisir le meilleur collagène marin\n\n1. **Forme hydrolysée (Peptides) & Poids moléculaire (< 3000 Daltons) :**\n   * Le collagène brut est une molécule trop grosse pour être absorbée par le corps.\n   * Choisissez impérativement des **peptides de collagène hydrolysés** de faible poids moléculaire (idéalement **≤ 2000 Daltons**), garantissant une assimilation digestive maximale.\n2. **Qualité de la matière première (Brevets reconnus) :**\n   * Privilégiez les marques qui utilisent des ingrédients brevetés et scientifiquement documentés comme **Naticol®** ou **Peptan® Marine**.\n   * Assurez-vous qu'il provient de **poissons sauvages ou de pêche durable** (labels type *Friend of the Sea* ou *MSC*).\n3. **Le bon dosage quotidien :**\n   * Pour la peau (anti-rides, élasticité) et les articulations, les études scientifiques préconisent un dosage entre **5 g et 10 g de collagène pur par jour**.\n4. **Les synergie d'actifs (Vitamine C, etc.) :**\n   * La **vitamine C** est indispensable, car elle participe directement à la synthèse naturelle du collagène par l'organisme. \n   * L'association avec de l'**acide hyaluronique** ou du **zinc** renforce les bienfaits sur l'hydratation de la peau et les ongles/cheveux.\n5. **Format et pureté :**\n   * **Format poudre :** C'est le format idéal pour atteindre facilement 5 à 10 g sans devoir avaler 10 à 15 gélules.\n   * Évitez les produits contenant trop d'additifs, de sucres ajoutés ou d'arômes synthétiques lourds.\n\n---\n\n### 2. Les marques les plus recommandées en France\n\nPlusieurs marques françaises se distinguent pour leur traçabilité, la pureté de leurs formules et leurs dosages :\n\n* **Novoma – Collagène Marin en Poudre :** Utilise le brevet Naticol® (2000 Da), très pur, certifié pêche durable.\n* **Nutri&Co – Collagène Marin :** Également à base de Naticol® (2000 Da), excellente traçabilité, goût neutre et très bonne solubilité.\n* **Nutripure – Peptides de Collagène Marin (Peptan®) :** Marque reconnue dans le sport et le bien-être pour la haute qualité de ses ingrédients et l'absence de superflu.\n* **Dynveo – Collagène Marin Hydrolysé :** Excellent rapport qualité/prix, formulation très pure et sans aucun additif.\n* **Aroma-Zone – Collagène Marin :** Très bon rapport qualité/prix pour une cure accessible.\n\n---\n\n### 3. Type I vs Type II : selon votre objectif\n\n* **Pour la peau, les cheveux et les rides :** Choisissez du **Collagène de Type I**.\n* **Pour le cartilage et les articulations :** Recherchez des formules ciblant le **Collagène de Type II** (ou enrichies en chondroïtine/glucosamine).\n\n---\n\n### 💡 Conseil d'utilisation\nPrenez votre collagène sous forme de cure continue pendant **au moins 2 à 3 mois** pour observer des effets visibles sur la fermeté de la peau ou le confort articulaire, le matin à jeun ou dilué dans une boisson froide/tiède."
+  },
+  {
+   "id": "6eb687ac-a88e-47b8-bed2-eb165b3a9da3",
+   "model": "gemini",
+   "prompt": "Quel est le meilleur magnésium contre la fatigue ?",
+   "expected": [],
+   "traps": [
+    "bisglycinate de magnésium",
+    "taurine"
+   ],
+   "tolerated": [],
+   "answer": "Pour lutter contre la fatigue, le « meilleur » magnésium dépend de la **forme chimique** sous laquelle il se présente. Toutes les formes ne s'assimilent pas de la même manière par l'organisme et certaines provoquent plus de troubles digestifs que d'autres.\n\nLes **meilleures formes de magnésium contre la fatigue** :\n\n### 1. Le Bisglycinate de magnésium (Le plus complet)\n* **Pourquoi ?** Le magnésium est lié à la glycine (un acide aminé apaisant). C'est la forme la mieux assimilée par l'organisme et la plus douce pour le système digestif (elle ne provoque généralement pas d'effet laxatif).\n* **Recommandé si :** Vous souffrez de fatigue générale, de stress, de nervosité ou de troubles du sommeil.\n\n### 2. Le Malate de magnésium (Spécial énergie / fatigue physique)\n* **Pourquoi ?** Le magnésium est associé à l'acide malique, une molécule qui intervient directement dans la production d'énergie de nos cellules (cycle de Krebs).\n* **Recommandé si :** Votre fatigue est plutôt physique, accompagnée de douleurs musculaires, d'épuisement au réveil ou chez les personnes très actives/sportives.\n\n### 3. Le Citrate de magnésium (Bon rapport qualité/prix)\n* **Pourquoi ?** C'est un sel organique très bien absorbé par le corps.\n* **Attention :** Il a un léger effet laxatif chez les personnes ayant les intestins sensibles. \n* **Recommandé si :** Vous cherchez un bon produit accessible et si vous avez tendance à avoir un transit plutôt lent.\n\n---\n\n### 💡 Les facteurs qui renforcent l'efficacité (Sinergie)\n\nPour optimiser l'action du magnésium contre la fatigue, privilégiez un complément contenant :\n* **De la vitamine B6 :** Elle facilite l'entrée du magnésium dans les cellules et participe elle aussi à réduire la fatigue.\n* **De la Taurine :** Un acide aminé qui aide à fixer le magnésium dans les cellules.\n\n---\n\n### ⚠️ Les formes à éviter pour lutter contre la fatigue\n* **L'oxyde de magnésium et le magnésium marin :** Bien qu'ils soient très répandus et souvent présentés comme « naturels », ils sont très peu assimilés par l'organisme (environ 3 à 4 %) et ont un fort pouvoir laxatif.\n* **Le chlorure de magnésium :** Bien assimilé mais au goût très amer et souvent mal toléré par les intestins.\n\n---\n\n### 📌 Conseils pratiques d'utilisation\n* **Durée :** Une cure de magnésium dure généralement entre 1 et 3 mois.\n* **Prise :** Il est préférable de répartir les prises au cours de la journée (ex: matin et soir) avec un repas pour maximiser l'absorption.\n* **Précautions :** En cas d'insuffisance rénale sévère, la supplémentation en magnésium est contre-indiquée sans avis médical. Si votre fatigue persiste malgré une cure, demandez conseil à votre médecin afin de rechercher d'autres causes éventuelles (carence en fer, problème de thyroïde, apnée du sommeil, etc.)."
+  }
+ ]
+}

@@ -18,7 +18,7 @@ import { appendFileSync } from "node:fs";
 import { createClient } from "@supabase/supabase-js";
 import { auditEdition } from "@/lib/edition-audit";
 import { tierOf } from "@/lib/spectrum";
-import { sameBrand } from "@/lib/llm/judge";
+import { sameBrand, normalizeBrandName } from "@/lib/llm/judge";
 import type { ModelKey } from "@/lib/llm/types";
 
 const site = process.argv.includes("--site") ? process.argv[process.argv.indexOf("--site") + 1] : null;
@@ -53,16 +53,42 @@ const ecarts: Array<{ ou: string; attendu: string; trouve: string }> = [];
 const DOUBLE_COUNT_FIX = "2026-09-27";
 
 /**
+ * L'ancienne règle de rapprochement des noms (avant le 27 septembre 2026) :
+ * n'importe quelle sous-chaîne suffisait, et « RoC » tombait dans « La
+ * Roche-Posay ». Les éditions antérieures ont été agrégées avec elle ; on la
+ * rejoue pour dire EXACTEMENT quelles marques elle a fusionnées à tort.
+ */
+function legacySameBrand(a: string, b: string): boolean {
+  const na = normalizeBrandName(a);
+  const nb = normalizeBrandName(b);
+  if (!na || !nb) return false;
+  return na === nb || na.includes(nb) || nb.includes(na);
+}
+
+/**
  * Le recalcul indépendant : pour chaque cellule (question × moteur), la part des
  * passages qui citent la marque ; le total est la somme de ces parts. Même
  * définition que la méthodologie publiée, écrite ici sans réutiliser le code du
  * Mesureur.
  */
-function recompute(answers: NonNullable<Row["data"]>["answers"] = []): Map<string, number> {
+function recompute(
+  answers: NonNullable<Row["data"]>["answers"] = [],
+  same: (a: string, b: string) => boolean = sameBrand,
+  merges?: Map<string, Set<string>>
+): Map<string, number> {
   const passes = new Map<string, number>();
   const hits = new Map<string, Map<string, number>>();
   const names: string[] = [];
-  const canon = (n: string) => names.find((k) => sameBrand(k, n)) ?? (names.push(n), n);
+  const canon = (n: string) => {
+    const k = names.find((x) => same(x, n));
+    if (k === undefined) {
+      names.push(n);
+      return n;
+    }
+    // Deux noms réunis alors que la règle actuelle les sépare : fusion abusive.
+    if (merges && !sameBrand(k, n)) merges.set(k, (merges.get(k) ?? new Set()).add(n));
+    return k;
+  };
   for (const a of answers) {
     const cell = `${a.prompt}|${a.model}`;
     passes.set(cell, (passes.get(cell) ?? 0) + 1);
@@ -122,6 +148,8 @@ async function main() {
       continue;
     }
     const totals = recompute(r.data.answers);
+    const merges = new Map<string, Set<string>>();
+    const legacy = recompute(r.data.answers, legacySameBrand, merges);
     let checked = 0;
     const connus: string[] = [];
     for (const b of stored.slice(0, 20)) {
@@ -136,13 +164,29 @@ async function main() {
       const sameDisplay =
         Math.round(mine) === Math.round(b.total) &&
         tierOf(Math.round((mine / runs) * 100)).key === tierOf(Math.round((b.total / runs) * 100)).key;
+      // Avant le correctif, la base a été agrégée avec l'ancienne règle : si le
+      // recalcul À L'ANCIENNE retombe sur le chiffre publié, l'écart vient de la
+      // règle corrigée, pas d'une erreur de lecture.
+      const legacyTotal = [...legacy.entries()].find(([n]) => legacySameBrand(n, b.name))?.[1] ?? 0;
+      const explainedByLegacy = beforeFix && Math.abs(legacyTotal - b.total) <= 0.5;
       if (beforeFix && gap <= 0.5 && sameDisplay) {
         connus.push(`${b.name} ${b.total} → ${mine}`);
+      } else if (explainedByLegacy && sameDisplay) {
+        connus.push(`${b.name} ${b.total} → ${mine} (fusion abusive corrigée)`);
       } else {
         ecarts.push({ ou: `${vertical} / ${b.name} (citations)`, attendu: String(mine), trouve: String(b.total) });
       }
     }
     out(`- ${vertical} (${r.edition_date}) : ${checked} marques recalculées sur ${runs} réponses.`);
+    if (merges.size > 0) {
+      out(
+        `  - fusions abusives de l'ancienne règle : ${[...merges.entries()]
+          .map(([k, v]) => `${k} ← ${[...v].join(", ")}`)
+          .join(" ; ")}`
+      );
+    } else {
+      out("  - aucune fusion abusive : la règle corrigée ne change rien à cette édition.");
+    }
     if (connus.length) {
       out(`  - écart connu (double comptage corrigé le 27/09, affichage inchangé) : ${connus.join(" ; ")}`);
     }
