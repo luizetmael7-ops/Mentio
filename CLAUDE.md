@@ -129,9 +129,11 @@ remplacer par un modèle ouvert reviendrait à mesurer ce que personne n'utilise
 
 *Les modèles de traitement* — juge, génération de questions, rédaction, veille,
 analyse. Aucun besoin de recherche web, donc aucun forfait. **Tournent sur OpenRouter
-en palier gratuit** (`nvidia/nemotron-3-ultra-550b-a55b:free`, repli Super puis Nano,
-puis moteurs payants). Vérifié avant migration sur un cas piégé mêlant institutions,
-médias, ingrédients et souches à de vraies marques : extraction exacte.
+en palier gratuit** (liste unique : `src/lib/llm/free-models.ts` — Nemotron Ultra,
+repli Super, puis moteurs payants). Noté sur le jeu de référence (`tests/reference`) :
+précision et rappel 100 % sur 19 réponses réelles le 27 septembre 2026. Le palier
+gratuit a un **quota quotidien par clé, partagé entre la CI et la production** : un
+quota vide fait basculer le juge sur le moteur payant, dont le coût est compté.
 
 Coûts unitaires mesurés : ChatGPT 0,0130 $ · Gemini 0,0145 $ · Claude 0,0240 $ ·
 Perplexity 0,0054 $ · juge 0 $.

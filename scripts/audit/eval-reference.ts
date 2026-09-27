@@ -41,13 +41,23 @@ async function main() {
   out("| Réponse | Moteur | Trouvées | Faux positifs | Oubliées |");
   out("|---|---|---|---|---|");
   const pause = (ms: number) => new Promise((r) => setTimeout(r, ms));
+  let quotaMisses = 0;
   for (const [i, item] of doc.items.entries()) {
+    // Deux réponses de suite refusées pour quota (429) : le quota GRATUIT DU JOUR
+    // est épuisé. Insister ne donne rien et puise dans le quota de la production
+    // (même clé) : on s'arrête, sans verdict.
+    if (quotaMisses >= 2) {
+      out("");
+      out("Quota gratuit du jour épuisé : évaluation interrompue, pas de verdict aujourd'hui.");
+      console.log("::warning::Juge non évalué : quota gratuit OpenRouter épuisé pour la journée.");
+      break;
+    }
     // Le palier gratuit limite le débit (HTTP 429) : on espace les réponses, et
     // on attend puis réessaie quand la limite est atteinte.
     if (i > 0) await pause(4_000);
     let extracted: string[] | null = null;
     let lastError = "";
-    for (let attempt = 0; attempt < 3 && extracted === null; attempt += 1) {
+    for (let attempt = 0; attempt < 2 && extracted === null; attempt += 1) {
       try {
         const { extraction } = await judgeAnswerFree(item.answer);
         extracted = extraction.brands.map((b) => b.name);
@@ -59,8 +69,10 @@ async function main() {
     }
     if (extracted === null) {
       out(`| ${item.id.slice(0, 8)} | ${item.model} | juge indisponible : ${lastError} | | |`);
+      quotaMisses = /429/.test(lastError) ? quotaMisses + 1 : 0;
       continue;
     }
+    quotaMisses = 0;
     const s = scoreItem(item, extracted);
     scores.push(s);
     out(
@@ -72,19 +84,19 @@ async function main() {
 
   const judged = doc.items.filter((i) => scores.some((s) => s.id === i.id));
   const total = aggregate(judged, scores);
+  const verdict = judged.length >= doc.items.length / 2;
   out("");
   out(
-    `**Précision ${(total.precision * 100).toFixed(1)} % · rappel ${(total.recall * 100).toFixed(1)} %** sur ${total.items} réponses réelles, ${total.expected} marques annotées. Réponses sans marque rendues vides : ${total.emptyCorrect}/${total.emptyTotal}.${
-      doc.validatedByFounder ? "" : " (Annotations pas encore validées par le fondateur.)"
-    }`
+    verdict
+      ? `**Précision ${(total.precision * 100).toFixed(1)} % · rappel ${(total.recall * 100).toFixed(1)} %** sur ${total.items} réponses réelles, ${total.expected} marques annotées. Réponses sans marque rendues vides : ${total.emptyCorrect}/${total.emptyTotal}.${
+          doc.validatedByFounder ? "" : " (Annotations pas encore validées par le fondateur.)"
+        }`
+      : `Pas de verdict : ${judged.length} réponse(s) notée(s) sur ${doc.items.length} (quota gratuit ?). Un chiffre sur si peu de réponses ne dirait rien.`
   );
   if (process.env.GITHUB_STEP_SUMMARY) {
     appendFileSync(process.env.GITHUB_STEP_SUMMARY, `# Jeu de référence — le juge noté\n\n${lines.join("\n")}\n`);
   }
-  if (judged.length < doc.items.length / 2) {
-    console.log("Moins de la moitié des réponses jugées (quota gratuit ?) : pas de verdict.");
-    return;
-  }
+  if (!verdict) return;
   if (total.precision < MIN_PRECISION || total.recall < MIN_RECALL) {
     console.error(`Régression du juge : seuils ${MIN_PRECISION} / ${MIN_RECALL}.`);
     process.exit(1);

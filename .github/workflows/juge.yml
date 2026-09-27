@@ -1,0 +1,52 @@
+# LE JUGE NOTÉ — le lecteur automatique évalué sur le jeu de référence.
+#
+# 20 réponses réelles annotées une à une ; le juge gratuit doit y retrouver les
+# marques (précision ≥ 90 %, rappel ≥ 85 %) et rendre vides les réponses pièges.
+#
+# Pas à chaque poussée : l'évaluation consomme le quota GRATUIT d'OpenRouter,
+# partagé avec la production (même clé). Le 27 septembre 2026, trois évaluations
+# dans la matinée l'ont épuisé — et un quota vide fait basculer le Mesureur sur
+# le juge payant. D'où : seulement quand le juge ou le jeu de référence changent,
+# une fois par semaine (lundi, 4 h UTC, loin des mesures du matin), ou à la main.
+# Quota épuisé : l'évaluation s'arrête sans verdict au lieu de tourner pour rien.
+
+name: Juge
+
+on:
+  push:
+    branches: ["main", "claude/**"]
+    paths:
+      - "src/lib/llm/**"
+      - "src/lib/reference-eval.ts"
+      - "tests/reference/**"
+      - "scripts/audit/eval-reference.ts"
+      - "scripts/audit/free-models.ts"
+      - ".github/workflows/juge.yml"
+  schedule:
+    - cron: "0 4 * * 1"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: juge-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  juge:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - name: Les modèles gratuits existent encore
+        run: npx tsx scripts/audit/free-models.ts
+      - name: Le juge noté sur le jeu de référence (gratuit)
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+        run: npx tsx scripts/audit/eval-reference.ts

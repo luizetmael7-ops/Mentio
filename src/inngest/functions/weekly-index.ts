@@ -158,7 +158,11 @@ export const weeklyIndex = inngest.createFunction(
               try {
                 const answer = await askWithTimeout(provider, job.text, 30_000, { country });
                 await recordSpend(bucket, answer.costUsd);
-                const { extraction } = await judgeAnswer(answer.text);
+                // Le juge est gratuit… tant que le quota gratuit tient. Quand il
+                // bascule sur le moteur payant, ce coût entre dans le compteur :
+                // le plafond ne vaut que s'il voit TOUT ce qui se dépense.
+                const { extraction, costUsd: judgeUsd } = await judgeAnswer(answer.text);
+                await recordSpend(bucket, judgeUsd);
                 return {
                   model: job.model,
                   record: {
