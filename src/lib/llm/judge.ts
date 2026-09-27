@@ -88,9 +88,15 @@ function clean(extraction: Extraction): Extraction {
  */
 /**
  * Un modèle ouvert ne rend pas toujours la forme demandée : parfois la liste
- * seule, parfois un objet indexé au lieu d'un tableau (« expected array » dans les
- * journaux du 27 septembre 2026). On ramène ces variantes à la forme attendue
- * avant validation ; tout le reste est refusé par le schéma.
+ * seule, parfois un objet indexé au lieu d'un tableau. On ramène ces deux
+ * variantes, sans ambiguïté, à la forme attendue.
+ *
+ * JAMAIS une réponse sans champ `brands` convertie en « aucune marque » : c'est
+ * ce qu'une première version faisait, et le juge rendait alors une liste vide
+ * en silence au lieu de passer au modèle suivant — 0 marque sur 11 pour une
+ * réponse qui en cite 11. L'évaluation sur le jeu de référence l'a attrapé en
+ * CI le 27 septembre 2026. Une forme inconnue doit ÉCHOUER : l'échec déclenche
+ * le repli, le silence fausse la mesure.
  */
 export function normalizeExtraction(raw: unknown): unknown {
   if (Array.isArray(raw)) return { brands: raw };
@@ -99,7 +105,6 @@ export function normalizeExtraction(raw: unknown): unknown {
     if (brands && typeof brands === "object" && !Array.isArray(brands)) {
       return { ...raw, brands: Object.values(brands) };
     }
-    if (brands === undefined || brands === null) return { ...raw, brands: [] };
   }
   return raw;
 }

@@ -40,13 +40,25 @@ async function main() {
 
   out("| Réponse | Moteur | Trouvées | Faux positifs | Oubliées |");
   out("|---|---|---|---|---|");
-  for (const item of doc.items) {
-    let extracted: string[] = [];
-    try {
-      const { extraction } = await judgeAnswerFree(item.answer);
-      extracted = extraction.brands.map((b) => b.name);
-    } catch (error) {
-      out(`| ${item.id.slice(0, 8)} | ${item.model} | juge indisponible : ${error instanceof Error ? error.message.slice(0, 80) : "?"} | | |`);
+  const pause = (ms: number) => new Promise((r) => setTimeout(r, ms));
+  for (const [i, item] of doc.items.entries()) {
+    // Le palier gratuit limite le débit (HTTP 429) : on espace les réponses, et
+    // on attend puis réessaie quand la limite est atteinte.
+    if (i > 0) await pause(4_000);
+    let extracted: string[] | null = null;
+    let lastError = "";
+    for (let attempt = 0; attempt < 3 && extracted === null; attempt += 1) {
+      try {
+        const { extraction } = await judgeAnswerFree(item.answer);
+        extracted = extraction.brands.map((b) => b.name);
+      } catch (error) {
+        lastError = error instanceof Error ? error.message.slice(0, 80) : "?";
+        if (/429/.test(lastError)) await pause(30_000 * (attempt + 1));
+        else break;
+      }
+    }
+    if (extracted === null) {
+      out(`| ${item.id.slice(0, 8)} | ${item.model} | juge indisponible : ${lastError} | | |`);
       continue;
     }
     const s = scoreItem(item, extracted);

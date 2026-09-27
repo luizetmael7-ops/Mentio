@@ -11,8 +11,15 @@ const brand = { name: "Typology", position: 1, sentiment: "positive" };
 test("Juge : la liste seule, ou un objet indexé, sont ramenés à la forme attendue", () => {
   assert.deepEqual(ExtractionSchema.parse(normalizeExtraction([brand])).brands, [brand]);
   assert.deepEqual(ExtractionSchema.parse(normalizeExtraction({ brands: { a: brand } })).brands, [brand]);
-  assert.deepEqual(ExtractionSchema.parse(normalizeExtraction({})).brands, []);
   assert.throws(() => ExtractionSchema.parse(normalizeExtraction({ brands: "Typology" })));
+});
+
+test("Juge : une réponse sans champ « brands » échoue — jamais « aucune marque » en silence", () => {
+  // Régression du 27 septembre 2026 : {} et {"marques": [...]} devenaient une
+  // liste vide, et le repli vers le modèle suivant ne se déclenchait plus.
+  assert.throws(() => ExtractionSchema.parse(normalizeExtraction({})));
+  assert.throws(() => ExtractionSchema.parse(normalizeExtraction({ marques: [brand] })));
+  assert.throws(() => ExtractionSchema.parse(normalizeExtraction(null)));
 });
 
 test("Chaîne gratuite : jamais un modèle facturé, même par variable d'environnement", () => {
