@@ -49,6 +49,9 @@ const out = (s = "") => {
 };
 const ecarts: Array<{ ou: string; attendu: string; trouve: string }> = [];
 
+/** Date du correctif « une réponse cite une marque une seule fois ». */
+const DOUBLE_COUNT_FIX = "2026-09-27";
+
 /**
  * Le recalcul indépendant : pour chaque cellule (question × moteur), la part des
  * passages qui citent la marque ; le total est la somme de ces parts. Même
@@ -120,14 +123,29 @@ async function main() {
     }
     const totals = recompute(r.data.answers);
     let checked = 0;
+    const connus: string[] = [];
     for (const b of stored.slice(0, 20)) {
       const mine = [...totals.entries()].find(([n]) => sameBrand(n, b.name))?.[1] ?? 0;
       checked += 1;
-      if (Math.abs(mine - b.total) > 0.11) {
+      const gap = Math.abs(mine - b.total);
+      if (gap <= 0.11) continue;
+      // Éditions antérieures au correctif du double comptage (27 septembre 2026) :
+      // écart connu, publié dans l'erratum. Il ne doit changer ni un rang affiché
+      // ni un palier — sinon c'est un vrai écart.
+      const beforeFix = r.edition_date < DOUBLE_COUNT_FIX;
+      const sameDisplay =
+        Math.round(mine) === Math.round(b.total) &&
+        tierOf(Math.round((mine / runs) * 100)).key === tierOf(Math.round((b.total / runs) * 100)).key;
+      if (beforeFix && gap <= 0.5 && sameDisplay) {
+        connus.push(`${b.name} ${b.total} → ${mine}`);
+      } else {
         ecarts.push({ ou: `${vertical} / ${b.name} (citations)`, attendu: String(mine), trouve: String(b.total) });
       }
     }
     out(`- ${vertical} (${r.edition_date}) : ${checked} marques recalculées sur ${runs} réponses.`);
+    if (connus.length) {
+      out(`  - écart connu (double comptage corrigé le 27/09, affichage inchangé) : ${connus.join(" ; ")}`);
+    }
   }
   out("");
 

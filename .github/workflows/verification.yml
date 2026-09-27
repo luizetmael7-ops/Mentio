@@ -105,3 +105,8 @@ jobs:
 
       - name: Audit adverse des chiffres
         run: npx tsx scripts/audit/prod.ts --site http://127.0.0.1:3300
+
+      # Tant que le jeu de référence n'est pas annoté, on en imprime l'échantillon.
+      - name: Échantillon du jeu de référence (à annoter)
+        if: hashFiles('tests/reference/annotations.json') == ''
+        run: npx tsx scripts/audit/export-reference.ts

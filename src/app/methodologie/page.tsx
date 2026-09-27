@@ -286,6 +286,15 @@ export default async function MethodologiePage() {
             rien n&apos;a causés. Les éditions ci-dessous ont été mesurées, puis écartées par ce
             contrôle : l&apos;édition précédente est restée la référence.
           </p>
+          <p className="mt-4 rounded-xl bg-[var(--porcelain)]/70 px-4 py-3 text-sm leading-relaxed text-[var(--ink-soft)]">
+            <strong className="text-[var(--ink)]">Correction de méthode — 27 septembre 2026.</strong>{" "}
+            Un audit indépendant, qui recalcule chaque score depuis les réponses brutes, a
+            trouvé qu&apos;une marque nommée deux fois dans la même réponse y était comptée deux
+            fois. L&apos;écart est d&apos;au plus 0,2 citation sur les éditions publiées (La
+            Roche-Posay : 19,4 au lieu de 19,2 le 23 août ; Profound : 6,8 au lieu de 6,6 le 13
+            août). Aucun rang ni palier affiché n&apos;en est changé. Les éditions suivantes
+            comptent une réponse une seule fois, comme la méthode l&apos;a toujours dit.
+          </p>
           {rejected.length > 0 ? (
             <ul className="mt-5 space-y-3 text-sm">
               {rejected.map((r) => (

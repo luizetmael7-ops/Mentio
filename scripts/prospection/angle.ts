@@ -173,7 +173,8 @@ async function main() {
         nature: (brand.target as string) === "agency" ? "agence" : "marque",
         score: report.score,
         tier: report.tier.label,
-        rank: report.rank,
+        // buildReport ne renvoie que des marques classées : le rang existe toujours ici.
+        rank: report.rank ?? report.totalBrands,
         total_brands: report.totalBrands,
         // Date en toutes lettres : « l'édition du 2026-08-16 » dans une phrase se lit
         // comme une fuite de base de données, ce qu'elle est.
@@ -232,7 +233,7 @@ async function main() {
       // Seuil : la première moitié du classement. « Vous êtes 40e sur 43 » n'est pas une
       // bonne nouvelle, et la présenter comme telle serait le genre de maquillage qu'une
       // agence repère immédiatement.
-      const dansLaPremiereMoitie = report.rank <= Math.ceil(report.totalBrands / 2);
+      const dansLaPremiereMoitie = report.rank !== null && report.rank <= Math.ceil(report.totalBrands / 2);
       if ((brand.target as string) === "agency" && type !== "no_angle" && report.tier.label && dansLaPremiereMoitie) {
         const rangPayload: AnglePayload = { ...base, delta: report.scoreDelta, bonne_nouvelle: true };
         const choix = await chooseAngle(

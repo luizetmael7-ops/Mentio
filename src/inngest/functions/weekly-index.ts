@@ -275,8 +275,21 @@ export const weeklyIndex = inngest.createFunction(
     function ingest(records: AnswerRecord[]) {
       for (const r of records) {
         const k = cellKey(r.prompt, r.model);
+        // UNE réponse cite une marque, ou ne la cite pas. Jusqu'au 27 septembre
+        // 2026, une marque extraite deux fois de la même réponse (« La Roche-Posay »
+        // et « La Roche Posay », fusionnées par `canon`) y comptait double : l'audit
+        // adverse l'a trouvé en recalculant indépendamment (19,4 au lieu de 19,2
+        // citations). On garde la meilleure position, une seule fois.
+        const bestPosition = new Map<string, number>();
         for (const b of r.brands) {
           const name = canon(b.name);
+          const known = bestPosition.get(name);
+          if (known === undefined || (b.position > 0 && (known <= 0 || b.position < known))) {
+            bestPosition.set(name, b.position);
+          }
+        }
+        for (const [name, position] of bestPosition) {
+          const b = { position };
           const cells = hitsByBrand.get(name) ?? new Map<string, number>();
           cells.set(k, (cells.get(k) ?? 0) + 1);
           hitsByBrand.set(name, cells);

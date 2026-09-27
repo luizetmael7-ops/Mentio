@@ -1,4 +1,6 @@
+import { sameBrand } from "@/lib/llm/judge";
 import {
+  getEditions,
   getEditionsForBrand,
   brandSlug,
   brandScore,
@@ -73,7 +75,10 @@ export interface BrandReport {
   slug: string;
   score: number;
   tier: Tier;
-  rank: number;
+  /** null : la marque n'est citée dans aucune réponse de la catégorie */
+  rank: number | null;
+  /** La catégorie mesurée — clé et libellé */
+  vertical: string;
   totalBrands: number;
   citations: number;
   runs: number;
@@ -131,8 +136,38 @@ export async function buildReport(slug: string): Promise<BrandReport | null> {
     })
     .find((f) => f !== null);
   if (!found) return null;
+  return assembleReport(editions, found.edition, found.brand, found.rank, slug);
+}
 
-  const { edition, brand, rank } = found;
+/**
+ * Le rapport d'une marque DANS une catégorie donnée — qu'elle y soit citée ou non.
+ *
+ * C'est le rapport qu'on livre après une mesure payée : la plupart des marques
+ * qui paient une mesure prioritaire ne sont justement citées nulle part. Leur
+ * rapport n'est pas vide pour autant — il dit qui est recommandé à leur place,
+ * sur quelles questions, et quelles pages les modèles ont lues pour répondre.
+ * Une absence mesurée est un diagnostic, pas une page blanche.
+ */
+export async function buildCategoryReport(
+  categoryKey: string,
+  brandName: string
+): Promise<BrandReport | null> {
+  const editions = await getEditions(12, categoryKey);
+  const edition = editions[0];
+  if (!edition) return null;
+  const slug = brandSlug(brandName);
+  const hit = edition.brands.findIndex((b) => brandSlug(b.name) === slug || sameBrand(b.name, brandName));
+  if (hit >= 0) return assembleReport(editions, edition, edition.brands[hit], hit + 1, brandSlug(edition.brands[hit].name));
+  return assembleReport(editions, edition, { name: brandName, total: 0, top1: 0 }, null, slug);
+}
+
+function assembleReport(
+  editions: Edition[],
+  edition: Edition,
+  brand: EditionBrand,
+  rank: number | null,
+  slug: string
+): BrandReport {
   const score = brandScore(brand, edition.runs);
   const previous = editions[editions.indexOf(edition) + 1];
   const before = previous ? findBrand(previous, slug) : null;
@@ -307,6 +342,7 @@ export async function buildReport(slug: string): Promise<BrandReport | null> {
     score,
     tier: tierOf(score),
     rank,
+    vertical: edition.vertical,
     totalBrands: edition.brands.length,
     citations: brand.total,
     runs: edition.runs,

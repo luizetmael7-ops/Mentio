@@ -40,7 +40,7 @@ function aggregate(answers: StudyRaw[], models: ModelKey[]) {
   const totals = new Map<string, { total: number; top1: number; byModel: Record<string, number> }>();
   const sources = new Map<string, number>();
   for (const a of answers) {
-    for (const b of a.brands) {
+    for (const b of a.brands.filter((x, i, all) => all.findIndex((y) => y.name === x.name) === i)) {
       const t = totals.get(b.name) ?? { total: 0, top1: 0, byModel: {} };
       t.total += 1;
       if (b.position === 1) t.top1 += 1;
