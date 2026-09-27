@@ -22,7 +22,10 @@
     "inngest:dev": "inngest-cli dev",
     "prospect:oreille": "tsx scripts/prospection/oreille.ts",
     "prospect:directeur": "tsx scripts/prospection/directeur.ts",
-    "prospect:appariement": "tsx scripts/prospection/appariement.ts"
+    "prospect:appariement": "tsx scripts/prospection/appariement.ts",
+    "test": "tsx --test tests/unit/*.test.ts tests/sql/*.test.ts",
+    "test:e2e": "playwright test",
+    "db:installer": "tsx scripts/build-installer.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.111.0",
@@ -59,6 +62,8 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "^0.5.8",
+    "@playwright/test": "^1.63.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",

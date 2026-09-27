@@ -10,6 +10,7 @@ import { notifyFounder } from "@/lib/founder";
 import { categoryIdentity, categoryPath, countryByCode, listCategories } from "@/lib/index-catalog";
 import { getLatestSummaries, brandSlug } from "@/lib/index-edition";
 import { sameBrand } from "@/lib/llm/judge";
+import { fixturesEnabled } from "@/lib/fixtures";
 
 const MAX_REQUESTS_PER_DAY_PER_IP = 5;
 
@@ -43,7 +44,9 @@ export async function requestBrand(
 
   if (brand.length < 2) return { ok: false, message: "Le nom de la marque est trop court." };
   if (category.length < 3) return { ok: false, message: "Décrivez la catégorie en quelques mots." };
-  if (!country) return { ok: false, message: "Choisissez un pays." };
+  if (!country) {
+    return { ok: false, message: "Ce marché n'est pas couvert par l'Index. Choisissez un pays de la liste." };
+  }
   if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
     return { ok: false, message: "Cette adresse email ne semble pas valide." };
   }
@@ -67,6 +70,12 @@ export async function requestBrand(
   }
 
   // 2. Sinon, la file.
+  if (fixturesEnabled()) {
+    return {
+      ok: true,
+      message: `C'est noté (démonstration). « ${category} » (${country.name}) rejoint la file de l'Index.`,
+    };
+  }
   const headerStore = await headers();
   const ip = headerStore.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
   const ipHash = createHash("sha256").update(`mentio:${ip}`).digest("hex").slice(0, 32);

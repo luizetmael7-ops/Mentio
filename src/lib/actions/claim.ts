@@ -3,6 +3,7 @@
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { captureServer } from "@/lib/posthog-server";
 import { notifyFounder } from "@/lib/founder";
+import { fixturesEnabled } from "@/lib/fixtures";
 
 /**
  * « C'est ma marque » — revendication d'une page du Baromètre.
@@ -22,6 +23,10 @@ export async function claimBrand(
   if (!brandName) return { ok: false, message: "Marque manquante." };
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
     return { ok: false, message: "Cette adresse email ne semble pas valide." };
+  }
+
+  if (fixturesEnabled()) {
+    return { ok: true, message: `C'est noté (démonstration). ${brandName} est revendiquée par ${email}.` };
   }
 
   try {

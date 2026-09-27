@@ -103,3 +103,53 @@ export function fixtureEditionRows(): EditionRow[] {
   ];
   return cache;
 }
+
+/**
+ * Un scan public de démonstration, calculé sur les réponses réelles de l'étude :
+ * la marque saisie y est-elle citée ? Sert aux tests de bout en bout du tunnel
+ * (scan → teaser → email → rapport complet) sans appel payant ni base.
+ */
+export function fixtureScan(id: string) {
+  const brandSlug = id.replace(/^demo-/, "");
+  const rows = fixtureEditionRows();
+  const answers = (rows[1].data?.answers ?? []).slice(0, 20);
+  const flat = (s: string) => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, "-");
+  const details = answers.map((a) => {
+    const hit = a.brands.find((b) => flat(b.name) === brandSlug);
+    return {
+      prompt: a.prompt,
+      model: a.model,
+      cited: Boolean(hit),
+      position: hit?.position ?? null,
+      topBrands: a.brands.slice(0, 5).map((b) => b.name),
+    };
+  });
+  const counts = new Map<string, number>();
+  for (const d of details) for (const name of d.topBrands) counts.set(name, (counts.get(name) ?? 0) + 1);
+  const topBrands = [...counts.entries()]
+    .map(([name, count]) => ({ name, count, isTarget: flat(name) === brandSlug }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 6);
+  const citedCount = details.filter((d) => d.cited).length;
+  const leader = topBrands.find((b) => !b.isTarget);
+  const perModel = ["chatgpt", "gemini"].map((model) => ({
+    model,
+    citedCount: details.filter((d) => d.model === model && d.cited).length,
+    runCount: details.filter((d) => d.model === model).length,
+  }));
+  return {
+    id,
+    brand_name: brandSlug.replace(/-/g, " "),
+    status: "completed",
+    created_at: "2026-09-27T08:00:00Z",
+    teaser: {
+      score: details.length ? Math.round((citedCount / details.length) * 100) : 0,
+      citedCount,
+      runCount: details.length,
+      topBrands,
+      shock: leader ? { competitor: leader.name, competitorCount: leader.count, targetCount: citedCount } : null,
+      perModel,
+      details,
+    },
+  };
+}

@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { inngest } from "@/inngest/client";
 import { captureServer } from "@/lib/posthog-server";
+import { fixturesEnabled } from "@/lib/fixtures";
 
 const MAX_SCANS_PER_DAY_PER_IP = 3;
 
@@ -15,6 +16,11 @@ function normalize(value: string): string {
 
 /** Cœur commun : cache 24 h par (marque, catégorie) + rate limit IP + création + événement. */
 async function createScanAndRun(brandName: string, category: string): Promise<string> {
+  // Démonstration (tests de bout en bout, jamais en production) : scan calculé
+  // sur l'étude de juillet, sans appel payant ni écriture.
+  if (fixturesEnabled()) {
+    return `demo-${brandName.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-")}`;
+  }
   const admin = supabaseAdmin();
   const dayAgo = new Date(Date.now() - 24 * 3600_000).toISOString();
 
@@ -80,6 +86,12 @@ export async function startScanWithEmail(formData: FormData) {
   if (!email.includes("@")) throw new Error("Invalid email");
 
   const scanId = await createScanAndRun(brandName, category);
+
+  if (fixturesEnabled()) {
+    const cookieStore = await cookies();
+    cookieStore.set(`mentio_unlocked_${scanId}`, "1", { httpOnly: true, maxAge: 7 * 86400, path: "/" });
+    redirect(`/scan/${scanId}`);
+  }
 
   const admin = supabaseAdmin();
   await admin.from("leads").insert({ email, brand_name: brandName, category, scan_id: scanId });

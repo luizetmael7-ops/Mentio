@@ -43,6 +43,5 @@ values
   ('us:project-management-software', 'project-management-software-us', 'Project management software', 'US', 'en', 'saas', 'tapent les acheteurs', 'queued', 'founder', 60, 0),
   ('us:running-shoes', 'running-shoes-us', 'Running shoes', 'US', 'en', 'sport', 'tapent les acheteurs', 'queued', 'founder', 60, 0),
   ('gb:mattress', 'mattress-gb', 'Mattress', 'GB', 'en', 'maison', 'tapent les acheteurs', 'queued', 'founder', 60, 0),
-  ('de:sonnencreme', 'sonnencreme-de', 'Sonnencreme', 'DE', 'de', 'beaute', 'tapent les acheteurs', 'queued', 'founder', 60, 0),
   ('es:crema-solar', 'crema-solar-es', 'Crema solar', 'ES', 'es', 'beaute', 'tapent les acheteurs', 'queued', 'founder', 60, 0)
 on conflict (key) do nothing;

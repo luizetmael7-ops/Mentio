@@ -39,10 +39,8 @@ export const COUNTRIES: Country[] = [
   { code: "FR", name: "France", nameEn: "France", language: "fr", flag: "🇫🇷" },
   { code: "BE", name: "Belgique", nameEn: "Belgium", language: "fr", flag: "🇧🇪" },
   { code: "CH", name: "Suisse", nameEn: "Switzerland", language: "fr", flag: "🇨🇭" },
-  { code: "CA", name: "Canada", nameEn: "Canada", language: "fr", flag: "🇨🇦" },
   { code: "US", name: "États-Unis", nameEn: "United States", language: "en", flag: "🇺🇸" },
   { code: "GB", name: "Royaume-Uni", nameEn: "United Kingdom", language: "en", flag: "🇬🇧" },
-  { code: "DE", name: "Allemagne", nameEn: "Germany", language: "de", flag: "🇩🇪" },
   { code: "ES", name: "Espagne", nameEn: "Spain", language: "es", flag: "🇪🇸" },
   { code: "IT", name: "Italie", nameEn: "Italy", language: "it", flag: "🇮🇹" },
   { code: "NL", name: "Pays-Bas", nameEn: "Netherlands", language: "nl", flag: "🇳🇱" },
@@ -54,8 +52,23 @@ export const COUNTRIES: Country[] = [
   { code: "JP", name: "Japon", nameEn: "Japan", language: "ja", flag: "🇯🇵" },
 ];
 
+/**
+ * LES MARCHÉS FERMÉS — décision du fondateur, non négociable par un agent.
+ *
+ * Allemagne, Autriche et Canada ne sont jamais mesurés, ni proposés, ni acceptés
+ * dans une demande. La règle vit à trois endroits pour qu'aucun ne suffise à la
+ * contourner : ici (catalogue, formulaires, Cartographe, API), et en base (une
+ * contrainte CHECK sur `index_categories` et `index_requests`).
+ */
+export const FORBIDDEN_COUNTRIES = ["DE", "AT", "CA"] as const;
+
+export function isForbiddenCountry(code: string | null | undefined): boolean {
+  return Boolean(code) && (FORBIDDEN_COUNTRIES as readonly string[]).includes(code!.toUpperCase());
+}
+
+/** Un marché OUVERT, ou null — un pays fermé est traité comme inconnu. */
 export function countryByCode(code: string | null | undefined): Country | null {
-  if (!code) return null;
+  if (!code || isForbiddenCountry(code)) return null;
   return COUNTRIES.find((c) => c.code === code.toUpperCase()) ?? null;
 }
 
@@ -231,7 +244,7 @@ export async function listCategories(): Promise<IndexCategory[]> {
   const byKey = new Map<string, IndexCategory>();
   for (const c of base) byKey.set(c.key, c);
   for (const c of extra) byKey.set(c.key, { ...byKey.get(c.key), ...c });
-  return [...byKey.values()].filter((c) => c.status !== "rejected");
+  return [...byKey.values()].filter((c) => c.status !== "rejected" && !isForbiddenCountry(c.country));
 }
 
 export async function categoryBySlug(slug: string): Promise<IndexCategory | null> {

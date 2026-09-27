@@ -132,6 +132,16 @@ export const cartographeRequest = inngest.createFunction(
       };
     });
     if (request.status !== "pending") return { skipped: true, reason: `déjà ${request.status}` };
+    // Marché fermé (DE, AT, CA) : refus sans appel au modèle.
+    if (!countryByCode(request.country)) {
+      await step.run("reject-country", async () => {
+        await supabase
+          .from("index_requests")
+          .update({ status: "rejected", note: "marché non couvert" })
+          .eq("id", request.id);
+      });
+      return { rejected: true, reason: "marché non couvert" };
+    }
 
     // 1. Rapprochement sans modèle : même libellé, même pays.
     const direct = categoryIdentity(request.category_input, request.country);

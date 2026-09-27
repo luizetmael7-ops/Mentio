@@ -106,12 +106,18 @@ select
   e.data -> 'topBrands' as top_brands,
   e.data -> 'topSources' as top_sources,
   e.data -> 'sampling' as sampling,
-  coalesce(jsonb_array_length(e.data -> 'answers'), 0) as answers_count,
+  -- Garde jsonb_typeof : une édition dont `answers` ne serait pas un tableau ne
+  -- doit pas faire échouer la vue entière (jsonb_array_length lève sur un scalaire).
+  case when jsonb_typeof(e.data -> 'answers') = 'array'
+    then jsonb_array_length(e.data -> 'answers') else 0 end as answers_count,
   (
     select jsonb_object_agg(t.model, t.n)
     from (
       select a ->> 'model' as model, count(*) as n
-      from jsonb_array_elements(coalesce(e.data -> 'answers', '[]'::jsonb)) as a
+      from jsonb_array_elements(
+        case when jsonb_typeof(e.data -> 'answers') = 'array'
+          then e.data -> 'answers' else '[]'::jsonb end
+      ) as a
       group by 1
     ) as t
   ) as answered_by_model

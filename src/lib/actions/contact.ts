@@ -3,6 +3,7 @@
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { CONTACT_KINDS } from "@/lib/contact-kinds";
 import { notifyFounder } from "@/lib/founder";
+import { fixturesEnabled } from "@/lib/fixtures";
 
 
 const VALID = new Set(CONTACT_KINDS.map((k) => k.value as string));
@@ -37,6 +38,10 @@ export async function sendContactMessage(
   }
   if (message.length > 4000) {
     return { ok: false, message: "Message trop long : 4000 caractères maximum." };
+  }
+
+  if (fixturesEnabled()) {
+    return { ok: true, message: "Message reçu (démonstration)." };
   }
 
   try {
