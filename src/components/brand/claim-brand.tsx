@@ -19,6 +19,13 @@ export function ClaimBrand({ brandName, slug }: { brandName: string; slug: strin
           <Check aria-hidden className="size-5 text-[var(--jade)]" /> Revendication enregistrée
         </p>
         <p className="mt-3 text-[var(--ink-soft)]">{state.message}</p>
+        {/* Sans attendre l'email : ce qui est public se lit tout de suite. */}
+        <Link
+          href={`/rapport/${slug}`}
+          className="mt-4 inline-flex items-center gap-1.5 font-semibold text-[var(--ink)] underline decoration-[var(--line)] underline-offset-4"
+        >
+          {`En attendant, le rapport de ${brandName}`} <ArrowRight aria-hidden className="size-4" />
+        </Link>
       </div>
     );
   }

@@ -3,6 +3,7 @@
 import { useActionState, useEffect } from "react";
 import { widgetScan } from "@/lib/actions/agency";
 import { TIERS } from "@/lib/spectrum";
+import { ordinal } from "@/lib/edition-format";
 
 /**
  * Le widget, tel qu'il s'affiche sur le site d'une agence (dans une iframe).
@@ -84,7 +85,7 @@ export function WidgetForm({
                 <span className="font-mono tabular-nums text-[var(--ink-soft)]">{`${r.score}/100`}</span>
               </p>
               <p className="mt-2 text-[var(--ink-soft)]">
-                {`${r.rank}e sur ${r.total} marques citées par ChatGPT et Gemini quand on leur demande « ${r.category.label} ».`}
+                {`${ordinal(r.rank)} sur ${r.total} marques citées par ChatGPT et Gemini quand on leur demande « ${r.category.label} ».`}
               </p>
             </>
           ) : r.status === "absent" ? (

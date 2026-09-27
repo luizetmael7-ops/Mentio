@@ -5,9 +5,13 @@ import { BrandNav } from "@/components/brand/nav";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { computeHealth } from "@/lib/health";
 import { listCategories, COUNTRIES, countryByCode, categoryPath } from "@/lib/index-catalog";
-import { getLatestSummaries, formatEditionDate } from "@/lib/index-edition";
+import { getLatestSummaries, formatEditionDate, brandSlug } from "@/lib/index-edition";
 import { estimateEditionUsd } from "@/lib/plan-economics";
 import { hotSubjects, describeHot } from "@/lib/radar";
+import { buildReport } from "@/lib/report";
+import { shareUrl } from "@/lib/report-access";
+import { appUrl } from "@/lib/customer-email";
+import { claimMailto, claimReplyDraft } from "@/lib/claim-reply";
 import {
   adminEmail,
   createCategory,
@@ -147,6 +151,24 @@ export default async function AdminPage() {
   const openContacts = contacts.filter((c) => !c.handled_at);
   const openLeads = leads.filter((l) => !l.handled_at);
 
+  // Les revendications ouvertes : la réponse promise, déjà rédigée, s'ouvre
+  // dans le client mail en un clic. Le fondateur relit et envoie (§8.1).
+  const replies = new Map<string, string>();
+  await Promise.all(
+    openLeads
+      .filter((l) => l.category === "revendication-barometre")
+      .slice(0, 10)
+      .map(async (l) => {
+        try {
+          const slug = brandSlug(l.brand_name);
+          const report = await buildReport(slug);
+          if (report) replies.set(l.id, claimMailto(l.email, claimReplyDraft(report, shareUrl(appUrl(), { slug }))));
+        } catch {
+          // sans rapport ni clé de signature : le simple lien mailto reste
+        }
+      })
+  );
+
   return (
     <div className="flex min-h-screen flex-col bg-[var(--porcelain)] text-[var(--ink)]">
       <BrandNav />
@@ -261,6 +283,11 @@ export default async function AdminPage() {
                       <a href={`mailto:${l.email}`} className="font-medium underline decoration-[var(--line)] underline-offset-4">
                         {l.email}
                       </a>
+                      {replies.has(l.id) && (
+                        <a href={replies.get(l.id)} className="mt-1 block text-xs font-semibold text-[var(--poppy-ink)]">
+                          Répondre — brouillon prêt
+                        </a>
+                      )}
                     </td>
                     <td className="px-4 py-3">{l.brand_name}</td>
                     <td className="px-4 py-3 text-[var(--ink-soft)]">{l.category}</td>

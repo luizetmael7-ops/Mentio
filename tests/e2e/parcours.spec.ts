@@ -1,3 +1,4 @@
+import { createHmac } from "node:crypto";
 import { test, expect, type Page } from "@playwright/test";
 
 /**
@@ -81,6 +82,24 @@ test("« c'est ma marque » : la revendication aboutit", async ({ page }) => {
   await email.fill("marque@exemple.fr");
   await email.press("Enter");
   await expect(page.getByText(/est revendiquée|C'est noté/)).toBeVisible();
+  // Sans attendre l'email : le rapport se lit tout de suite, et il propose le suivi.
+  await page.getByRole("link", { name: /En attendant, le rapport de La Roche-Posay/ }).click();
+  await expect(page).toHaveURL(/\/rapport\/la-roche-posay$/);
+  await expect(page.getByRole("button", { name: /Suivre La Roche-Posay — 19\s€\spar\smois/ })).toBeVisible();
+  await expectNoGluedWords(page);
+  await expectNoHorizontalScroll(page);
+});
+
+test("rapport aux couleurs d'une agence : aucune offre Mentio à son prospect", async ({ page }) => {
+  // Le jeton est frappé avec la clé du serveur de démonstration (SUPABASE_SERVICE_ROLE_KEY=demo).
+  const params = { slug: "la-roche-posay", agence: "Agence Démo", couleur: "#0055AA", logo: "" };
+  const jeton = createHmac("sha256", "demo")
+    .update([params.slug, params.agence, params.couleur, params.logo].join("\u0000"))
+    .digest("base64url");
+  const query = new URLSearchParams({ agence: params.agence, couleur: params.couleur, jeton });
+  await page.goto(`/rapport/la-roche-posay?${query.toString()}`);
+  await expect(page.getByText("Agence Démo").first()).toBeVisible();
+  await expect(page.getByRole("button", { name: /Suivre La Roche-Posay/ })).toHaveCount(0);
 });
 
 test("méthodologie : l'erratum publie l'édition écartée", async ({ page }) => {
@@ -111,7 +130,7 @@ test("mesure prioritaire : du formulaire au rapport livré, avec l'offre de suiv
   await expect(page).toHaveURL(/\/rapport\/c\/demo/);
   await expect(page.getByRole("heading", { name: "Soleil Test", exact: true })).toBeVisible();
   // Une marque absente a un rapport quand même : c'est un diagnostic, pas une page blanche.
-  await expect(page.getByRole("button", { name: /Suivre Soleil Test — 19 € par mois/ })).toBeVisible();
+  await expect(page.getByRole("button", { name: /Suivre Soleil Test — 19\s€\spar\smois/ })).toBeVisible();
   await expectNoGluedWords(page);
   await expectNoHorizontalScroll(page);
 });

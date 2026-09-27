@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { brandSlug } from "@/lib/index-edition";
 import { ReportView } from "@/components/brand/report-view";
+import { SuiviOffer } from "@/components/brand/suivi-offer";
 import { buildReport, parseBranding } from "@/lib/report";
 import { verifyShare, type ReportAccess } from "@/lib/report-access";
 import { getEditions } from "@/lib/index-edition";
@@ -67,5 +68,10 @@ export default async function RapportPage({
   const access: ReportAccess = signed ? "complet" : "public";
   const branding = signed ? requested : {};
 
-  return <ReportView report={report} access={access} branding={branding} radarSubject={slug} />;
+  // Le suivi se propose au lecteur d'un rapport Mentio, jamais sur celui d'une agence.
+  const suivi = branding.agency ? null : (
+    <SuiviOffer brand={report.name} categoryKey={report.vertical} tierKey={report.tier.key} />
+  );
+
+  return <ReportView report={report} access={access} branding={branding} extra={suivi} radarSubject={slug} />;
 }

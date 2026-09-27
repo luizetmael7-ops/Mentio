@@ -18,6 +18,11 @@ export function formatEditionDate(date: string): string {
   return text.replace(/^1 /, "1er ");
 }
 
+/** Le rang, à la française : « 1re », « 2e » — jamais « 1e ». */
+export function ordinal(rank: number): string {
+  return rank === 1 ? "1re" : `${rank}e`;
+}
+
 /** Identifiant d'URL d'une marque : « Nutri&Co » → « nutri-co ». */
 export function brandSlug(name: string): string {
   return name

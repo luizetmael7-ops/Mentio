@@ -5,6 +5,7 @@ import { lookupBrand, matchCategory } from "@/lib/index-lookup";
 import { sameBrand } from "@/lib/llm/judge";
 import { TIERS, tierOf } from "@/lib/spectrum";
 import { modelName } from "@/lib/models";
+import { ordinal } from "@/lib/edition-format";
 
 /**
  * LE SERVEUR MCP DE L'INDEX — l'Index, branchable dans n'importe quel assistant.
@@ -120,7 +121,7 @@ async function callTool(name: string, args: Args): Promise<{ text: string; data:
           ? `Rien dans l'Index pour « ${q} ». Une catégorie peut être demandée sur ${SITE}/ajouter.`
           : [
               ...cats.map((c) => `Catégorie « ${c.label} » (${c.country}) — ${c.measured ? "mesurée" : "dans la file"} : ${c.url}`),
-              ...brands.map((b) => `Marque ${b.brand} — ${b.rank}e dans « ${b.category} »`),
+              ...brands.map((b) => `Marque ${b.brand} — ${ordinal(b.rank)} dans « ${b.category} »`),
               ATTRIBUTION,
             ].join("\n");
       return { text, data };
@@ -147,7 +148,7 @@ async function callTool(name: string, args: Args): Promise<{ text: string; data:
         const r = await lookupBrand(brand, str(args.category), country);
         const text =
           r.status === "found"
-            ? `${brand} est ${r.tierLabel} (${r.score}/100), ${r.rank}e sur ${r.total} dans « ${r.category.label} » (édition du ${formatEditionDate(r.editionDate)}).`
+            ? `${brand} est ${r.tierLabel} (${r.score}/100), ${ordinal(r.rank)} sur ${r.total} dans « ${r.category.label} » (édition du ${formatEditionDate(r.editionDate)}).`
             : r.status === "absent"
               ? `${brand} n'est citée dans aucune réponse sur « ${r.category.label} » (édition du ${formatEditionDate(r.editionDate)}) : palier Invisible.`
               : `Cette catégorie n'est pas encore mesurée en ${country}. Demande possible sur ${SITE}/ajouter.`;
@@ -162,7 +163,7 @@ async function callTool(name: string, args: Args): Promise<{ text: string; data:
         found.push({ category: categories.find((c) => c.key === key)?.label ?? key, rank: i + 1, score, tier: tierOf(score).label, edition: s.date });
       }
       const text = found.length
-        ? [...found.map((f) => `${brand} : ${f.tier} (${f.score}/100), ${f.rank}e dans « ${f.category} » — édition du ${formatEditionDate(f.edition)}`), `Fiche : ${SITE}/marques/${brandSlug(brand)}`, ATTRIBUTION].join("\n")
+        ? [...found.map((f) => `${brand} : ${f.tier} (${f.score}/100), ${ordinal(f.rank)} dans « ${f.category} » — édition du ${formatEditionDate(f.edition)}`), `Fiche : ${SITE}/marques/${brandSlug(brand)}`, ATTRIBUTION].join("\n")
         : `${brand} n'apparaît dans aucune catégorie mesurée de l'Index. Elle peut y être ajoutée : ${SITE}/ajouter`;
       return { text, data: { brand, categories: found } };
     }

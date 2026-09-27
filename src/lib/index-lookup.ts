@@ -2,6 +2,7 @@ import { categoryIdentity, listCategories, slugify, type IndexCategory } from "@
 import { getLatestSummaries, brandScore } from "@/lib/index-edition";
 import { sameBrand } from "@/lib/llm/judge";
 import { tierOf } from "@/lib/spectrum";
+import { ordinal } from "@/lib/edition-format";
 
 /**
  * « Où en est cette marque ? » — la réponse que l'Index donne SANS dépenser.
@@ -84,7 +85,7 @@ export async function lookupBrand(brand: string, categoryInput: string, country:
 /** Une ligne lisible, pour l'email de l'agence et la table des leads. */
 export function describeLookup(r: LookupResult, brand: string): string {
   if (r.status === "found") {
-    return `${brand} est ${r.tierLabel} (${r.score}/100), ${r.rank}e sur ${r.total} dans « ${r.category.label} ».`;
+    return `${brand} est ${r.tierLabel} (${r.score}/100), ${ordinal(r.rank)} sur ${r.total} dans « ${r.category.label} ».`;
   }
   if (r.status === "absent") {
     return `${brand} n'est citée dans aucune réponse sur « ${r.category.label} » (${r.total} marques citées${r.leader ? `, ${r.leader} en tête` : ""}).`;
