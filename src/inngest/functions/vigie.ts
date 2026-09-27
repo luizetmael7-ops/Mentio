@@ -17,6 +17,7 @@ import { supabaseAdmin } from "@/lib/supabase/admin";
 import { computeHealth, type HealthReport } from "@/lib/health";
 import { notifyFounder, cockpitUrl } from "@/lib/founder";
 import { freeJson } from "@/lib/llm/free-json";
+import { hotSubjects, describeHot, type HotSubject } from "@/lib/radar";
 
 const ICON = { critique: "🔴", important: "🟠", info: "⚪" } as const;
 
@@ -60,6 +61,8 @@ interface WeekStats {
   scans: number;
   editions: Array<{ vertical: string; date: string }>;
   paying: number;
+  /** La caisse de la semaine : commandes payées, chiffre, suivis actifs */
+  orders: { paid: number; revenueEur: number; suivisActifs: number };
 }
 
 async function weekStats(): Promise<WeekStats> {
@@ -87,6 +90,26 @@ async function weekStats(): Promise<WeekStats> {
     .from("organizations")
     .select("id", { count: "exact", head: true })
     .neq("plan", "free");
+  const orders = { paid: 0, revenueEur: 0, suivisActifs: 0 };
+  try {
+    const { data: week } = await supabase
+      .from("orders")
+      .select("kind, amount_eur, status")
+      .gte("paid_at", since);
+    for (const o of (week ?? []) as Array<{ kind: string; amount_eur: number | null; status: string }>) {
+      if (o.status === "refunded") continue;
+      orders.paid += 1;
+      orders.revenueEur += Number(o.amount_eur ?? 0);
+    }
+    const { count } = await supabase
+      .from("orders")
+      .select("id", { count: "exact", head: true })
+      .eq("kind", "suivi")
+      .eq("status", "active");
+    orders.suivisActifs = count ?? 0;
+  } catch {
+    // table absente
+  }
   return {
     contacts: await count("contact_messages"),
     leads: await count("leads"),
@@ -98,6 +121,7 @@ async function weekStats(): Promise<WeekStats> {
       date: e.edition_date,
     })),
     paying: paying ?? 0,
+    orders,
   };
 }
 
@@ -108,9 +132,14 @@ const AdviceSchema = z.object({ conseil: z.string().min(10).max(600) });
  * SEULEMENT. Il ne voit que ce qui est dans ce mail ; s'il échoue, une règle
  * simple prend le relais. Jamais d'appel payant pour ça.
  */
-async function adviceFor(stats: WeekStats, report: HealthReport): Promise<string> {
+async function adviceFor(stats: WeekStats, report: HealthReport, hot: Array<HotSubject & { label: string }>): Promise<string> {
   if (report.waiting.length > 0) {
     return `Commence par répondre aux ${report.waiting.length} personne(s) qui attendent : une réponse humaine sous 24 h vaut plus que tout le reste du tunnel.`;
+  }
+  // Une intention visible vaut mieux que cent emails à froid.
+  const top = hot[0];
+  if (top && top.score >= 5 && !top.kinds.widget) {
+    return `${top.label} montre le plus d'intérêt cette semaine (${describeHot(top)}). Un message personnel à la marque, avec le lien de son rapport, est l'action la plus rentable de ta semaine.`;
   }
   try {
     const { value } = await freeJson(
@@ -134,13 +163,15 @@ export const secretaire = inngest.createFunction(
   async ({ step }) => {
     const report = await step.run("health", computeHealth);
     const stats = await step.run("stats", weekStats);
-    const advice = await step.run("advice", () => adviceFor(stats, report));
+    const hot = await step.run("radar", () => hotSubjects(7, 3));
+    const advice = await step.run("advice", () => adviceFor(stats, report, hot));
 
     await step.run("send", () =>
       notifyFounder("bilan", `Semaine : ${stats.scans} scans, ${stats.leads} leads, ${stats.paying} payant(s)`, [
         "LA SEMAINE",
         `· ${stats.scans} scans publics · ${stats.leads} leads · ${stats.contacts} messages · ${stats.requests} demandes d'ajout`,
         `· ${stats.signups} inscriptions · ${stats.paying} organisation(s) payante(s) au total`,
+        `· Caisse : ${stats.orders.paid} commande(s) payée(s), ${stats.orders.revenueEur} € · ${stats.orders.suivisActifs} suivi(s) actif(s)`,
         `· ${stats.editions.length} édition(s) publiée(s)${
           stats.editions.length ? ` : ${stats.editions.map((e) => `${e.vertical} (${e.date})`).join(", ")}` : ""
         }`,
@@ -155,6 +186,10 @@ export const secretaire = inngest.createFunction(
         report.waiting.length
           ? `ILS ATTENDENT UNE RÉPONSE\n${report.waiting.map((w) => `· ${w.at.slice(0, 10)} — ${w.who} : ${w.what}`).join("\n")}`
           : "Personne n'attend de réponse.",
+        "",
+        hot.length
+          ? `LE RADAR — qui se pose la question\n${hot.map((h) => `· ${h.kinds.widget ? `Widget ${h.subject}` : h.label} : ${describeHot(h)}`).join("\n")}`
+          : "Le Radar n'a rien vu cette semaine.",
         "",
         "LA SEULE CHOSE À FAIRE CETTE SEMAINE",
         advice,

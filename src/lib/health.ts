@@ -3,6 +3,7 @@ import { listCategories, type IndexCategory } from "@/lib/index-catalog";
 import { getLatestSummaries, getRejectedEditions, type RejectedEdition } from "@/lib/index-edition";
 import { isModelConfigured, modelName } from "@/lib/models";
 import { monthlyCapUsd, spentThisMonthUsd } from "@/lib/spend-guard";
+import { checkFreeModels, freeModels } from "@/lib/llm/free-models";
 
 /**
  * L'ÉTAT DE SANTÉ DE MENTIO — ce qui est cassé, ce qui attend un humain.
@@ -54,6 +55,13 @@ export interface HealthInputs {
   monthUsd: number;
   capUsd: number;
   waiting: InboundItem[];
+  /**
+   * Modèles gratuits de la chaîne qui ont disparu d'OpenRouter. `null` : liste
+   * illisible ce matin (réseau), rien à conclure. Absent : non vérifié.
+   */
+  freeModelsMissing?: string[] | null;
+  /** Nombre de modèles dans la chaîne gratuite */
+  freeChainLength?: number;
 }
 
 const DAY = 86_400_000;
@@ -74,6 +82,22 @@ export function assessHealth(input: HealthInputs): HealthReport {
         } sur Vercel.`,
       });
     }
+  }
+
+  // 1 bis. Les modèles gratuits existent-ils encore ? Le 27 septembre 2026, le
+  // dernier maillon répondait 404 depuis on ne sait quand.
+  const missing = input.freeModelsMissing ?? [];
+  if (missing.length > 0) {
+    const all = missing.length >= (input.freeChainLength ?? missing.length);
+    issues.push({
+      severity: all ? "critique" : "important",
+      title: all ? "Plus aucun modèle gratuit pour le juge" : "Un modèle gratuit a disparu",
+      detail: `${missing.join(", ")} ${missing.length > 1 ? "ne sont" : "n'est"} plus proposé${missing.length > 1 ? "s" : ""} par OpenRouter.${
+        all
+          ? " Le juge bascule sur le moteur payant à chaque réponse mesurée."
+          : " La chaîne de repli est plus courte."
+      } Remplacer dans OPENROUTER_FREE_MODELS (Vercel), ou dans src/lib/llm/free-models.ts.`,
+    });
   }
 
   // 2. Les éditions écartées depuis moins de trois semaines
@@ -232,6 +256,8 @@ export async function gatherHealth(): Promise<HealthInputs> {
     monthUsd: await spentThisMonthUsd(),
     capUsd: monthlyCapUsd(),
     waiting,
+    freeModelsMissing: process.env.OPENROUTER_API_KEY ? (await checkFreeModels()).missing : undefined,
+    freeChainLength: freeModels().length,
   };
 }
 

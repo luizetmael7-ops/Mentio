@@ -9,6 +9,7 @@
 import OpenAI from "openai";
 import { zodResponseFormat } from "openai/helpers/zod";
 import { z } from "zod";
+import { freeModels, FREE_CALL_TIMEOUT_MS } from "@/lib/llm/free-models";
 
 const GENERATOR_MODEL = process.env.OPENAI_JUDGE_MODEL ?? "gpt-5.4-mini";
 
@@ -31,15 +32,11 @@ function client(): OpenAI {
  * aucune recherche web, donc aucun forfait. C'est le second poste qui passe à zéro.
  */
 async function generateWithOpenRouter(industry: string, count: number): Promise<string[]> {
-  const models = [
-    process.env.OPENROUTER_JUDGE_MODEL ?? "nvidia/nemotron-3-ultra-550b-a55b:free",
-    "nvidia/nemotron-3-super-120b-a12b:free",
-    "nvidia/nemotron-3-nano-30b-a3b:free",
-  ];
   let lastError: unknown;
-  for (const model of models) {
+  for (const model of freeModels()) {
     try {
       const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+        signal: AbortSignal.timeout(FREE_CALL_TIMEOUT_MS),
         method: "POST",
         headers: {
           Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,

@@ -7,6 +7,7 @@ import { computeHealth } from "@/lib/health";
 import { listCategories, COUNTRIES, countryByCode, categoryPath } from "@/lib/index-catalog";
 import { getLatestSummaries, formatEditionDate } from "@/lib/index-edition";
 import { estimateEditionUsd } from "@/lib/plan-economics";
+import { hotSubjects, describeHot } from "@/lib/radar";
 import {
   adminEmail,
   createCategory,
@@ -95,6 +96,28 @@ export default async function AdminPage() {
   const email = await adminEmail();
   if (!email) notFound();
 
+  const [hot, ordersResult] = await Promise.all([
+    hotSubjects(14, 12),
+    supabaseAdmin()
+      .from("orders")
+      .select("id, kind, status, brand_name, category_input, country, amount_eur, created_at")
+      .order("created_at", { ascending: false })
+      .limit(20)
+      .then(
+        (r) => r,
+        () => ({ data: null })
+      ),
+  ]);
+  const orders = (ordersResult.data ?? []) as Array<{
+    id: string;
+    kind: string;
+    status: string;
+    brand_name: string;
+    category_input: string;
+    country: string;
+    amount_eur: number | null;
+    created_at: string;
+  }>;
   const [health, contacts, leads, requests, categories, summaries, promptsResult] = await Promise.all([
     computeHealth(),
     load<ContactRow>(
@@ -301,6 +324,14 @@ export default async function AdminPage() {
                       <td className="px-4 py-3 text-[var(--ink-soft)]">{last ? formatEditionDate(last) : "—"}</td>
                       <td className="px-4 py-3 text-right">
                         <div className="flex justify-end gap-3">
+                          {last ? (
+                            <a
+                              href={`/api/carrousel/${c.key === "beaute_complements" ? "barometre" : c.slug}`}
+                              className="font-semibold text-[var(--ink)] underline decoration-[var(--line)] underline-offset-4"
+                            >
+                              Carrousel PDF
+                            </a>
+                          ) : null}
                           {q === 0 ? (
                             <form action={prepareNow}>
                               <input type="hidden" name="key" value={c.key} />
@@ -346,6 +377,62 @@ export default async function AdminPage() {
             </select>
             <button className="h-10 rounded-xl bg-[var(--ink)] px-4 text-sm font-semibold text-white">Ouvrir</button>
           </form>
+        </section>
+
+        {/* La caisse : ce qui a été payé, et où en est la livraison */}
+        <section className="mt-10">
+          <h2 className="font-display text-xl font-extrabold uppercase tracking-wide">{`La caisse · ${orders.length}`}</h2>
+          <ul className="mt-3 space-y-2 text-sm">
+            {orders.length === 0 && (
+              <li className="rounded-2xl border border-[var(--line)] bg-white px-5 py-4 text-[var(--ink-soft)]">
+                Aucune commande pour l&apos;instant.
+              </li>
+            )}
+            {orders.map((o) => (
+              <li key={o.id} className="flex flex-wrap items-baseline justify-between gap-2 rounded-2xl border border-[var(--line)] bg-white px-5 py-3">
+                <span>
+                  <Link href={`/commande/${o.id}`} className="font-semibold underline decoration-[var(--line)] underline-offset-4">
+                    {o.brand_name}
+                  </Link>
+                  {` · ${o.kind === "priority" ? "mesure prioritaire" : o.kind === "suivi" ? "suivi" : "crédit agence"} · « ${o.category_input} » ${countryByCode(o.country)?.flag ?? o.country}`}
+                </span>
+                <span className="font-metric text-xs tabular-nums text-[var(--ink-soft)]">
+                  {`${o.amount_eur ? `${o.amount_eur} € · ` : ""}${o.status} · ${ago(o.created_at)}`}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        {/* Le Radar : qui se pose la question en ce moment */}
+        <section className="mt-10">
+          <h2 className="font-display text-xl font-extrabold uppercase tracking-wide">Le Radar · 14 jours</h2>
+          <p className="mt-1 text-sm text-[var(--ink-soft)]">
+            Visiteurs distincts, sans cookie. Un rapport ouvert ou un clic depuis un badge pèse plus qu&apos;une fiche consultée.
+            Écrire ou non reste ta décision.
+          </p>
+          <ul className="mt-3 space-y-2 text-sm">
+            {hot.length === 0 && (
+              <li className="rounded-2xl border border-[var(--line)] bg-white px-5 py-4 text-[var(--ink-soft)]">
+                Aucun signal pour l&apos;instant.
+              </li>
+            )}
+            {hot.map((h) => (
+              <li key={h.subject} className="flex flex-wrap items-baseline justify-between gap-2 rounded-2xl border border-[var(--line)] bg-white px-5 py-3">
+                <span>
+                  {h.kinds.widget ? (
+                    <strong>{`Widget ${h.subject}`}</strong>
+                  ) : (
+                    <Link href={`/marques/${h.subject}`} className="font-semibold underline decoration-[var(--line)] underline-offset-4">
+                      {h.label}
+                    </Link>
+                  )}
+                  <span className="text-[var(--ink-soft)]">{` · ${describeHot(h)}`}</span>
+                </span>
+                <span className="font-metric text-xs tabular-nums text-[var(--ink-soft)]">{`${h.score} pts · ${ago(h.lastSeen)}`}</span>
+              </li>
+            ))}
+          </ul>
         </section>
 
         {/* 4. Les demandes publiques */}

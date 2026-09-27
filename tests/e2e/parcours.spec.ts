@@ -182,3 +182,21 @@ test("serveur MCP : un assistant peut lire l'Index", async ({ request }) => {
   const unknown = await rpc("tools/call", { name: "nope", arguments: {} });
   expect(unknown.error.code).toBe(-32602);
 });
+
+test("partage : carrousel PDF et image d'une catégorie publiée", async ({ request }) => {
+  const pdf = await request.get("/api/carrousel/barometre");
+  expect(pdf.status()).toBe(200);
+  expect(pdf.headers()["content-type"]).toContain("application/pdf");
+  expect((await pdf.body()).subarray(0, 5).toString()).toBe("%PDF-");
+  const missing = await request.get("/api/carrousel/categorie-inexistante-fr");
+  expect(missing.status()).toBe(404);
+  const og = await request.get("/barometre/opengraph-image");
+  expect(og.headers()["content-type"]).toContain("image/png");
+});
+
+test("Radar : le récepteur ne gêne jamais une page", async ({ request }) => {
+  const ok = await request.post("/api/signal", { data: { kind: "marque", subject: "la-roche-posay" } });
+  expect(ok.status()).toBe(204);
+  const junk = await request.post("/api/signal", { data: "pas du json" });
+  expect(junk.status()).toBe(204);
+});

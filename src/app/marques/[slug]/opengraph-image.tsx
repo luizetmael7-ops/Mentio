@@ -1,6 +1,7 @@
 import { ImageResponse } from "next/og";
 import { getEditionsForBrand, brandSlug, brandScore, citationCount } from "@/lib/index-edition";
-import { tierOf } from "@/lib/spectrum";
+import { TIERS, tierOf } from "@/lib/spectrum";
+import { LogoBars } from "@/lib/og/ranking-card";
 
 export const alt = "Score de visibilité IA — Baromètre Mentio";
 export const size = { width: 1200, height: 630 };
@@ -42,14 +43,7 @@ export default async function OgImage({ params }: { params: Promise<{ slug: stri
       >
         {/* Marque + barres du logo */}
         <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-          <div style={{ display: "flex", alignItems: "flex-end", gap: 4, height: 30 }}>
-            {["#727387", "#7A5FA8", "#EF8060", "#E7A94B", "#E8462B"].map((c, i) => (
-              <div
-                key={c}
-                style={{ width: 6, height: 10 + i * 5, backgroundColor: c, borderRadius: 2 }}
-              />
-            ))}
-          </div>
+          <LogoBars size={30} />
           <div style={{ fontSize: 26, fontWeight: 700, color: "#171520", letterSpacing: -0.5 }}>
             Mentio
           </div>
@@ -132,8 +126,8 @@ export default async function OgImage({ params }: { params: Promise<{ slug: stri
         {/* Le spectre complet, en pied */}
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
           <div style={{ display: "flex", height: 10, borderRadius: 5, overflow: "hidden" }}>
-            {["#727387", "#7A5FA8", "#EF8060", "#E7A94B", "#E8462B"].map((c) => (
-              <div key={c} style={{ flex: 1, backgroundColor: c }} />
+            {TIERS.map((t) => (
+              <div key={t.key} style={{ flex: 1, backgroundColor: t.hex }} />
             ))}
           </div>
           <div style={{ display: "flex", justifyContent: "space-between", fontSize: 16, color: "#544F60" }}>

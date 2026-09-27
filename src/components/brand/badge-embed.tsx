@@ -9,7 +9,8 @@ import { Check, Copy } from "lucide-react";
  */
 export function BadgeEmbed({ slug, brandName }: { slug: string; brandName: string }) {
   const [copied, setCopied] = useState(false);
-  const url = `https://mentio.fr/marques/${slug}`;
+  // `source=badge` : un clic depuis le badge est un signal du Radar (sans cookie).
+  const url = `https://mentio.fr/marques/${slug}?source=badge`;
   const snippet = `<a href="${url}" target="_blank" rel="noopener">\n  <img src="https://mentio.fr/api/badge/${slug}" alt="Score Mentio de ${brandName}" height="40" />\n</a>`;
 
   return (

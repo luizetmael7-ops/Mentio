@@ -1,0 +1,13 @@
+{
+ "evaluated": "2026-09-27",
+ "run": "https://github.com/luizetmael7-ops/Mentio/actions/runs/36308433478",
+ "judge": "palier gratuit OpenRouter (Nemotron 3 Ultra, repli Super)",
+ "answers": 20,
+ "judged": 19,
+ "expectedBrands": 100,
+ "precision": 1.0,
+ "recall": 1.0,
+ "emptyCorrect": 5,
+ "emptyTotal": 5,
+ "note": "Une réponse (piège sans marque) n'a pas pu être notée : modèles gratuits indisponibles pendant l'évaluation."
+}

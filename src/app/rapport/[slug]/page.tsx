@@ -67,5 +67,5 @@ export default async function RapportPage({
   const access: ReportAccess = signed ? "complet" : "public";
   const branding = signed ? requested : {};
 
-  return <ReportView report={report} access={access} branding={branding} />;
+  return <ReportView report={report} access={access} branding={branding} radarSubject={slug} />;
 }

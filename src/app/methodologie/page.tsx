@@ -8,6 +8,7 @@ import { CONTEST_GAP, CONTESTED_PASSES, MAX_CONTESTED_QUESTIONS } from "@/lib/me
 import { getEditions, getRejectedEditions, formatEditionDate, brandScore } from "@/lib/index-edition";
 import { verticalLabel } from "@/lib/verticals";
 import reference from "../../../tests/reference/annotations.json";
+import referenceScore from "../../../tests/reference/score.json";
 
 /** Le jeu de référence, compté depuis le fichier annoté — jamais recopié. */
 const REFERENCE = {
@@ -232,11 +233,15 @@ export default async function MethodologiePage() {
               affiche. Un écart fait échouer la vérification, et la modification n&apos;est pas fusionnée.
             </li>
             <li>
-              <strong className="text-[var(--ink)]">Un jeu de référence annoté à la main.</strong>{" "}
-              {`${REFERENCE.answers} réponses réelles de ChatGPT et Gemini, relues une à une : ${REFERENCE.brands} marques à trouver, et ${REFERENCE.empty} réponses pièges qui ne citent que des autorités de santé, des médias ou des ingrédients — le lecteur automatique doit les rendre vides. Il est noté dessus (précision, rappel) avant chaque changement.${
-                REFERENCE.validated ? "" : " Les scores seront publiés ici dès la validation des annotations."
-              }`}
+              <strong className="text-[var(--ink)]">Un jeu de référence.</strong>{" "}
+              {`${REFERENCE.answers} réponses réelles de ChatGPT et Gemini, dont les marques ont été relevées une à une, indépendamment du lecteur automatique : ${REFERENCE.brands} marques à trouver, et ${REFERENCE.empty} réponses pièges qui ne citent que des autorités de santé, des médias ou des ingrédients — le lecteur doit les rendre vides. Il est noté dessus avant chaque changement.`}
             </li>
+            {REFERENCE.validated ? (
+              <li>
+                <strong className="text-[var(--ink)]">Sa note.</strong>{" "}
+                {`Évaluation du ${formatEditionDate(referenceScore.evaluated)} : précision ${Math.round(referenceScore.precision * 100)} %, rappel ${Math.round(referenceScore.recall * 100)} %, sur ${referenceScore.judged} réponses notées et ${referenceScore.expectedBrands} marques ; ${referenceScore.emptyCorrect} réponses pièges sur ${referenceScore.emptyTotal} rendues vides. Aucune institution, aucun média, aucun ingrédient pris pour une marque. Vingt réponses ne prouvent pas l'infaillibilité : le jeu s'agrandit à chaque édition, et la note est republiée ici.`}
+              </li>
+            ) : null}
             <li>
               <strong className="text-[var(--ink)]">Ce qu&apos;il a déjà trouvé.</strong> Une marque au
               nom court pouvait être confondue avec une autre qui le contient (« RoC » dans « La

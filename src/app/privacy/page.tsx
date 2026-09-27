@@ -25,6 +25,13 @@ export default function PrivacyPage() {
               empreinte salée de votre adresse IP pour limiter les abus — jamais l&apos;adresse
               elle-même. La mesure d&apos;usage passe par PostHog (cloud UE).
             </p>
+            <p className="mt-3">
+              Quand vous ouvrez la fiche ou le rapport d&apos;une marque, nous comptons la visite sans
+              cookie : une empreinte de votre connexion, recalculée chaque jour, qui ne permet pas de
+              vous reconnaître le lendemain ni de vous identifier. Rien n&apos;est compté si votre
+              navigateur demande de ne pas être suivi. Le widget installé chez une agence ne contient
+              aucun traceur.
+            </p>
           </section>
           <section>
             <h2 className="font-semibold text-[var(--ink)]">Ce que nous en faisons</h2>

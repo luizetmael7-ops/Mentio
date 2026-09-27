@@ -4,6 +4,7 @@ import { supabaseAdmin } from "@/lib/supabase/admin";
 import { captureServer } from "@/lib/posthog-server";
 import { notifyFounder } from "@/lib/founder";
 import { fixturesEnabled } from "@/lib/fixtures";
+import { brandSlug } from "@/lib/edition-format";
 
 /**
  * « C'est ma marque » — revendication d'une page du Baromètre.
@@ -50,6 +51,11 @@ export async function claimBrand(
     }
 
     if (!existing) {
+      // Le signal le plus fort du Radar : quelqu'un de la marque se déclare.
+      await admin
+        .from("signals")
+        .insert({ kind: "revendication", subject: brandSlug(brandName) })
+        .then(() => undefined, () => undefined);
       await notifyFounder(
         "lead",
         `« C'est ma marque » — ${brandName} (${email})`,

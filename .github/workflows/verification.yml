@@ -127,6 +127,9 @@ jobs:
           node-version: "22"
           cache: npm
       - run: npm ci
+      - name: Les modèles gratuits existent encore
+        run: npx tsx scripts/audit/free-models.ts
+
       - name: Le juge noté sur le jeu de référence (gratuit)
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}

@@ -4,6 +4,7 @@ import { BrandNav } from "@/components/brand/nav";
 import { BrandFooter } from "@/components/brand/footer";
 import { TierScale } from "@/components/brand/tier";
 import { PrintButton } from "@/components/brand/print-button";
+import { RadarBeacon } from "@/components/brand/radar-beacon";
 import { modelName, INDEX_CADENCE } from "@/lib/models";
 import { formatEditionDate, citationCount } from "@/lib/edition-format";
 import type { BrandReport, ReportBranding } from "@/lib/report";
@@ -21,6 +22,7 @@ export function ReportView({
   branding,
   extra,
   showPublicPage = true,
+  radarSubject,
 }: {
   report: BrandReport;
   access: ReportAccess;
@@ -29,6 +31,8 @@ export function ReportView({
   extra?: ReactNode;
   /** La page /marques/[slug] n'existe que pour une marque classée */
   showPublicPage?: boolean;
+  /** Le rapport public signale son ouverture au Radar ; le rapport d'un client, non. */
+  radarSubject?: string;
 }) {
   const accent = branding.color ?? "var(--poppy)";
   return (
@@ -36,6 +40,7 @@ export function ReportView({
       <div className="print:hidden">
         <BrandNav />
       </div>
+      {radarSubject ? <RadarBeacon kind="rapport" subject={radarSubject} /> : null}
 
       <main className="mx-auto w-full max-w-3xl flex-1 px-5 pb-24 pt-28 print:pt-6">
         {/* Bandeau agence — présent seulement s'il a été demandé */}

@@ -1,5 +1,6 @@
 import OpenAI from "openai";
 import type { z } from "zod";
+import { freeModels, FREE_CALL_TIMEOUT_MS } from "@/lib/llm/free-models";
 
 /**
  * LES MODÈLES DE TRAITEMENT — du JSON, en palier gratuit d'abord.
@@ -11,13 +12,8 @@ import type { z } from "zod";
  *
  * Un seul point d'entrée pour tous les agents : la chaîne de repli ne se
  * réécrit pas à chaque module, et le jour où un modèle gratuit disparaît, on le
- * remplace ici.
+ * remplace dans `free-models.ts`.
  */
-const FREE_MODELS = [
-  process.env.OPENROUTER_JUDGE_MODEL ?? "nvidia/nemotron-3-ultra-550b-a55b:free",
-  "nvidia/nemotron-3-super-120b-a12b:free",
-  "nvidia/nemotron-3-nano-30b-a3b:free",
-];
 
 /** Filet payant, minuscule : ~0,001 $ l'appel, sans recherche web. */
 const PAID_FALLBACK = process.env.OPENAI_JUDGE_MODEL ?? "gpt-5.4-mini";
@@ -31,6 +27,7 @@ function extractJson(content: string): unknown {
 
 async function viaOpenRouter(model: string, system: string, user: string): Promise<unknown> {
   const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+    signal: AbortSignal.timeout(FREE_CALL_TIMEOUT_MS),
     method: "POST",
     headers: {
       Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
@@ -82,7 +79,7 @@ export async function freeJson<T>(
 ): Promise<{ value: T; model: string }> {
   const errors: string[] = [];
   if (process.env.OPENROUTER_API_KEY) {
-    for (const model of FREE_MODELS) {
+    for (const model of freeModels()) {
       try {
         return { value: schema.parse(await viaOpenRouter(model, system, user)), model };
       } catch (error) {

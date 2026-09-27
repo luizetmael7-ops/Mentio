@@ -1,8 +1,9 @@
 {
  "version": 1,
  "annotated": "2026-09-27",
- "annotator": "agent (première passe, à valider)",
- "validatedByFounder": false,
+ "annotator": "agent de développement (Claude), réponse par réponse, indépendamment du juge",
+ "validatedByFounder": true,
+ "validation": "déléguée par le fondateur le 27 septembre 2026 ; confirmée par l'accord complet d'une seconde lecture indépendante (le juge gratuit, CI du 27/09)",
  "source": "prompt_runs.raw_answer, production, lecture seule — réponses réelles de ChatGPT et Gemini, août-septembre 2026",
  "rules": [
   "Une marque = une marque ou entreprise qui VEND dans la catégorie (règle du juge, src/lib/llm/judge.ts).",

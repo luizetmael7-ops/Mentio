@@ -86,3 +86,30 @@ test("Vigie : une catégorie active en retard de plus de 10 jours est signalée"
   });
   assert.match(report.issues[0].title, /Crème solaire/);
 });
+
+test("Vigie : un modèle gratuit disparu est signalé, tous disparus est critique", () => {
+  const one = assessHealth({ ...base, freeModelsMissing: ["x:free"], freeChainLength: 2 });
+  assert.equal(one.issues[0]?.severity, "important");
+  const all = assessHealth({ ...base, freeModelsMissing: ["x:free", "y:free"], freeChainLength: 2 });
+  assert.equal(all.issues[0]?.severity, "critique");
+  // Liste illisible ce matin : rien à conclure.
+  assert.equal(assessHealth({ ...base, freeModelsMissing: null, freeChainLength: 2 }).issues.length, 0);
+});
+
+test("Radar : une revendication pèse plus que des fiches consultées, un visiteur compte une fois", async () => {
+  const { rankSignals, describeHot, isBot } = await import("@/lib/radar");
+  const at = "2026-09-27T10:00:00Z";
+  const hot = rankSignals([
+    { kind: "marque", subject: "a", visitor: "v1", created_at: at },
+    { kind: "marque", subject: "a", visitor: "v1", created_at: at },
+    { kind: "marque", subject: "a", visitor: "v2", created_at: at },
+    { kind: "revendication", subject: "b", visitor: null, created_at: at },
+    { kind: "rapport", subject: "c", visitor: "v3", created_at: at },
+  ]);
+  assert.deepEqual(hot.map((h) => h.subject), ["b", "c", "a"]);
+  assert.equal(hot.find((h) => h.subject === "a")?.visitors, 2);
+  assert.equal(describeHot(hot.find((h) => h.subject === "a")!), "2 fiches consultées");
+  assert.equal(isBot("Mozilla/5.0 (compatible; Googlebot/2.1)"), true);
+  assert.equal(isBot("Mozilla/5.0 (Macintosh; Intel Mac OS X 14_0) Safari/605"), false);
+  assert.equal(isBot(null), true);
+});

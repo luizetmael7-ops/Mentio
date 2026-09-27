@@ -152,13 +152,33 @@ export default async function ScoreMentioPage() {
               </span>
             </li>
             <li>
+              Un mouvement :{" "}
+              <span className="text-white">« la marque est passée d&apos;Aperçue à Citée (Score Mentio) »</span>{" "}
+              — un palier nommé se retient mieux qu&apos;un pourcentage.
+            </li>
+            <li>
+              À éviter : « ChatGPT classe la marque Citée ». Le palier est celui du barème Mentio,
+              calculé sur les réponses de ChatGPT et Gemini ; aucun assistant ne le décerne lui-même.
+            </li>
+            <li>
+              Sur votre site :{" "}
+              <Link href="/badge" className="text-white underline">
+                le badge
+              </Link>
+              , mis à jour à chaque édition.
+            </li>
+            <li>
               Données brutes :{" "}
-              <a href="/api/v1/barometre" className="text-white underline">
+              <a href="/api/v1/index" className="text-white underline">
                 API publique
               </a>{" "}
               ·{" "}
               <a href="/llms-full.txt" className="text-white underline">
                 fichier complet
+              </a>{" "}
+              ·{" "}
+              <a href="/api/mcp" className="text-white underline">
+                serveur MCP pour assistants
               </a>
             </li>
             <li>
