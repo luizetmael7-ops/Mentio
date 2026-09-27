@@ -229,7 +229,7 @@ export default async function MethodologiePage() {
               <strong className="text-[var(--ink)]">Un audit indépendant à chaque changement.</strong>{" "}
               Avant toute modification du code, chaque score publié est recalculé depuis les réponses
               brutes par un autre programme que celui qui l&apos;a produit, et comparé à ce que le site
-              affiche. Un écart bloque la modification.
+              affiche. Un écart fait échouer la vérification, et la modification n&apos;est pas fusionnée.
             </li>
             <li>
               <strong className="text-[var(--ink)]">Un jeu de référence annoté à la main.</strong>{" "}
