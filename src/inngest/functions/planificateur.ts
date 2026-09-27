@@ -14,6 +14,10 @@
  *
  * Une catégorie sans questions est d'abord envoyée au Cartographe (gratuit) ;
  * elle sera mesurée un jour suivant.
+ *
+ * Les catégories SUIVIES (un client paie 19 €/mois pour qu'elles soient
+ * remesurées) passent à part : leur mesure est payée, elle ne consomme ni le
+ * budget gratuit ni le quota d'éditions du jour, et elle ne saute jamais.
  */
 import { inngest } from "../client";
 import { supabaseAdmin } from "@/lib/supabase/admin";
@@ -26,14 +30,21 @@ import {
   spentTodayUsd,
 } from "@/lib/spend-guard";
 import { estimateEditionUsd } from "@/lib/plan-economics";
+import { orderBucket } from "@/lib/spend-guard";
 
 /** Au plus N éditions lancées par jour, quel que soit le budget restant. */
 const MAX_EDITIONS_PER_DAY = 3;
 /** Au plus N catégories préparées (questions écrites) par jour : quota gratuit. */
 const MAX_PREPARED_PER_DAY = 5;
+/** Cadence garantie d'une catégorie suivie, quelle que soit la sienne. */
+export const WATCHED_CADENCE_DAYS = 30;
+/** Garde-fou : au plus N remesures payées lancées par jour. */
+const MAX_WATCHED_PER_DAY = 10;
 
 interface Plan {
   measure: Array<{ key: string; estimateUsd: number }>;
+  /** Catégories suivies par un client, remesurées sur son abonnement */
+  watched: string[];
   prepare: string[];
   skipped: Array<{ key: string; reason: string }>;
   budgetUsd: number;
@@ -44,9 +55,10 @@ export function planDay(
   lastEdition: Map<string, string>,
   questionCount: Map<string, number>,
   budgetUsd: number,
-  now = new Date()
+  now = new Date(),
+  watchedKeys: Set<string> = new Set()
 ): Plan {
-  const plan: Plan = { measure: [], prepare: [], skipped: [], budgetUsd };
+  const plan: Plan = { measure: [], watched: [], prepare: [], skipped: [], budgetUsd };
 
   const candidates = categories
     .filter((c) => c.status === "active" || c.status === "queued")
@@ -72,6 +84,12 @@ export function planDay(
     if (questions === 0) {
       if (plan.prepare.length < MAX_PREPARED_PER_DAY) plan.prepare.push(c.key);
       else plan.skipped.push({ key: c.key, reason: "sans questions, préparation demain" });
+      continue;
+    }
+    if (watchedKeys.has(c.key)) {
+      if (ageDays < Math.min(c.cadenceDays, WATCHED_CADENCE_DAYS)) continue;
+      if (plan.watched.length < MAX_WATCHED_PER_DAY) plan.watched.push(c.key);
+      else plan.skipped.push({ key: c.key, reason: "suivi : quota du jour, demain" });
       continue;
     }
     if (ageDays < c.cadenceDays) continue; // pas encore due
@@ -129,14 +147,26 @@ export const planificateur = inngest.createFunction(
           ? 0
           : Math.max(0, Math.min(dailyCapUsd("index") - today, monthlyCapUsd() - month));
 
-      return { categories, lastEdition, questionCount, budgetUsd };
+      // Les catégories qu'un client suit (abonnement actif). Table absente :
+      // aucune, et le reste du plan tourne.
+      const { data: suivis } = await supabase
+        .from("orders")
+        .select("category_key")
+        .eq("kind", "suivi")
+        .eq("status", "active")
+        .not("category_key", "is", null);
+      const watched = [...new Set(((suivis ?? []) as Array<{ category_key: string }>).map((o) => o.category_key))];
+
+      return { categories, lastEdition, questionCount, budgetUsd, watched };
     });
 
     const plan = planDay(
       inputs.categories,
       new Map(Object.entries(inputs.lastEdition)),
       new Map(Object.entries(inputs.questionCount)),
-      inputs.budgetUsd
+      inputs.budgetUsd,
+      new Date(),
+      new Set(inputs.watched)
     );
 
     if (plan.prepare.length > 0) {
@@ -149,6 +179,15 @@ export const planificateur = inngest.createFunction(
       await step.sendEvent(
         "measure-categories",
         plan.measure.map((m) => ({ name: "mentio/index.refresh", data: { vertical: m.key } }))
+      );
+    }
+    if (plan.watched.length > 0) {
+      await step.sendEvent(
+        "measure-watched",
+        plan.watched.map((key) => ({
+          name: "mentio/index.refresh",
+          data: { vertical: key, bucket: orderBucket() },
+        }))
       );
     }
 

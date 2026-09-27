@@ -97,10 +97,10 @@ export function ReportView({
             <dl className="mt-5 grid grid-cols-2 gap-4 sm:grid-cols-4">
               {[
                 {
-                  t: "Rang",
+                  t: report.rank === null ? "Rang · non citée" : "Rang",
                   v:
                     report.rank === null
-                      ? `absente · ${report.totalBrands} classées`
+                      ? `—/${report.totalBrands}`
                       : `${report.rank}${report.rank === 1 ? "re" : "e"}/${report.totalBrands}`,
                 },
                 { t: "Citations", v: `${citationCount(report.citations)}/${report.runs}` },
@@ -327,7 +327,7 @@ export function ReportView({
                       {s.type.label}
                     </span>
                     <span className="font-metric w-24 shrink-0 text-right text-xs tabular-nums text-[var(--ink-soft)]">
-                      {`${s.rivalWeight} réponses`}
+                      {`${s.rivalWeight} réponse${s.rivalWeight > 1 ? "s" : ""}`}
                     </span>
                   </div>
                   <p className="mt-1.5 pl-9 text-xs leading-relaxed text-[var(--ink-soft)]">

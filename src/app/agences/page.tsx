@@ -4,7 +4,8 @@ import { ArrowRight } from "lucide-react";
 import { BrandNav } from "@/components/brand/nav";
 import { BrandFooter } from "@/components/brand/footer";
 import { Reveal } from "@/components/brand/reveal";
-import { PLAN_LIMITS, checkoutHref } from "@/lib/plans";
+import { OffersGrid } from "@/components/brand/offers-grid";
+import { OFFERS } from "@/lib/offers";
 import { modelsSentence, indexModels } from "@/lib/models";
 import { buildReport } from "@/lib/report";
 import { getLatestEdition, formatEditionDate, brandSlug } from "@/lib/index-edition";
@@ -13,7 +14,7 @@ import { signShare } from "@/lib/report-access";
 export const metadata: Metadata = {
   title: "Mentio pour les agences — la mesure qui vend un retainer GEO",
   description:
-    "Rapports de visibilité IA en marque blanche, jusqu'à 30 marques suivies, et un baromètre public où figurent déjà vos clients. L'outil de mesure des agences SEO et growth françaises.",
+    "Rapports de visibilité IA en marque blanche, dix mesures prioritaires par mois, et un widget qui transforme les visiteurs de votre site en leads. L'outil de mesure des agences SEO et growth.",
   alternates: { canonical: "/agences" },
 };
 
@@ -34,8 +35,7 @@ export const revalidate = 3600;
  */
 export default async function AgencesPage() {
   const edition = await getLatestEdition();
-  const agency = PLAN_LIMITS.agency;
-  const agencyPlus = PLAN_LIMITS.agencyplus;
+  const agency = OFFERS.agency;
   // Un exemple cliquable vaut mieux qu'une capture : on prend une marque réelle
   // de l'édition en cours, plutôt qu'un rapport fictif.
   const sample = edition?.brands[1] ?? edition?.brands[0];
@@ -83,7 +83,7 @@ export default async function AgencesPage() {
               href="/pricing"
               className="font-medium text-[var(--ink)] underline decoration-[var(--line)] underline-offset-4 transition-colors hover:decoration-[var(--ink)]"
             >
-              {`Les formules agence — à partir de ${agency.priceMonthlyEur} € / mois`}
+              {`Le compte agence — ${agency.priceEur} € par mois`}
             </Link>
           </div>
         </section>
@@ -205,13 +205,13 @@ export default async function AgencesPage() {
             {[
               {
                 n: "01",
-                t: "Vous ajoutez la marque",
-                d: `Nom et concurrents. Nous attachons les ${agency.promptsPerBrand} questions d'achat de sa catégorie — vous ne configurez rien.`,
+                t: "Vous commandez la mesure",
+                d: `Le nom de la marque, ce que ses clients cherchent, le pays. ${agency.includedPriority} mesures prioritaires par mois sont incluses — vous ne configurez rien.`,
               },
               {
                 n: "02",
-                t: "Le relevé tourne tout seul",
-                d: `${agency.cadenceLabel}. Vous recevez l'alerte quand un concurrent passe devant.`,
+                t: "Elle tourne dans l'heure",
+                d: "Questions d'achat figées, ChatGPT et Gemini interrogés depuis le pays, contrôle d'instrument. Le rapport arrive par email.",
               },
               {
                 n: "03",
@@ -243,7 +243,7 @@ export default async function AgencesPage() {
               {/* La limite de couverture, écrite avant que l'agence la découvre en payant. */}
               <p>
                 <strong className="text-[var(--ink)]">Les secteurs couverts aujourd&apos;hui.</strong>{" "}
-                {`L'Index couvre les catégories déjà mesurées, et n'importe quel secteur peut y entrer : demandez-le depuis la page « Ajouter une marque », il rejoint la file de mesure. ${agencyPlus.label} inclut en plus une bibliothèque de questions écrite sur mesure pour vos clients.`}
+                {"L'Index couvre les catégories déjà mesurées, et n'importe quel secteur peut y entrer : une mesure prioritaire crée la catégorie, écrit ses dix questions d'achat et la mesure dans l'heure."}
               </p>
             </div>
           </Reveal>
@@ -280,87 +280,50 @@ export default async function AgencesPage() {
           </section>
         )}
 
-        {/* 5. Les deux formules agence */}
+        {/* 5. Le widget — l'aimant à prospects */}
         <section className="mx-auto max-w-6xl px-5 py-10">
           <Reveal>
-            <p className="eyebrow">Les formules agence</p>
+            <div className="grid gap-8 rounded-3xl border border-[var(--line)] bg-white p-7 sm:p-10 lg:grid-cols-[1fr_1fr] lg:items-center">
+              <div>
+                <p className="eyebrow">Le widget</p>
+                <h2 className="mt-3 font-display text-2xl font-extrabold uppercase tracking-wide sm:text-3xl">
+                  Vos visiteurs testent leur visibilité IA.
+                  <br />
+                  <span className="text-[var(--poppy)]">Les leads arrivent chez vous.</span>
+                </h2>
+                <p className="mt-4 max-w-lg text-[var(--ink-soft)]">
+                  Une ligne de code sur votre site. Le visiteur tape sa marque et ce que cherchent ses clients :
+                  il voit son palier tout de suite si sa catégorie est mesurée, et vous recevez son contact avec le
+                  chiffre. Vos couleurs, votre nom ; Mentio signe discrètement en bas.
+                </p>
+                <Link
+                  href="/w/demo"
+                  className="mt-6 inline-flex items-center gap-2 rounded-full bg-[var(--ink)] px-6 py-2.5 font-semibold text-white transition-transform hover:scale-[1.03]"
+                >
+                  Essayer le widget <ArrowRight aria-hidden className="size-4" />
+                </Link>
+              </div>
+              <pre className="overflow-x-auto rounded-2xl bg-[var(--plum)] p-5 font-metric text-xs leading-relaxed text-white/85">
+                {`<div id="mentio-widget"></div>
+<script src="https://www.mentio.fr/widget.js"
+        data-agence="votre-identifiant"
+        async></script>`}
+              </pre>
+            </div>
+          </Reveal>
+        </section>
+
+        {/* 6 bis. Les offres qui servent une agence */}
+        <section className="mx-auto max-w-6xl px-5 py-10">
+          <Reveal>
+            <p className="eyebrow">Les prix</p>
             <h2 className="mt-3 font-display text-2xl font-extrabold uppercase tracking-wide sm:text-3xl">
               Prix publics, jamais de devis
             </h2>
           </Reveal>
-          <div className="mt-8 grid gap-4 md:grid-cols-2">
-            {[agency, agencyPlus].map((plan, i) => (
-              <Reveal key={plan.label} style={{ "--reveal-index": i } as React.CSSProperties}>
-                <article
-                  aria-label={`Formule ${plan.label}`}
-                  className={
-                    i === 1
-                      ? "flex h-full flex-col rounded-3xl bg-[var(--plum)] p-7 text-white"
-                      : "flex h-full flex-col rounded-3xl border-2 border-[var(--poppy)] bg-white p-7"
-                  }
-                >
-                  <h3 className="font-display text-lg font-extrabold uppercase tracking-wide">
-                    {plan.label}
-                  </h3>
-                  <p className="mt-3 flex items-baseline gap-1 font-metric font-bold">
-                    <span className="text-4xl tabular-nums">{plan.priceMonthlyEur}</span>
-                    <span className="text-2xl">€</span>
-                    <span
-                      className={`ml-0.5 text-sm font-normal ${i === 1 ? "text-white/50" : "text-[var(--ink-soft)]"}`}
-                    >
-                      /mois
-                    </span>
-                  </p>
-                  <p
-                    className={`mt-2 text-sm ${i === 1 ? "text-white/70" : "text-[var(--ink-soft)]"}`}
-                  >
-                    {`${plan.brands} marques · ${plan.promptsPerBrand} questions par marque · ${plan.competitors} concurrents suivis`}
-                  </p>
-                  <ul
-                    className={`mt-5 flex-1 space-y-2 border-t pt-5 text-sm ${
-                      i === 1
-                        ? "border-white/10 text-white/85"
-                        : "border-[var(--line)] text-[var(--ink-soft)]"
-                    }`}
-                  >
-                    {plan.features.map((feature) => (
-                      <li key={feature} className="flex items-start gap-2">
-                        <span
-                          aria-hidden
-                          className="mt-1.5 size-1.5 shrink-0 rounded-full"
-                          style={{
-                            backgroundColor: i === 1 ? "var(--spectrum-amber)" : "var(--poppy)",
-                          }}
-                        />
-                        {feature}
-                      </li>
-                    ))}
-                  </ul>
-                  <Link
-                    href={checkoutHref(i === 1 ? "agencyplus" : "agency", false)}
-                    className={
-                      i === 1
-                        ? "mt-6 rounded-full bg-white py-2.5 text-center font-semibold text-[var(--ink)] transition-transform hover:scale-[1.02]"
-                        : "mt-6 rounded-full bg-[var(--poppy)] py-2.5 text-center font-semibold text-white transition-transform hover:scale-[1.02]"
-                    }
-                  >
-                    Choisir cette formule
-                  </Link>
-                </article>
-              </Reveal>
-            ))}
+          <div className="mt-8">
+            <OffersGrid only={["priority", "agency"]} />
           </div>
-          <Reveal className="mt-6">
-            <p className="text-sm text-[var(--ink-soft)]">
-              Annuel : deux mois offerts. Sans engagement, résiliable en deux clics.{" "}
-              <Link
-                href="/pricing"
-                className="font-medium text-[var(--ink)] underline decoration-[var(--line)] underline-offset-4"
-              >
-                Comparer les quatre formules →
-              </Link>
-            </p>
-          </Reveal>
         </section>
 
         {/* 6. CTA */}

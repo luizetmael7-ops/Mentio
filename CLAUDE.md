@@ -144,11 +144,23 @@ au-delà.
 **Règle absolue : toute dépense est annoncée et validée avant d'être engagée.**
 Estimation chiffrée d'abord, feu vert ensuite, coût réel rapporté après.
 
+*Une mesure commandée* (mesure prioritaire, suivi, crédit agence) est une dépense
+validée une fois pour toutes par la fusion de la caisse (27 septembre 2026) : ~0,72 $
+pour une catégorie de 10 questions, couverts par la commande. Elle ne tourne sur le
+compteur `paid` (jamais coupé) qu'avec une clé Stripe de production ; tant que Stripe
+est en mode test, elle est comptée dans le budget de l'Index et son plafond
+(`orderBucket`, `spend-guard.ts`).
+
 ## 8. Ce qu'un agent ne fait jamais
 
 1. **Envoyer un message à un tiers.** Ni email, ni DM, ni publication. L'agent
    prépare, un humain relit et envoie. Un message sincère automatisé devient du spam,
    et c'est précisément la sincérité qui convertit ici.
+   *Ne sont pas des messages à un tiers* : les emails qui LIVRENT une commande à la
+   personne qui l'a passée (rapport, échec et remboursement, nouvelle édition d'un
+   suivi, lead du widget pour l'agence qui l'a installé). Ils partent vers l'adresse
+   donnée pour cette commande, sont des gabarits écrits dans `customer-email.ts` —
+   jamais rédigés par un modèle —, et la réponse arrive dans la boîte de l'entreprise.
 2. **Merger une PR touchant le Baromètre.** On publie un classement nominatif de
    marques réelles : une erreur automatisée coûte la crédibilité, et davantage.
 3. **Engager une dépense sans validation.**

@@ -22,13 +22,19 @@
  *
  * Qui déclenche : le Planificateur (`planificateur.ts`), selon la cadence de chaque
  * catégorie et le budget du jour. Plus de cron propre — une catégorie mesurée deux
- * fois par deux déclencheurs, c'est une facture en double.
+ * fois par deux déclencheurs, c'est une facture en double. Et le Livreur
+ * (`livreur.ts`), quand une mesure a été commandée : elle passe en tête de file
+ * (`ordered`), et se compte sur le compteur de la commande (`bucket`). Elle suit
+ * exactement la même méthode — on vend la date d'une mesure, jamais son résultat.
+ *
+ * À chaque édition publiée, l'événement `mentio/index.published` part : c'est
+ * lui qui réveille les suivis abonnés à la catégorie.
  */
 import { inngest } from "../client";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { activeProviders, askWithTimeout } from "@/lib/llm";
 import { judgeAnswer, sameBrand } from "@/lib/llm/judge";
-import { guard, recordSpend } from "@/lib/spend-guard";
+import { guard, recordSpend, type SpendBucket } from "@/lib/spend-guard";
 import {
   measureBrand,
   contestedQuestions,
@@ -70,13 +76,20 @@ export const weeklyIndex = inngest.createFunction(
     // Une édition à la fois : deux éditions en parallèle doubleraient la dépense
     // du jour avant que le coupe-circuit ait vu la première.
     concurrency: 1,
+    // Une mesure commandée passe devant la file du Planificateur (jusqu'à dix
+    // minutes d'avance, le maximum d'Inngest) : c'est exactement ce qui se vend.
+    priority: { run: "event.data.ordered == true ? 600 : 0" },
     triggers: [{ event: "mentio/index.refresh" }],
   },
   async ({ event, step }) => {
     const supabase = supabaseAdmin();
     // `event.data` est typé comme l'union des déclencheurs : lecture défensive.
-    const requested = (event?.data as { vertical?: unknown } | undefined)?.vertical;
+    const input = (event?.data ?? {}) as { vertical?: unknown; bucket?: unknown };
+    const requested = input.vertical;
     const vertical = typeof requested === "string" && requested ? requested : DEFAULT_VERTICAL;
+    // Le compteur qui paie : l'Index (plafonné) par défaut, `paid` pour une
+    // commande réglée en production (jamais coupée, voir `orderBucket`).
+    const bucket: SpendBucket = input.bucket === "paid" ? "paid" : "index";
 
     const category = await step.run("load-category", async () => {
       const c = await categoryByKey(vertical);
@@ -99,7 +112,7 @@ export const weeklyIndex = inngest.createFunction(
     }
 
     // Coupe-circuit : l'Index est du contenu, pas du revenu — il est plafonné.
-    const budget = await step.run("check-budget", async () => guard("index"));
+    const budget = await step.run("check-budget", async () => guard(bucket));
     if (!budget.allowed) {
       return { skipped: true, reason: budget.reason, spentUsd: budget.spentUsd };
     }
@@ -131,7 +144,7 @@ export const weeklyIndex = inngest.createFunction(
       const errors: Record<string, string> = {};
       for (let start = 0; start < jobs.length; start += BATCH) {
         if (start > 0) {
-          const room = await step.run(`${phase}-budget-${start / BATCH}`, async () => guard("index"));
+          const room = await step.run(`${phase}-budget-${start / BATCH}`, async () => guard(bucket));
           if (!room.allowed) {
             return { answers: out, stopped: true, errors };
           }
@@ -144,7 +157,7 @@ export const weeklyIndex = inngest.createFunction(
               if (!provider) return { record: null, model: job.model, error: "provider inactif" };
               try {
                 const answer = await askWithTimeout(provider, job.text, 30_000, { country });
-                await recordSpend("index", answer.costUsd);
+                await recordSpend(bucket, answer.costUsd);
                 const { extraction } = await judgeAnswer(answer.text);
                 return {
                   model: job.model,
@@ -426,8 +439,15 @@ export const weeklyIndex = inngest.createFunction(
         runs,
         calls: data.sampling.totalCalls,
         contested: contested.length,
+        editionDate: today,
         top: topBrands.slice(0, 3).map((b) => `${b.name} (${b.total}±${b.ci95})`),
       };
+    });
+
+    // Les suivis abonnés à cette catégorie sont prévenus par `suivi.ts`.
+    await step.sendEvent("published", {
+      name: "mentio/index.published",
+      data: { vertical, editionDate: saved.editionDate },
     });
 
     // Les demandes publiques qui attendaient cette catégorie passent « mesurées ».

@@ -54,7 +54,7 @@ test("ajouter une marque : catégorie inconnue → file d'attente", async ({ pag
   await page.goto("/ajouter");
   await page.getByLabel("La marque").fill("Marque Test");
   await page.getByLabel("Ce que ses clients cherchent").fill("matelas en latex");
-  await page.getByRole("button", { name: /Ajouter à l'Index/ }).click();
+  await page.getByRole("button", { name: "Rejoindre la file" }).click();
   await expect(page.getByText(/rejoint la file/)).toBeVisible();
 });
 
@@ -62,7 +62,7 @@ test("ajouter une marque : catégorie mesurée → réponse immédiate", async (
   await page.goto("/ajouter");
   await page.getByLabel("La marque").fill("La Rosée");
   await page.getByLabel("Ce que ses clients cherchent").fill("Crème solaire");
-  await page.getByRole("button", { name: /Ajouter à l'Index/ }).click();
+  await page.getByRole("button", { name: "Rejoindre la file" }).click();
   await expect(page).toHaveURL(/\/marques\/la-rosee/);
 });
 
@@ -91,6 +91,63 @@ test("méthodologie : l'erratum publie l'édition écartée", async ({ page }) =
 
 test("cockpit : réservé, redirige vers la connexion", async ({ page }) => {
   const response = await page.goto("/admin");
+  expect(page.url()).toContain("/login");
+  expect(response?.status()).toBeLessThan(500);
+});
+
+test("mesure prioritaire : du formulaire au rapport livré, avec l'offre de suivi", async ({ page }) => {
+  await page.goto("/ajouter");
+  // Les deux options, avec leur vrai délai et la règle qui ne se vend pas.
+  await expect(page.getByText("File publique")).toBeVisible();
+  await expect(page.getByText(/Vous payez la date de la mesure, jamais son résultat/).first()).toBeVisible();
+  await page.getByLabel("La marque").fill("Soleil Test");
+  await page.getByLabel("Ce que ses clients cherchent").fill("crème solaire");
+  await page.getByRole("button", { name: /Mesurer maintenant/ }).click();
+  await expect(page).toHaveURL(/\/commande\/demo/);
+  await expect(page.getByRole("heading", { name: "Soleil Test", exact: true })).toBeVisible();
+  await expectNoGluedWords(page);
+  await expectNoHorizontalScroll(page);
+  await page.getByRole("link", { name: /Ouvrir le rapport/ }).click();
+  await expect(page).toHaveURL(/\/rapport\/c\/demo/);
+  await expect(page.getByRole("heading", { name: "Soleil Test", exact: true })).toBeVisible();
+  // Une marque absente a un rapport quand même : c'est un diagnostic, pas une page blanche.
+  await expect(page.getByRole("button", { name: /Suivre Soleil Test — 19 € par mois/ })).toBeVisible();
+  await expectNoGluedWords(page);
+  await expectNoHorizontalScroll(page);
+});
+
+test("tarifs : quatre offres, rien d'inventé autour", async ({ page }) => {
+  await page.goto("/pricing");
+  await expect(page.getByRole("article", { name: /^Offre / })).toHaveCount(4);
+  await expect(page.getByText(/le plus choisi/i)).toHaveCount(0);
+  await expect(page.locator(".line-through")).toHaveCount(0);
+  await expect(page.getByText("449")).toHaveCount(0);
+  await expectNoGluedWords(page);
+  await expectNoHorizontalScroll(page);
+});
+
+test("widget agence : un test donne un palier du barème public", async ({ page }) => {
+  await page.goto("/w/demo");
+  await page.getByLabel("Votre marque").fill("La Rosée");
+  await page.getByLabel("Ce que cherchent vos clients").fill("crème solaire bio");
+  await page.getByRole("button", { name: /Suis-je recommandé/ }).click();
+  await expect(page.getByRole("status")).toContainText("La Rosée est");
+  await expect(page.getByRole("status")).toContainText("/100");
+  await expect(page.getByText("Mesuré par")).toBeVisible();
+  await expectNoHorizontalScroll(page);
+});
+
+test("widget agence : une ligne de code sur une page quelconque suffit", async ({ page, baseURL }) => {
+  await page.setContent(
+    `<!doctype html><html><body><h1>Le site d'une agence</h1><div id="mentio-widget"></div>` +
+      `<script src="${baseURL}/widget.js" data-agence="demo" async></script></body></html>`
+  );
+  const frame = page.frameLocator('iframe[title="Test de visibilité IA"]');
+  await expect(frame.getByRole("heading", { name: /Les IA recommandent-elles votre marque/ })).toBeVisible();
+});
+
+test("espace agence : réservé, redirige vers la connexion", async ({ page }) => {
+  const response = await page.goto("/agence");
   expect(page.url()).toContain("/login");
   expect(response?.status()).toBeLessThan(500);
 });

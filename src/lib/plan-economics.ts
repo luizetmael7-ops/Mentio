@@ -164,3 +164,18 @@ export function estimateEditionUsd(questions: number): number {
   const contested = Math.min(MAX_CONTESTED_QUESTIONS, Math.ceil(questions / 3));
   return questions * perPass + contested * perPass * (CONTESTED_PASSES - 1);
 }
+
+/**
+ * Le délai HONNÊTE de la file publique, en semaines — celui qu'affiche
+ * « Ajouter une marque » à côté de l'option payante.
+ *
+ * Le budget mensuel de l'Index paie un nombre fini d'éditions ; les catégories
+ * demandées passent dans l'ordre (voir `planDay`). Le délai est donc celui de
+ * la file devant soi, divisé par ce que le budget mesure chaque semaine. Borné
+ * à 12 : au-delà, on dit « plus de trois mois » plutôt qu'un chiffre inventé.
+ */
+export function publicQueueWeeks(ahead: number, monthlyCapUsd: number, questions = 10): number {
+  const perWeek = monthlyCapUsd / estimateEditionUsd(questions) / 4.35;
+  if (!Number.isFinite(perWeek) || perWeek <= 0) return 13;
+  return Math.min(13, Math.max(1, Math.ceil((ahead + 1) / perWeek)));
+}

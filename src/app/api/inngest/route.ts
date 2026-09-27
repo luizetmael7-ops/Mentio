@@ -14,6 +14,8 @@ import { econome } from "@/inngest/functions/econome";
 import { planificateur } from "@/inngest/functions/planificateur";
 import { cartographeRequest, cartographePrepare } from "@/inngest/functions/cartographe";
 import { vigie, secretaire } from "@/inngest/functions/vigie";
+import { livreur } from "@/inngest/functions/livreur";
+import { suiviEnvoi } from "@/inngest/functions/suivi";
 
 export const { GET, POST, PUT } = serve({
   client: inngest,
@@ -34,5 +36,8 @@ export const { GET, POST, PUT } = serve({
     cartographePrepare,
     vigie,
     secretaire,
+    // La caisse : livrer ce qui a été payé
+    livreur,
+    suiviEnvoi,
   ],
 });

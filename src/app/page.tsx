@@ -8,9 +8,9 @@ import { BrandFooter } from "@/components/brand/footer";
 import { TierScale } from "@/components/brand/tier";
 import { tierOf } from "@/lib/spectrum";
 import { indexModels, modelsSentence, modelName, INDEX_CADENCE } from "@/lib/models";
-import { UpgradeLadder } from "@/components/brand/pricing-tiers";
+import { OffersGrid } from "@/components/brand/offers-grid";
 import { Reveal } from "@/components/brand/reveal";
-import { PLAN_LIMITS } from "@/lib/plans";
+import { OFFERS } from "@/lib/offers";
 import { buildReport } from "@/lib/report";
 import { getLatestEdition, formatEditionDate, brandSlug, citationCount, brandScore } from "@/lib/index-edition";
 import { getIndexOverview } from "@/lib/index-overview";
@@ -359,7 +359,7 @@ export default async function LandingPage() {
                   votre retainer GEO
                 </h2>
                 <p className="mt-4 max-w-lg text-[var(--ink-soft)]">
-                  {`Un lien à vos couleurs, pour n'importe quelle marque de l'Index : score, palier, concurrents cités à sa place, questions perdues, sites à conquérir, et le plan d'action. Vous le posez devant un prospect, il fait le travail à votre place. Jusqu'à ${PLAN_LIMITS.agencyplus.brands} marques suivies en parallèle.`}
+                  {`Un lien à vos couleurs, pour n'importe quelle marque de l'Index : score, palier, concurrents cités à sa place, questions perdues, sites à conquérir, et le plan d'action. Vous le posez devant un prospect, il fait le travail à votre place. Et un widget sur votre site, qui transforme vos visiteurs en leads.`}
                 </p>
                 <div className="mt-7 flex flex-wrap items-center gap-4">
                   <Link
@@ -369,17 +369,17 @@ export default async function LandingPage() {
                     Ce que Mentio fait pour une agence <ArrowRight aria-hidden className="size-4" />
                   </Link>
                   <p className="font-metric text-xs text-[var(--ink-soft)]">
-                    {`À partir de ${PLAN_LIMITS.agency.priceMonthlyEur} € / mois`}
+                    {`${OFFERS.agency.priceEur} € / mois`}
                   </p>
                 </div>
               </div>
               <ul className="space-y-2.5 rounded-2xl bg-[var(--porcelain)]/70 p-6 text-sm text-[var(--ink-soft)]">
                 {[
                   "Rapports en marque blanche, illimités",
-                  `${PLAN_LIMITS.agency.brands} marques suivies dès la formule Agence`,
+                  `${OFFERS.agency.includedPriority} mesures prioritaires par mois`,
                   "Votre logo et vos couleurs sur chaque rapport",
                   "Vos clients dans l'Index, dans leur pays",
-                  "Accès API sur Agence+",
+                  "Le widget : vos visiteurs testent leur visibilité IA, les leads arrivent chez vous",
                 ].map((item) => (
                   <li key={item} className="flex items-start gap-2">
                     <span aria-hidden className="mt-1.5 size-1.5 shrink-0 rounded-full bg-[var(--poppy)]" />
@@ -396,20 +396,20 @@ export default async function LandingPage() {
           <Reveal>
             <p className="eyebrow">Tarifs</p>
             <h2 className="mt-3 font-display text-3xl font-extrabold uppercase tracking-wide sm:text-4xl">
-              L&apos;Index est gratuit<span className="text-[var(--poppy)]">.</span> Le suivi, non.
+              L&apos;Index est gratuit<span className="text-[var(--poppy)]">.</span> La date se paie.
             </h2>
             <p className="mt-3 max-w-2xl text-[var(--ink-soft)]">
-              {`Consulter l'Index, y ajouter une marque, lancer un scan : gratuit. Suivre vos propres questions face à vos concurrents, recevoir les alertes et le plan chaque semaine : de ${PLAN_LIMITS.brand.priceMonthlyEur} à ${PLAN_LIMITS.agencyplus.priceMonthlyEur} € par mois. Prix publics, sans engagement.`}
+              {`Consulter l'Index, y ajouter une marque, lancer un scan : gratuit. Être mesuré maintenant plutôt que dans la file : ${OFFERS.priority.priceEur} €, le rapport en moins d'une heure. Être prévenu quand son palier bouge : ${OFFERS.suivi.priceEur} € par mois. Prix publics, sans engagement.`}
             </p>
           </Reveal>
           <Reveal className="mt-8">
-            <UpgradeLadder />
+            <OffersGrid />
           </Reveal>
           <Link
             href="/pricing"
             className="font-medium text-[var(--ink)] underline decoration-[var(--line)] underline-offset-4 transition-colors hover:decoration-[var(--ink)]"
           >
-            Voir le détail des formules →
+            Les questions fréquentes sur les tarifs →
           </Link>
         </section>
 

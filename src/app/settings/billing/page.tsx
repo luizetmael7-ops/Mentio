@@ -51,9 +51,16 @@ export default async function BillingPage({
             Formule en cours : <Badge>{PLAN_LIMITS[currentPlan].label}</Badge>
           </p>
         </div>
-        <Button variant="ghost" asChild>
-          <Link href="/dashboard">← Tableau de bord</Link>
-        </Button>
+        <div className="flex gap-2">
+          {currentPlan === "agency" || currentPlan === "agencyplus" ? (
+            <Button variant="outline" asChild>
+              <Link href="/agence">Espace agence</Link>
+            </Button>
+          ) : null}
+          <Button variant="ghost" asChild>
+            <Link href="/dashboard">← Tableau de bord</Link>
+          </Button>
+        </div>
       </header>
 
       {/* Choix de la période — un lien, pas un état client : la page est rendue

@@ -62,7 +62,7 @@ On te donne une catégorie saisie par un visiteur et un pays. Tu dois :
 3. Choisir un secteur dans la liste fournie.
 4. Écrire exactement ${QUESTIONS_PER_CATEGORY} questions telles qu'un acheteur de ce pays les taperait dans ChatGPT, DANS LA LANGUE DU PAYS : courtes, naturelles, variées (meilleur choix, comparaison, besoin précis, budget, profil), orientées recommandation, SANS citer aucune marque.`;
 
-async function draftCategory(input: string, countryCode: string): Promise<CategoryDraft> {
+export async function draftCategory(input: string, countryCode: string): Promise<CategoryDraft> {
   const country = countryByCode(countryCode);
   const language = country?.language ?? "en";
   const { value } = await freeJson(
@@ -80,7 +80,7 @@ async function draftCategory(input: string, countryCode: string): Promise<Catego
 }
 
 /** Écrit les questions figées d'une catégorie. Idempotent : ne réécrit jamais. */
-async function freezeQuestions(key: string, questions: string[]): Promise<number> {
+export async function freezeQuestions(key: string, questions: string[]): Promise<number> {
   const supabase = supabaseAdmin();
   const { count } = await supabase
     .from("prompts")
@@ -99,6 +99,59 @@ async function freezeQuestions(key: string, questions: string[]): Promise<number
   );
   if (error) throw new Error(error.message);
   return unique.length;
+}
+
+export type CategoryMapping =
+  | { ok: true; key: string; label: string; created: boolean }
+  | { ok: false; reason: string };
+
+/**
+ * D'une saisie libre à une catégorie mesurable, en un appel — pour la livraison
+ * d'une commande payée, qui ne peut pas attendre la file du Cartographe.
+ *
+ * Même règles que pour une demande publique : rapprochement direct d'abord
+ * (aucun modèle), sinon le modèle gratuit nomme la catégorie et écrit ses
+ * questions, qui sont figées. Une catégorie qui existe déjà garde les siennes.
+ */
+export async function mapCategory(input: string, countryCode: string): Promise<CategoryMapping> {
+  const country = countryByCode(countryCode);
+  if (!country) return { ok: false, reason: "marché non couvert" };
+  const supabase = supabaseAdmin();
+
+  const direct = categoryIdentity(input, countryCode);
+  const { data: existing } = await supabase
+    .from("index_categories")
+    .select("key, label")
+    .eq("key", direct.key)
+    .maybeSingle();
+  if (existing) return { ok: true, key: existing.key as string, label: existing.label as string, created: false };
+
+  const draft = await draftCategory(input, countryCode);
+  if (!draft.accept) return { ok: false, reason: draft.reason || "catégorie hors périmètre" };
+
+  const identity = categoryIdentity(draft.label, countryCode);
+  const { data: already } = await supabase
+    .from("index_categories")
+    .select("key, label")
+    .eq("key", identity.key)
+    .maybeSingle();
+  if (already) return { ok: true, key: already.key as string, label: already.label as string, created: false };
+
+  const { error } = await supabase.from("index_categories").insert({
+    key: identity.key,
+    slug: identity.slug,
+    label: draft.label,
+    country: countryCode,
+    language: country.language,
+    sector: draft.sector,
+    audience: "tapent les acheteurs",
+    status: "queued",
+    origin: "request",
+    requests: 1,
+  });
+  if (error) throw new Error(error.message);
+  await freezeQuestions(identity.key, draft.questions);
+  return { ok: true, key: identity.key, label: draft.label, created: true };
 }
 
 export const cartographeRequest = inngest.createFunction(

@@ -326,6 +326,12 @@ export default async function DashboardPage({
               <a href="/portefeuille">Portefeuille</a>
             </Button>
           )}
+          {/* Mesures prioritaires, widget et leads : l'espace du compte agence. */}
+          {limits.brands > 1 && (
+            <Button variant="outline" asChild>
+              <a href="/agence">Espace agence</a>
+            </Button>
+          )}
           <Button variant="outline" asChild>
             <a href={`/settings/brand?brand=${brand.id}`}>Settings</a>
           </Button>

@@ -276,7 +276,7 @@ function assembleReport(
   //    disqualifier tout le plan.
   for (const source of sourcePool.filter((s) => s.type.actionable).slice(0, 5)) {
     const play = playbookFor(source.domain);
-    const opening = `Ce domaine alimente ${source.rivalWeight} des réponses où ${brand.name} n'apparaît pas, et les modèles y retournent à chaque interrogation.`;
+    const opening = `Ce domaine alimente ${source.rivalWeight > 1 ? `${source.rivalWeight} des réponses` : "une réponse"} où ${brand.name} n'apparaît pas, et les modèles y retournent à chaque interrogation.`;
     familleSources.push({
       title:
         source.type.kind === "plateforme"
@@ -314,7 +314,7 @@ function assembleReport(
   for (const rival of rivals.slice(0, 2)) {
     familleRivaux.push({
       title: `Se positionner face à ${rival.name}`,
-      detail: `${rival.name} apparaît dans ${rival.citations} réponses où ${brand.name} est absente${rival.firstPlaces > 0 ? `, dont ${rival.firstPlaces} en première position` : ""}. Un comparatif honnête publié sur votre site, puis repris par les sources du secteur, est le format que les modèles citent le plus volontiers — y compris quand il ne vous donne pas systématiquement le premier rôle.`,
+      detail: `${rival.name} apparaît dans ${rival.citations > 1 ? `${rival.citations} réponses` : "une réponse"} où ${brand.name} est absente${rival.firstPlaces > 0 ? `, dont ${rival.firstPlaces} en première position` : ""}. Un comparatif honnête publié sur votre site, puis repris par les sources du secteur, est le format que les modèles citent le plus volontiers — y compris quand il ne vous donne pas systématiquement le premier rôle.`,
     });
   }
 

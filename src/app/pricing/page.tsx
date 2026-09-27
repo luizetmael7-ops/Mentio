@@ -2,47 +2,45 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { BrandNav } from "@/components/brand/nav";
 import { BrandFooter } from "@/components/brand/footer";
-import { PricingTiers, WhiteGloveStrip, UpgradeLadder } from "@/components/brand/pricing-tiers";
+import { OffersGrid } from "@/components/brand/offers-grid";
 import { Reveal } from "@/components/brand/reveal";
-import { PLAN_LIMITS } from "@/lib/plans";
+import { OFFERS, FRESH_DAYS } from "@/lib/offers";
 
 export const metadata: Metadata = {
   title: "Tarifs — Mentio",
-  description:
-    "Le suivi de visibilité IA à partir de 0 €. Prix publics, jamais de devis, sans engagement — et deux formules pensées pour les agences.",
+  description: `L'Index est gratuit. Une mesure prioritaire : ${OFFERS.priority.priceEur} €, le rapport en moins d'une heure. Le suivi : ${OFFERS.suivi.priceEur} € par mois. Les agences : ${OFFERS.agency.priceEur} € par mois. Prix publics, sans engagement.`,
   alternates: { canonical: "/pricing" },
 };
 
 /**
- * La FAQ répond aux objections réelles, avec les vrais noms de formules.
- * Elle a longtemps parlé de « Growth » et « Agency » — des noms commerciaux
- * abandonnés, restés ici alors que la grille affichait Brand, Agence et Agence+.
- * Un prospect qui lit un nom qu'il ne trouve nulle part se demande ce qu'on lui vend.
+ * La FAQ répond aux objections réelles, avec les noms de `offers.ts`. Elle a
+ * longtemps parlé de formules disparues ; un prospect qui lit un nom qu'il ne
+ * trouve nulle part se demande ce qu'on lui vend.
  */
 const FAQ: Array<[string, string]> = [
   [
-    "Pourquoi un relevé hebdomadaire et pas quotidien ?",
-    "Parce qu'un score de visibilité IA ne bouge pas en vingt-quatre heures. Un relevé quotidien produirait quinze cents mesures par mois que personne ne lit. Là où le classement est serré, la question est en revanche rejouée plusieurs fois — c'est l'échantillonnage stratifié, décrit dans la méthodologie. L'Index public, lui, est mensuel : c'est la référence de marché, votre suivi est la mesure fine.",
+    "Qu'est-ce que je paie, exactement, avec la mesure prioritaire ?",
+    `La date. Votre catégorie est mesurée dès le paiement au lieu d'attendre la file publique — avec exactement la même méthode, les mêmes questions figées, les mêmes moteurs. La mesure peut conclure que la marque est absente, et c'est ce qu'elle dira si c'est vrai. Si la catégorie a été mesurée il y a moins de ${FRESH_DAYS} jours, le rapport part aussitôt.`,
+  ],
+  [
+    "Et si un moteur d'IA ne répond pas ?",
+    "Aucun rapport n'est livré sur une mesure incomplète : chaque moteur doit avoir répondu à au moins 80 % des questions. Si ce n'est pas le cas, vous êtes remboursé automatiquement et prévenu par email.",
   ],
   [
     "Le relevé correspond-il à ce que voient vraiment mes clients ?",
-    "On passe par les APIs officielles des modèles, recherche web activée. C'est un bon reflet, documenté, de ce que voit un client — jamais du scraping des applications grand public, qui personnalisent leurs réponses.",
+    "On passe par les APIs officielles de ChatGPT et Gemini, recherche web activée depuis le pays mesuré. C'est un reflet documenté de ce que voit un acheteur — jamais du scraping des applications grand public, qui personnalisent leurs réponses.",
   ],
   [
-    "Sur quels secteurs Mentio fonctionne-t-il ?",
-    `Tous. Le scan gratuit génère ses questions à la volée à partir de la catégorie saisie, et l'Index public s'étend catégorie par catégorie, pays par pays : n'importe qui peut demander qu'une catégorie soit mesurée, elle rejoint la file. ${PLAN_LIMITS.agencyplus.label} inclut en plus une bibliothèque de questions écrite sur mesure pour votre secteur.`,
-  ],
-  [
-    "Que veut dire « mise en route faite par nous » ?",
-    "On écrit vos questions, on ajoute vos concurrents et on règle le suivi. Vous ne configurez rien : le premier relevé est déjà juste.",
+    "Pourquoi un suivi mensuel et pas quotidien ?",
+    "Parce qu'un score de visibilité IA ne bouge pas en vingt-quatre heures. Le suivi remesure votre catégorie chaque mois avec les mêmes questions, et l'email vous dit d'abord si votre palier a bougé.",
   ],
   [
     "Je suis une agence — qu'est-ce que ça change ?",
-    `${PLAN_LIMITS.agency.label} et ${PLAN_LIMITS.agencyplus.label} suivent ${PLAN_LIMITS.agency.brands} à ${PLAN_LIMITS.agencyplus.brands} marques en parallèle et débloquent les rapports en marque blanche : une page partageable à vos couleurs, que vous posez devant un prospect. C'est ce qui transforme la mesure en argument de vente.`,
+    `${OFFERS.agency.includedPriority} mesures prioritaires par mois pour vos clients et vos prospects, des rapports à vos couleurs, et un widget à poser sur votre site : vos visiteurs testent leur visibilité IA, les leads arrivent chez vous.`,
   ],
   [
     "Puis-je changer d'avis ?",
-    "À tout moment. Sans engagement : changez de formule ou résiliez en deux clics depuis l'espace de facturation, et vos données restent exportables.",
+    "À tout moment. Le suivi se résilie en un clic depuis la page de votre commande, le compte agence depuis l'espace de facturation. Sans engagement.",
   ],
 ];
 
@@ -51,19 +49,19 @@ export default function PricingPage() {
     <div className="flex min-h-screen flex-col bg-[var(--porcelain)] text-[var(--ink)]">
       <BrandNav />
       <main className="flex-1">
-        <section className="mx-auto max-w-6xl px-5 pb-16 pt-32">
+        <section className="mx-auto max-w-6xl px-4 pb-16 pt-32 sm:px-5">
           <p className="eyebrow">Tarifs</p>
           <h1 className="mt-3 font-display text-4xl font-black uppercase tracking-tight sm:text-6xl">
-            Le prix d&apos;un outil<span className="text-[var(--poppy)]">,</span>
+            L&apos;Index est gratuit<span className="text-[var(--poppy)]">.</span>
             <br />
-            pas d&apos;un cabinet<span className="text-[var(--poppy)]">.</span>
+            La date se paie<span className="text-[var(--poppy)]">.</span>
           </h1>
           <p className="mt-4 max-w-xl text-[var(--ink-soft)]">
-            Annuel : deux mois offerts. Sans engagement. Chaque formule est calée sur le coût réel
-            des modèles — pas de magie, pas de marge cachée.
+            Consulter les classements, ajouter une marque, lancer un scan : gratuit, pour toujours. Ce qui
+            se paie, c&apos;est d&apos;être mesuré maintenant plutôt que dans la file — jamais le résultat.
           </p>
           <p className="mt-4 max-w-xl text-sm text-[var(--ink-soft)]">
-            {`Deux formules sur quatre sont pensées pour les agences : ${PLAN_LIMITS.agency.brands} à ${PLAN_LIMITS.agencyplus.brands} marques suivies et des rapports en marque blanche. `}
+            {"Vous êtes une agence ? "}
             <Link
               href="/agences"
               className="font-medium text-[var(--ink)] underline decoration-[var(--line)] underline-offset-4"
@@ -72,9 +70,7 @@ export default function PricingPage() {
             </Link>
           </p>
           <div className="mt-14">
-            <UpgradeLadder />
-            <PricingTiers />
-            <WhiteGloveStrip />
+            <OffersGrid />
           </div>
         </section>
 

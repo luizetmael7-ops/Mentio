@@ -3,8 +3,11 @@ import Link from "next/link";
 import { BrandNav } from "@/components/brand/nav";
 import { BrandFooter } from "@/components/brand/footer";
 import { RequestForm } from "@/components/brand/request-form";
-import { COUNTRIES } from "@/lib/index-catalog";
+import { COUNTRIES, listCategories } from "@/lib/index-catalog";
 import { indexModels, modelsSentence } from "@/lib/models";
+import { OFFERS, RULE_DATE_NOT_RESULT } from "@/lib/offers";
+import { publicQueueWeeks } from "@/lib/plan-economics";
+import { monthlyCapUsd } from "@/lib/spend-guard";
 
 export const metadata: Metadata = {
   title: "Ajouter une marque à l'Index — Mentio",
@@ -20,13 +23,26 @@ export const metadata: Metadata = {
  * réponse est immédiate ; sinon elle rejoint la file, et ce sont les agents qui
  * font le reste : le Cartographe écrit les questions, le Planificateur mesure
  * dans le budget, la Vigie contrôle, le fondateur est prévenu.
+ *
+ * À côté, l'option payante : la même mesure, maintenant. Le délai affiché de la
+ * file publique est calculé, pas écrit : c'est ce qui rend l'offre honnête.
  */
+const ERREURS: Record<string, string> = {
+  formulaire: "Il manque la marque, la catégorie ou le pays.",
+  commande: "La commande n'a pas pu être créée. Réessayez dans un instant, rien n'a été débité.",
+  paiement: "Le paiement en ligne n'est pas encore ouvert. La file publique, elle, est ouverte : rejoignez-la, c'est gratuit.",
+};
+
 export default async function AjouterPage({
   searchParams,
 }: {
-  searchParams: Promise<{ categorie?: string; pays?: string; marque?: string }>;
+  searchParams: Promise<{ categorie?: string; pays?: string; marque?: string; erreur?: string }>;
 }) {
   const params = await searchParams;
+  const categories = await listCategories();
+  const ahead = categories.filter((c) => c.status === "queued" && c.requests > 0).length;
+  const etaWeeks = publicQueueWeeks(ahead, monthlyCapUsd());
+  const erreur = params.erreur ? ERREURS[params.erreur] : undefined;
   return (
     <div className="flex min-h-screen flex-col bg-[var(--porcelain)] text-[var(--ink)]">
       <BrandNav />
@@ -41,10 +57,18 @@ export default async function AjouterPage({
           {`Dites-nous ce que ses clients cherchent, et où. Si la catégorie est déjà mesurée, vous voyez tout de suite si ${modelsSentence(indexModels())} la recommandent. Sinon, elle entre dans la file : ses questions d'achat sont écrites, figées, puis mesurées.`}
         </p>
 
+        {erreur ? (
+          <p role="alert" className="mt-6 rounded-xl border border-[var(--poppy)] bg-white px-4 py-3 text-sm">
+            {erreur}
+          </p>
+        ) : null}
         <div className="mt-8">
           <RequestForm
             countries={COUNTRIES.map((c) => ({ code: c.code, flag: c.flag, name: c.name }))}
             defaults={{ category: params.categorie, country: params.pays, brand: params.marque }}
+            etaWeeks={etaWeeks}
+            priorityPriceEur={OFFERS.priority.priceEur}
+            rule={RULE_DATE_NOT_RESULT}
           />
         </div>
 

@@ -184,3 +184,17 @@ export async function spendSummary(): Promise<
     }))
   );
 }
+
+/**
+ * Le compteur d'une mesure COMMANDÉE (mesure prioritaire, suivi, crédit agence).
+ *
+ * En production (clé Stripe `sk_live_`), une commande a été payée : sa mesure
+ * est rentable et ne se coupe jamais (`paid`). Tant que Stripe est en mode test,
+ * un « paiement » ne rapporte rien : la mesure est comptée dans le budget de
+ * l'Index, sous le même plafond mensuel que tout le reste. Un paiement de test
+ * ne peut donc pas engager une dépense que le fondateur n'a pas validée
+ * (constitution §7).
+ */
+export function orderBucket(): SpendBucket {
+  return process.env.STRIPE_SECRET_KEY?.startsWith("sk_live_") ? "paid" : "index";
+}
