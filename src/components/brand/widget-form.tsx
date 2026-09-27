@@ -71,7 +71,7 @@ export function WidgetForm({
         >
           {pending ? "Recherche dans l'Index…" : "Suis-je recommandé par ChatGPT ?"}
         </button>
-        {state && !state.ok ? <p className="text-sm text-[var(--poppy)]">{state.message}</p> : null}
+        {state && !state.ok ? <p className="text-sm text-[var(--poppy-ink)]">{state.message}</p> : null}
       </form>
 
       {r ? (

@@ -155,7 +155,7 @@ export default async function LandingPageEn({
               </div>
             </form>
             {error === "limite-scans" && (
-              <p className="mt-2 text-sm text-[var(--poppy)]">
+              <p className="mt-2 text-sm text-[var(--poppy-ink)]">
                 3 scans/day limit reached — come back tomorrow or create a free account.
               </p>
             )}
@@ -225,7 +225,7 @@ export default async function LandingPageEn({
             ].map((step, i) => (
               <Reveal key={step.n} style={{ "--reveal-index": i } as React.CSSProperties}>
                 <li className="h-full rounded-2xl border border-[var(--line)] bg-white p-6">
-                  <p className="font-metric text-xs text-[var(--poppy)]">{step.n}</p>
+                  <p className="font-metric text-xs text-[var(--poppy-ink)]">{step.n}</p>
                   <h3 className="mt-3 font-display text-base font-extrabold uppercase tracking-wide">
                     {step.t}
                   </h3>

@@ -79,7 +79,7 @@ export default async function AjouterPage({
             ["03", "Le classement", "Public, daté, contestable. Un score sur 100 et un palier nommé, d'Invisible à Prescrite."],
           ].map(([n, title, text]) => (
             <li key={n} className="rounded-2xl border border-[var(--line)] bg-white p-5">
-              <p className="font-metric text-xs text-[var(--poppy)]">{n}</p>
+              <p className="font-metric text-xs text-[var(--poppy-ink)]">{n}</p>
               <p className="mt-2 font-display text-sm font-extrabold uppercase tracking-wide">{title}</p>
               <p className="mt-1.5 text-sm leading-relaxed text-[var(--ink-soft)]">{text}</p>
             </li>

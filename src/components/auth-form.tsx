@@ -151,7 +151,7 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
           />
         </div>
 
-        {error && <p className="text-sm text-[var(--poppy)]">{error}</p>}
+        {error && <p className="text-sm text-[var(--poppy-ink)]">{error}</p>}
 
         <button
           type="submit"

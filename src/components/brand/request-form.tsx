@@ -111,7 +111,7 @@ export function RequestForm({
         </div>
       </details>
 
-      {state && !state.ok ? <p className="text-sm text-[var(--poppy)]">{state.message}</p> : null}
+      {state && !state.ok ? <p className="text-sm text-[var(--poppy-ink)]">{state.message}</p> : null}
 
       {/* Les deux options, avec leur vrai délai. Même mesure, même méthode. */}
       <div className="grid gap-3 pt-2 sm:grid-cols-2">

@@ -147,6 +147,10 @@
     --line: #d6d2df;
     --plum: #1f1830;
     --poppy: #e8462b;
+    /* Le même rouge, assombri pour le PETIT texte (erreurs, numéros) : #e8462b
+       n'atteint que 3,9:1 sur blanc, sous le minimum AA de 4,5:1. Celui-ci fait
+       5,5:1. Les boutons et le barème gardent --poppy. */
+    --poppy-ink: #c2361d;
     --jade: #2fa98a;
     /* Spectre de visibilité : invisible (cendré) → citée en tête (chaud) */
     --spectrum-ash: #727387;

@@ -234,7 +234,7 @@ export default async function AdminPage() {
                   <form action={markHandled} className="mt-3">
                     <input type="hidden" name="table" value="contact_messages" />
                     <input type="hidden" name="id" value={c.id} />
-                    <button className="text-sm font-semibold text-[var(--poppy)]">Marquer comme répondu ✓</button>
+                    <button className="text-sm font-semibold text-[var(--poppy-ink)]">Marquer comme répondu ✓</button>
                   </form>
                 )}
               </li>

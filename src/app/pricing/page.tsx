@@ -70,6 +70,7 @@ export default function PricingPage() {
             </Link>
           </p>
           <div className="mt-14">
+            <h2 className="sr-only">Les quatre offres</h2>
             <OffersGrid />
           </div>
         </section>

@@ -104,6 +104,8 @@ changer de palier**. Le jour où c'est négociable, l'actif est mort.
 
 Jetons dans `globals.css` : porcelaine `#ECEAF1`, encre `#171520`, encre douce
 `#544F60`, filet `#D6D2DF`, prune `#1F1830`, poppy `#E8462B` (CTA uniquement).
+Pour le PETIT texte rouge (erreurs, numéros), `--poppy-ink` `#C2361D` : poppy
+n'atteint que 3,9:1 sur blanc, sous le minimum d'accessibilité AA (4,5:1).
 Typo : Archivo (display), Inter (texte), Space Mono (tous les chiffres).
 
 **Interdits** — ce sont les signatures « site généré par IA » : parallaxe, dégradés

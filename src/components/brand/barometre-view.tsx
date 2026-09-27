@@ -180,7 +180,7 @@ export async function BarometreView({
                               {row.name}
                             </Link>
                             <span
-                              className={`font-metric shrink-0 text-sm tabular-nums ${bloc.jade ? "text-[var(--jade)]" : "text-[var(--poppy)]"}`}
+                              className={`font-metric shrink-0 text-sm tabular-nums ${bloc.jade ? "text-[var(--jade)]" : "text-[var(--poppy-ink)]"}`}
                             >
                               {row.delta! > 0 ? `▲${row.delta}` : `▼${Math.abs(row.delta!)}`}
                             </span>

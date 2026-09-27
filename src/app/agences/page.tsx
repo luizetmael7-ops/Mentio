@@ -171,7 +171,7 @@ export default async function AgencesPage() {
               {sampleReport.actions.slice(0, 3).map((action, i) => (
                 <Reveal key={action.title} style={{ "--reveal-index": i } as React.CSSProperties}>
                   <li className="h-full rounded-2xl border border-[var(--line)] bg-white p-6">
-                    <p className="font-metric text-xs text-[var(--poppy)]">
+                    <p className="font-metric text-xs text-[var(--poppy-ink)]">
                       {String(i + 1).padStart(2, "0")}
                     </p>
                     <p className="mt-3 font-display text-base font-extrabold uppercase tracking-wide">
@@ -221,7 +221,7 @@ export default async function AgencesPage() {
             ].map((step, i) => (
               <Reveal key={step.n} style={{ "--reveal-index": i } as React.CSSProperties}>
                 <li className="h-full rounded-2xl border border-[var(--line)] bg-white p-6">
-                  <p className="font-metric text-xs text-[var(--poppy)]">{step.n}</p>
+                  <p className="font-metric text-xs text-[var(--poppy-ink)]">{step.n}</p>
                   <h3 className="mt-3 font-display text-base font-extrabold uppercase tracking-wide">
                     {step.t}
                   </h3>

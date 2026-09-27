@@ -105,7 +105,7 @@ export function BrandFooter({ locale = "fr" }: { locale?: "fr" | "en" }) {
         </nav>
       </div>
       {/* Mentio mesure quelles sources les IA citent : il doit lui-même être lisible par elles. */}
-      <div className="mx-auto mt-8 flex max-w-6xl flex-wrap items-center gap-x-5 gap-y-2 border-t border-white/10 pt-6 font-metric text-[0.65rem] uppercase tracking-wider text-white/40">
+      <div className="mx-auto mt-8 flex max-w-6xl flex-wrap items-center gap-x-5 gap-y-2 border-t border-white/10 pt-6 font-metric text-[0.65rem] uppercase tracking-wider text-white/60">
         <span>{t.machines}</span>
         <a href="/llms.txt" className="transition-colors hover:text-white">llms.txt</a>
         <a href="/llms-full.txt" className="transition-colors hover:text-white">llms-full.txt</a>
@@ -114,7 +114,7 @@ export function BrandFooter({ locale = "fr" }: { locale?: "fr" | "en" }) {
         <a href="/api/mcp" className="transition-colors hover:text-white">MCP</a>
         <a href="/sitemap.xml" className="transition-colors hover:text-white">sitemap</a>
       </div>
-      <div className="mx-auto mt-6 flex max-w-6xl items-center gap-3 text-xs text-white/40">
+      <div className="mx-auto mt-6 flex max-w-6xl items-center gap-3 text-xs text-white/60">
         <LogoMark size={14} />
         <p>Mentio — mentio.fr · {t.legal}</p>
       </div>

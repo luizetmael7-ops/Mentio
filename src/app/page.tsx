@@ -230,7 +230,7 @@ export default async function LandingPage() {
                 </ul>
               </figure>
               <aside className="flex flex-col rounded-3xl bg-[var(--plum)] p-5 text-white sm:p-7">
-                <p className="eyebrow text-white/60">Ce que Mentio en retient</p>
+                <p className="eyebrow !text-white/60">Ce que Mentio en retient</p>
                 <ol className="mt-4 grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
                   {lecture.brands.map((b, i) => (
                     <li key={b} className="flex items-baseline gap-2">
@@ -329,7 +329,7 @@ export default async function LandingPage() {
                 <span className="font-display text-lg font-extrabold uppercase leading-tight tracking-wide">
                   Votre catégorie n&apos;y est pas ?
                 </span>
-                <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-[var(--poppy)]">
+                <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-[var(--poppy-ink)]">
                   Ajoutez-la à l&apos;Index <ArrowRight aria-hidden className="size-4" />
                 </span>
               </Link>
@@ -371,7 +371,7 @@ export default async function LandingPage() {
                   {`Voici la première action du plan de ${samplePlan.name}, telle qu'elle s'affiche dans son rapport. Le plan complet en compte ${samplePlan.actions.length}, classées par effet attendu, toutes déduites des réponses mesurées — aucune n'est écrite par un modèle.`}
                 </p>
                 <div className="mt-7 rounded-2xl bg-[var(--porcelain)]/70 p-5 sm:p-6">
-                  <p className="font-metric text-[0.65rem] uppercase tracking-widest text-[var(--poppy)]">
+                  <p className="font-metric text-[0.65rem] uppercase tracking-widest text-[var(--poppy-ink)]">
                     {`Action 01/${samplePlan.actions.length}`}
                   </p>
                   <p className="mt-2 font-display text-lg font-extrabold uppercase tracking-wide">

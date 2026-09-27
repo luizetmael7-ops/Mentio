@@ -56,7 +56,7 @@ export function ClaimBrand({ brandName, slug }: { brandName: string; slug: strin
         </button>
       </form>
 
-      {state && !state.ok && <p className="mt-2 text-sm text-[var(--poppy)]">{state.message}</p>}
+      {state && !state.ok && <p className="mt-2 text-sm text-[var(--poppy-ink)]">{state.message}</p>}
 
       <p className="mt-3 text-[0.7rem] leading-relaxed text-[var(--ink-soft)]">
         Votre email sert uniquement à cet envoi. Aucune inscription, désinscription immédiate sur

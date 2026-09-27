@@ -118,7 +118,7 @@ export function RankingTable({
                   </span>
                   {row.delta !== null && row.delta !== 0 && (
                     <span
-                      className={`font-metric text-[0.65rem] tabular-nums ${row.delta > 0 ? "text-[var(--jade)]" : "text-[var(--poppy)]"}`}
+                      className={`font-metric text-[0.65rem] tabular-nums ${row.delta > 0 ? "text-[var(--jade)]" : "text-[var(--poppy-ink)]"}`}
                     >
                       {row.delta > 0 ? `▲${row.delta}` : `▼${Math.abs(row.delta)}`}
                     </span>

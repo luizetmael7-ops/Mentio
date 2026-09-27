@@ -100,7 +100,7 @@ export default async function MethodologiePage() {
               },
             ].map((step) => (
               <li key={step.n} className="rounded-2xl border border-[var(--line)] bg-white p-5">
-                <p className="font-metric text-xs uppercase tracking-wider text-[var(--poppy)]">
+                <p className="font-metric text-xs uppercase tracking-wider text-[var(--poppy-ink)]">
                   {step.n}
                 </p>
                 <p className="mt-2 font-display text-base font-extrabold uppercase tracking-wide">
