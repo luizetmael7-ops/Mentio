@@ -69,14 +69,21 @@ export async function POST(request: NextRequest) {
   }
 
   switch (event.type) {
-    case "checkout.session.completed": {
+    // Un moyen de paiement différé (prélèvement SEPA…) termine la session avant
+    // l'encaissement : `payment_status` vaut alors « unpaid », et c'est
+    // `async_payment_succeeded` qui dit, plus tard, que l'argent est arrivé.
+    // Les deux passent ici ; seule une session payée déclenche une livraison.
+    case "checkout.session.completed":
+    case "checkout.session.async_payment_succeeded": {
       const session = event.data.object;
       const kind = session.metadata?.kind;
       const orderId = session.metadata?.order_id;
       const email = session.customer_details?.email ?? null;
       const amount = `${((session.amount_total ?? 0) / 100).toFixed(2)} €`;
 
-      if (kind === "priority" && orderId && session.payment_status === "paid") {
+      if (kind === "priority" && orderId) {
+        // Encaissement différé : on attend `async_payment_succeeded`.
+        if (session.payment_status !== "paid") break;
         // Seule une commande encore « pending » passe à « paid » : c'est le second
         // verrou, au cas où le premier manquerait (installeur non appliqué).
         const { data: updated } = await admin
