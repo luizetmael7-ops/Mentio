@@ -84,7 +84,8 @@ export const publicScan = inngest.createFunction(
             try {
               const answer = await askWithTimeout(provider, job.promptText);
               await recordSpend("public_scan", answer.costUsd);
-              const { extraction } = await judgeAnswer(answer.text);
+              const { extraction, costUsd: judgeUsd } = await judgeAnswer(answer.text);
+              await recordSpend("public_scan", judgeUsd);
               const target = extraction.brands.find((b) => sameBrand(b.name, brandName));
               return {
                 model: job.model,

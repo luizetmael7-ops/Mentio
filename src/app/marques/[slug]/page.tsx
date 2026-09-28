@@ -9,6 +9,7 @@ import { tierOf } from "@/lib/spectrum";
 import { modelName } from "@/lib/models";
 import { ClaimBrand } from "@/components/brand/claim-brand";
 import { BadgeEmbed } from "@/components/brand/badge-embed";
+import { RadarBeacon } from "@/components/brand/radar-beacon";
 import {
   getEditionsByVertical,
   getEditionsForBrand,
@@ -171,6 +172,7 @@ export default async function BrandPage({ params }: { params: Promise<{ slug: st
   return (
     <div className="flex min-h-screen flex-col bg-[var(--porcelain)] text-[var(--ink)]">
       <BrandNav />
+      <RadarBeacon kind="marque" subject={slug} />
       <main className="mx-auto w-full max-w-5xl flex-1 px-5 pb-24 pt-28">
         <Link
           href="/barometre"

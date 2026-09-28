@@ -36,7 +36,8 @@ pas assurer.
 | Profondeur de mesure | Profound, Peec | perdu d'avance |
 | Volume de données réelles | Profound | perdu d'avance |
 | **Vocabulaire de catégorie** | personne | **libre** |
-| **Corpus citable par les IA** | personne | **libre** |
+| **Corpus citable par les IA** | contesté depuis l'été 2026 (Observatoire de la Visibilité IA, baromètres Eskimoz) | **à gagner par l'échelle et l'ouverture** — voir §9 |
+| **Coût marginal d'une marque de plus** | les concurrents paient au prompt suivi | **nul** : la mesure est mutualisée par catégorie |
 
 **Le barème comme standard.** Les concurrents vendent un pourcentage ; Mentio vend un
 rang nommé. C'est le mécanisme du Nutri-Score : personne ne retient qui mesure le
@@ -83,6 +84,13 @@ changer de palier**. Le jour où c'est négociable, l'actif est mort.
   HTML ; l'animation n'est qu'un supplément si le JS tourne.
 - **APIs officielles avec recherche web.** Jamais de scraping des applications.
 - **Ne jamais publier une édition vide.** Mieux vaut garder la précédente.
+- **Contrôle d'instrument** (`src/lib/edition-audit.ts`) : aucune édition n'est publiée
+  — ni servie, si elle est déjà en base — quand un moteur annoncé a répondu à moins de
+  80 % des questions. La précédente reste la référence, l'erratum est public
+  (/methodologie). Né des éditions du 30 août et du 6 septembre 2026.
+- **L'Index** (§9) mesure des catégories étroites avec 10 questions figées chacune ;
+  les deux Baromètres historiques gardent leurs 50 questions. Le Cartographe n'écrit
+  jamais de questions pour une catégorie qui a déjà un historique.
 
 ## 5. Règles éditoriales du Baromètre
 
@@ -96,6 +104,8 @@ changer de palier**. Le jour où c'est négociable, l'actif est mort.
 
 Jetons dans `globals.css` : porcelaine `#ECEAF1`, encre `#171520`, encre douce
 `#544F60`, filet `#D6D2DF`, prune `#1F1830`, poppy `#E8462B` (CTA uniquement).
+Pour le PETIT texte rouge (erreurs, numéros), `--poppy-ink` `#C2361D` : poppy
+n'atteint que 3,9:1 sur blanc, sous le minimum d'accessibilité AA (4,5:1).
 Typo : Archivo (display), Inter (texte), Space Mono (tous les chiffres).
 
 **Interdits** — ce sont les signatures « site généré par IA » : parallaxe, dégradés
@@ -119,25 +129,42 @@ remplacer par un modèle ouvert reviendrait à mesurer ce que personne n'utilise
 
 *Les modèles de traitement* — juge, génération de questions, rédaction, veille,
 analyse. Aucun besoin de recherche web, donc aucun forfait. **Tournent sur OpenRouter
-en palier gratuit** (`nvidia/nemotron-3-ultra-550b-a55b:free`, repli Super puis Nano,
-puis moteurs payants). Vérifié avant migration sur un cas piégé mêlant institutions,
-médias, ingrédients et souches à de vraies marques : extraction exacte.
+en palier gratuit** (liste unique : `src/lib/llm/free-models.ts` — Nemotron Ultra,
+repli Super, puis moteurs payants). Noté sur le jeu de référence (`tests/reference`) :
+précision et rappel 100 % sur 19 réponses réelles le 27 septembre 2026. Le palier
+gratuit a un **quota quotidien par clé, partagé entre la CI et la production** : un
+quota vide fait basculer le juge sur le moteur payant, dont le coût est compté.
 
 Coûts unitaires mesurés : ChatGPT 0,0130 $ · Gemini 0,0145 $ · Claude 0,0240 $ ·
 Perplexity 0,0054 $ · juge 0 $.
 
 **Coupe-circuit** (`src/lib/spend-guard.ts`) : plafond quotidien sur les usages sans
-revenu (scans publics, comptes gratuits, Baromètre). Les organisations payantes ont un
-plafond infini — un client qui paie n'est jamais coupé.
+revenu (scans publics, comptes gratuits, Baromètre), et plafond mensuel de 8 $ par
+défaut (`SPEND_CAP_MONTHLY`). Un compteur illisible refuse la dépense (sauf le scan
+public, déjà borné). Les organisations payantes ont un plafond infini — un client qui
+paie n'est jamais coupé. Le Planificateur de l'Index dépense dans ce budget, jamais
+au-delà.
 
 **Règle absolue : toute dépense est annoncée et validée avant d'être engagée.**
 Estimation chiffrée d'abord, feu vert ensuite, coût réel rapporté après.
+
+*Une mesure commandée* (mesure prioritaire, suivi, crédit agence) est une dépense
+validée une fois pour toutes par la fusion de la caisse (27 septembre 2026) : ~0,72 $
+pour une catégorie de 10 questions, couverts par la commande. Elle ne tourne sur le
+compteur `paid` (jamais coupé) qu'avec une clé Stripe de production ; tant que Stripe
+est en mode test, elle est comptée dans le budget de l'Index et son plafond
+(`orderBucket`, `spend-guard.ts`).
 
 ## 8. Ce qu'un agent ne fait jamais
 
 1. **Envoyer un message à un tiers.** Ni email, ni DM, ni publication. L'agent
    prépare, un humain relit et envoie. Un message sincère automatisé devient du spam,
    et c'est précisément la sincérité qui convertit ici.
+   *Ne sont pas des messages à un tiers* : les emails qui LIVRENT une commande à la
+   personne qui l'a passée (rapport, échec et remboursement, nouvelle édition d'un
+   suivi, lead du widget pour l'agence qui l'a installé). Ils partent vers l'adresse
+   donnée pour cette commande, sont des gabarits écrits dans `customer-email.ts` —
+   jamais rédigés par un modèle —, et la réponse arrive dans la boîte de l'entreprise.
 2. **Merger une PR touchant le Baromètre.** On publie un classement nominatif de
    marques réelles : une erreur automatisée coûte la crédibilité, et davantage.
 3. **Engager une dépense sans validation.**
@@ -146,3 +173,37 @@ Estimation chiffrée d'abord, feu vert ensuite, coût réel rapporté après.
 
 Chaque exécution d'agent écrit son compte-rendu dans `ops/logs/AAAA-MM-JJ-agent.md` :
 ce qui a été fait, ce qui a échoué, ce que ça a coûté.
+
+## 9. L'Index mondial et ses agents
+
+*Amendement du 26 septembre 2026, proposé par l'agent à la demande du fondateur — il
+prend effet quand le fondateur fusionne la branche qui le porte.*
+
+**La vision.** Mentio devient l'index public de ce que les IA recommandent,
+catégorie par catégorie, pays par pays (`/classements`). N'importe qui peut y ajouter
+une marque (`/ajouter`). Le modèle mental est TrustMRR : public, vérifié — par la
+mesure, pas par déclaration — et impossible à acheter. Le détail est dans
+`ops/vision-2026-09-26.md`.
+
+**Une catégorie** = une intention d'achat étroite dans un pays (`index_categories`,
+clé `fr:creme-solaire`), 10 questions figées dans la langue du pays, mesurées sur
+ChatGPT et Gemini avec recherche web localisée. Le barème s'applique à l'intérieur de
+la catégorie : c'est ce qui le rend discriminant.
+
+**Les agents** (Inngest, tous plafonnés, aucun n'écrit à un tiers) :
+
+| Agent | Rôle |
+|---|---|
+| Cartographe | nomme une catégorie demandée, écrit et fige ses questions (modèle gratuit) |
+| Planificateur | chaque matin, choisit ce qui est mesuré selon priorité, demandes, ancienneté et budget |
+| Mesureur (`weekly-index`) | sonde, phase 1, contrôle d'instrument, phase 2 bornée, édition |
+| Vigie | alerte le fondateur quand quelque chose casse ou qu'une personne attend une réponse |
+| Secrétaire | bilan du dimanche et une seule action conseillée |
+
+**Le fondateur** reçoit tout sur `FOUNDER_EMAIL` et décide depuis `/admin`. Toute
+notification à un tiers (prévenir un demandeur que sa catégorie est publiée) reste
+une décision humaine (§8.1).
+
+**Jamais** : un classement qui s'achète. On peut vendre la *date* d'une mesure (la
+passer en tête de file), jamais son *résultat*.
+

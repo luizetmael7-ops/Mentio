@@ -1,4 +1,6 @@
+import { sameBrand } from "@/lib/llm/judge";
 import {
+  getEditions,
   getEditionsForBrand,
   brandSlug,
   brandScore,
@@ -7,7 +9,7 @@ import {
 } from "@/lib/index-edition";
 import { tierOf, type Tier } from "@/lib/spectrum";
 import { modelName } from "@/lib/models";
-import { classifySource, brandDomainHint, type SourceType } from "@/lib/source-types";
+import { classifySource, brandDomainHints, type SourceType } from "@/lib/source-types";
 import { playbookFor } from "@/lib/source-playbook";
 
 /**
@@ -73,7 +75,10 @@ export interface BrandReport {
   slug: string;
   score: number;
   tier: Tier;
-  rank: number;
+  /** null : la marque n'est citée dans aucune réponse de la catégorie */
+  rank: number | null;
+  /** La catégorie mesurée — clé et libellé */
+  vertical: string;
   totalBrands: number;
   citations: number;
   runs: number;
@@ -97,10 +102,19 @@ export interface BrandReport {
   actions: ReportAction[];
 }
 
-/** Le Baromètre reparaît chaque semaine, aux mêmes questions. */
+/**
+ * L'Index reparaît chaque mois, aux mêmes questions. La date annoncée ne peut
+ * pas être dans le passé : si l'édition a pris du retard, on annonce la
+ * prochaine date plausible plutôt qu'une promesse déjà manquée.
+ */
 function nextMeasureDate(editionDate: string): string {
   const d = new Date(`${editionDate}T00:00:00Z`);
-  d.setUTCDate(d.getUTCDate() + 7);
+  d.setUTCDate(d.getUTCDate() + 30);
+  const today = new Date();
+  if (d < today) {
+    today.setUTCDate(today.getUTCDate() + 7);
+    return today.toISOString().slice(0, 10);
+  }
   return d.toISOString().slice(0, 10);
 }
 
@@ -122,8 +136,38 @@ export async function buildReport(slug: string): Promise<BrandReport | null> {
     })
     .find((f) => f !== null);
   if (!found) return null;
+  return assembleReport(editions, found.edition, found.brand, found.rank, slug);
+}
 
-  const { edition, brand, rank } = found;
+/**
+ * Le rapport d'une marque DANS une catégorie donnée — qu'elle y soit citée ou non.
+ *
+ * C'est le rapport qu'on livre après une mesure payée : la plupart des marques
+ * qui paient une mesure prioritaire ne sont justement citées nulle part. Leur
+ * rapport n'est pas vide pour autant — il dit qui est recommandé à leur place,
+ * sur quelles questions, et quelles pages les modèles ont lues pour répondre.
+ * Une absence mesurée est un diagnostic, pas une page blanche.
+ */
+export async function buildCategoryReport(
+  categoryKey: string,
+  brandName: string
+): Promise<BrandReport | null> {
+  const editions = await getEditions(12, categoryKey);
+  const edition = editions[0];
+  if (!edition) return null;
+  const slug = brandSlug(brandName);
+  const hit = edition.brands.findIndex((b) => brandSlug(b.name) === slug || sameBrand(b.name, brandName));
+  if (hit >= 0) return assembleReport(editions, edition, edition.brands[hit], hit + 1, brandSlug(edition.brands[hit].name));
+  return assembleReport(editions, edition, { name: brandName, total: 0, top1: 0 }, null, slug);
+}
+
+function assembleReport(
+  editions: Edition[],
+  edition: Edition,
+  brand: EditionBrand,
+  rank: number | null,
+  slug: string
+): BrandReport {
   const score = brandScore(brand, edition.runs);
   const previous = editions[editions.indexOf(edition) + 1];
   const before = previous ? findBrand(previous, slug) : null;
@@ -189,7 +233,7 @@ export async function buildReport(slug: string): Promise<BrandReport | null> {
   }
   // Les domaines des marques classées, pour reconnaître le site d'un concurrent :
   // aucune expression régulière ne devinerait que loreal.com en est un.
-  const brandDomains = edition.brands.map((b) => brandDomainHint(b.name)).filter((d) => d.length > 3);
+  const brandDomains = edition.brands.flatMap((b) => brandDomainHints(b.name));
   // Le vivier complet sert à construire le plan ; l'affichage n'en montre que la
   // tête. Tronquer à 5 avant de générer les actions limitait mécaniquement le plan
   // à trois lignes, alors que les relevés en contiennent bien plus.
@@ -232,7 +276,7 @@ export async function buildReport(slug: string): Promise<BrandReport | null> {
   //    disqualifier tout le plan.
   for (const source of sourcePool.filter((s) => s.type.actionable).slice(0, 5)) {
     const play = playbookFor(source.domain);
-    const opening = `Ce domaine alimente ${source.rivalWeight} des réponses où ${brand.name} n'apparaît pas, et les modèles y retournent à chaque interrogation.`;
+    const opening = `Ce domaine alimente ${source.rivalWeight > 1 ? `${source.rivalWeight} des réponses` : "une réponse"} où ${brand.name} n'apparaît pas, et les modèles y retournent à chaque interrogation.`;
     familleSources.push({
       title:
         source.type.kind === "plateforme"
@@ -270,7 +314,7 @@ export async function buildReport(slug: string): Promise<BrandReport | null> {
   for (const rival of rivals.slice(0, 2)) {
     familleRivaux.push({
       title: `Se positionner face à ${rival.name}`,
-      detail: `${rival.name} apparaît dans ${rival.citations} réponses où ${brand.name} est absente${rival.firstPlaces > 0 ? `, dont ${rival.firstPlaces} en première position` : ""}. Un comparatif honnête publié sur votre site, puis repris par les sources du secteur, est le format que les modèles citent le plus volontiers — y compris quand il ne vous donne pas systématiquement le premier rôle.`,
+      detail: `${rival.name} apparaît dans ${rival.citations > 1 ? `${rival.citations} réponses` : "une réponse"} où ${brand.name} est absente${rival.firstPlaces > 0 ? `, dont ${rival.firstPlaces} en première position` : ""}. Un comparatif honnête publié sur votre site, puis repris par les sources du secteur, est le format que les modèles citent le plus volontiers — y compris quand il ne vous donne pas systématiquement le premier rôle.`,
     });
   }
 
@@ -298,6 +342,7 @@ export async function buildReport(slug: string): Promise<BrandReport | null> {
     score,
     tier: tierOf(score),
     rank,
+    vertical: edition.vertical,
     totalBrands: edition.brands.length,
     citations: brand.total,
     runs: edition.runs,

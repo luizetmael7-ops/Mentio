@@ -64,7 +64,7 @@ export default async function BadgePage() {
             />
             <p className="mt-5 text-sm leading-relaxed text-[var(--ink-soft)]">
               Le mois affiché est celui de la <strong className="text-[var(--ink)]">mesure</strong>,
-              pas celui de la visite. Tant que la marque est relevée chaque semaine, il avance seul.
+              pas celui de la visite. À chaque nouvelle édition, il avance seul.
             </p>
           </section>
         ) : null}

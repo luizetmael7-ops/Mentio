@@ -6,7 +6,8 @@ const COPY = {
     tagline: ["La perception, ", "mesurée", "."],
     nav: "Pied de page",
     scan: "Scan gratuit",
-    index: "Le Baromètre",
+    index: "L'Index",
+    add: "Ajouter une marque",
     agencies: "Agences",
     pricing: "Tarifs",
     login: "Connexion",
@@ -14,6 +15,7 @@ const COPY = {
     scale: "Le barème",
     badge: "Le badge",
     method: "Méthodologie",
+    status: "Statut",
     contact: "Contact",
     terms: "CGU",
     privacy: "Confidentialité",
@@ -26,6 +28,7 @@ const COPY = {
     nav: "Footer",
     scan: "Free scan",
     index: "The Index",
+    add: "Add a brand",
     agencies: "Agencies",
     pricing: "Pricing",
     login: "Log in",
@@ -33,6 +36,7 @@ const COPY = {
     scale: "Le barème",
     badge: "Le badge",
     method: "Méthodologie",
+    status: "Status",
     contact: "Contact",
     terms: "Terms",
     privacy: "Privacy",
@@ -59,8 +63,11 @@ export function BrandFooter({ locale = "fr" }: { locale?: "fr" | "en" }) {
           <Link href="/score" className="transition-colors hover:text-white">
             {t.scan}
           </Link>
-          <Link href="/barometre" className="transition-colors hover:text-white">
+          <Link href="/classements" className="transition-colors hover:text-white">
             {t.index}
+          </Link>
+          <Link href="/ajouter" className="transition-colors hover:text-white">
+            {t.add}
           </Link>
           <Link href="/agences" className="transition-colors hover:text-white">
             {t.agencies}
@@ -76,6 +83,9 @@ export function BrandFooter({ locale = "fr" }: { locale?: "fr" | "en" }) {
           </Link>
           <Link href="/methodologie" className="transition-colors hover:text-white">
             {t.method}
+          </Link>
+          <Link href="/statut" className="transition-colors hover:text-white">
+            {t.status}
           </Link>
           <Link href="/pricing" className="transition-colors hover:text-white">
             {t.pricing}
@@ -95,15 +105,16 @@ export function BrandFooter({ locale = "fr" }: { locale?: "fr" | "en" }) {
         </nav>
       </div>
       {/* Mentio mesure quelles sources les IA citent : il doit lui-même être lisible par elles. */}
-      <div className="mx-auto mt-8 flex max-w-6xl flex-wrap items-center gap-x-5 gap-y-2 border-t border-white/10 pt-6 font-metric text-[0.65rem] uppercase tracking-wider text-white/40">
+      <div className="mx-auto mt-8 flex max-w-6xl flex-wrap items-center gap-x-5 gap-y-2 border-t border-white/10 pt-6 font-metric text-[0.65rem] uppercase tracking-wider text-white/60">
         <span>{t.machines}</span>
         <a href="/llms.txt" className="transition-colors hover:text-white">llms.txt</a>
         <a href="/llms-full.txt" className="transition-colors hover:text-white">llms-full.txt</a>
         <a href="/barometre.md" className="transition-colors hover:text-white">barometre.md</a>
         <a href="/api/v1/barometre" className="transition-colors hover:text-white">API</a>
+        <a href="/api/mcp" className="transition-colors hover:text-white">MCP</a>
         <a href="/sitemap.xml" className="transition-colors hover:text-white">sitemap</a>
       </div>
-      <div className="mx-auto mt-6 flex max-w-6xl items-center gap-3 text-xs text-white/40">
+      <div className="mx-auto mt-6 flex max-w-6xl items-center gap-3 text-xs text-white/60">
         <LogoMark size={14} />
         <p>Mentio — mentio.fr · {t.legal}</p>
       </div>

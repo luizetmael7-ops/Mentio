@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { supabaseAdmin } from "@/lib/supabase/admin";
+import { fixturesEnabled, fixtureScan } from "@/lib/fixtures";
 import { submitLead } from "@/lib/actions/lead";
 import { tierOf } from "@/lib/spectrum";
 import { modelLabel } from "@/lib/models-meta";
@@ -28,11 +29,14 @@ export default async function ScanPage({ params }: { params: Promise<{ id: strin
   const { id } = await params;
   const admin = supabaseAdmin();
 
-  const { data: scan } = await admin
-    .from("public_scans")
-    .select("id, brand_name, status, teaser, created_at")
-    .eq("id", id)
-    .single();
+  const { data: scan } =
+    fixturesEnabled() && id.startsWith("demo-")
+      ? { data: fixtureScan(id) }
+      : await admin
+          .from("public_scans")
+          .select("id, brand_name, status, teaser, created_at")
+          .eq("id", id)
+          .single();
   if (!scan) notFound();
 
   const cookieStore = await cookies();

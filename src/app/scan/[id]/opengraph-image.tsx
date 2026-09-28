@@ -1,19 +1,17 @@
 import { ImageResponse } from "next/og";
 import { supabaseAdmin } from "@/lib/supabase/admin";
+import { TIERS, tierOf } from "@/lib/spectrum";
 
 export const alt = "AI visibility reading — Mentio";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
-const SPECTRUM_HEX = [
-  { min: 85, color: "#E8462B" },
-  { min: 65, color: "#E7A94B" },
-  { min: 45, color: "#EF8060" },
-  { min: 20, color: "#7A5FA8" },
-  { min: 0, color: "#727387" },
-];
-const colorOf = (value: number) =>
-  (SPECTRUM_HEX.find((s) => value >= s.min) ?? SPECTRUM_HEX[4]).color;
+/**
+ * La couleur d'un score, lue dans le barème. Cette image avait ses propres seuils
+ * (85/65/45/20) : un score de 60 y prenait la couleur de « Citée » au lieu de
+ * « Recommandée ». Constitution §3 : aucune redéfinition hors de spectrum.ts.
+ */
+const colorOf = (value: number) => tierOf(value).hex;
 
 interface Teaser {
   score: number;
@@ -56,7 +54,7 @@ export default async function OgImage({ params }: { params: Promise<{ id: string
         <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
           {/* Logomark */}
           <div style={{ display: "flex", alignItems: "flex-end", gap: 5, height: 36 }}>
-            {["#727387", "#7A5FA8", "#EF8060", "#E7A94B", "#E8462B"].map((color, i) => (
+            {TIERS.map((t) => t.hex).map((color, i) => (
               <div
                 key={i}
                 style={{

@@ -40,10 +40,41 @@ export function isModelConfigured(key: ModelKey): boolean {
 
 /** Les modèles réellement interrogeables maintenant (serveur uniquement). */
 export function activeModels(): ModelInfo[] {
-  const active = MODELS.filter((m) => isModelConfigured(m.key));
-  // Filet de sécurité : si l'env n'est pas lisible, on n'affiche pas une liste vide
-  return active.length > 0 ? active : MODELS;
+  return MODELS.filter((m) => isModelConfigured(m.key));
 }
+
+/**
+ * Les moteurs que L'INDEX interroge — ceux qu'une page publique a le droit de
+ * nommer quand elle parle du classement.
+ *
+ * Avant septembre 2026, le site nommait les moteurs dont la clé existait sur
+ * Vercel (quatre), avec un repli qui affichait les quatre quand l'environnement
+ * était illisible. Le Baromètre, lui, n'en interrogeait que deux — et pendant
+ * deux éditions, un seul. La page d'accueil annonçait donc « ChatGPT, Gemini,
+ * Claude et Perplexity, chaque semaine » à des experts SEO, au moment précis où
+ * ChatGPT ne répondait plus. Une page qui parle de la mesure lit désormais les
+ * moteurs de la mesure (voir `edition.models`, qui ne contient que les moteurs
+ * ayant répondu) ; à défaut, cette liste.
+ */
+export const INDEX_MODEL_KEYS: ModelKey[] = ["chatgpt", "gemini"];
+
+export function indexModels(): ModelInfo[] {
+  return MODELS.filter((m) => INDEX_MODEL_KEYS.includes(m.key));
+}
+
+/**
+ * La cadence de l'Index, écrite une seule fois. Mensuelle depuis septembre
+ * 2026 : un score de visibilité IA ne bouge pas en une semaine, et la facture
+ * est divisée par quatre. Chaque catégorie peut avoir la sienne (`cadence_days`),
+ * mais c'est celle-ci qu'on annonce.
+ */
+export const INDEX_CADENCE = {
+  adverb: "chaque mois",
+  adjective: "mensuel",
+  label: "Relevé mensuel",
+  en: "every month",
+  enLabel: "Monthly reading",
+} as const;
 
 /** « ChatGPT, Gemini, Claude et Perplexity » — pour les phrases. */
 export function modelsSentence(models: ModelInfo[] = activeModels()): string {

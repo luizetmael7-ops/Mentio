@@ -96,7 +96,7 @@ export function ContactForm() {
         />
       </div>
 
-      {state && !state.ok && <p className="text-sm text-[var(--poppy)]">{state.message}</p>}
+      {state && !state.ok && <p className="text-sm text-[var(--poppy-ink)]">{state.message}</p>}
 
       <div className="flex flex-wrap items-center gap-4">
         <button

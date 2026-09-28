@@ -1,0 +1,115 @@
+# LA VÉRIFICATION — ce qui doit être vert avant toute fusion dans main.
+#
+# Deux jobs :
+#   qualite     — typage, lint, tests unitaires, installeur SQL rejoué sur un vrai
+#                 Postgres, build, et parcours de bout en bout dans un navigateur.
+#                 Sur les données de démonstration : aucun appel payant, aucune base.
+#   audit-prod  — la branche bâtie sur la VRAIE base, en lecture seule, et chaque
+#                 chiffre affiché recalculé par un autre chemin (scripts/audit/prod.ts).
+#                 Uniquement sur un push : les secrets ne sont jamais donnés à une PR
+#                 venue d'ailleurs.
+#
+# Le juge noté sur le jeu de référence a son propre workflow (juge.yml) : il
+# consomme le quota gratuit d'OpenRouter, partagé avec la production.
+#
+# Les journaux de ce dépôt sont publics : l'audit n'imprime que des marques et des
+# scores, déjà publics. Jamais une adresse, jamais un message.
+
+name: Vérification
+
+on:
+  push:
+    branches: ["main", "claude/**"]
+  pull_request:
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: verification-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  qualite:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      MENTIO_FIXTURES: "1"
+      NEXT_PUBLIC_SUPABASE_URL: http://127.0.0.1:54321
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: demo
+      SUPABASE_SERVICE_ROLE_KEY: demo
+      NEXT_TELEMETRY_DISABLED: "1"
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+
+      - name: Typage
+        run: npx tsc --noEmit
+
+      - name: Lint
+        run: npx eslint src scripts tests
+
+      - name: Tests unitaires et installeur SQL (Postgres embarqué)
+        run: npm test
+
+      - name: L'installeur SQL est à jour avec les migrations
+        run: |
+          npx tsx scripts/build-installer.ts
+          git diff --exit-code supabase/INSTALLER.sql
+
+      - name: Build
+        run: npx next build
+
+      - name: Navigateur
+        run: npx playwright install --with-deps chromium
+
+      - name: Parcours de bout en bout (ordinateur et 380 px)
+        run: npx playwright test
+
+      - name: Traces des parcours en échec
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: parcours-en-echec
+          path: test-results/
+          retention-days: 7
+
+  audit-prod:
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      # Le proxy de session a besoin d'une clé publique ; sans elle, il échoue
+      # proprement et les pages publiques s'affichent quand même.
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'lecture-seule' }}
+      NEXT_TELEMETRY_DISABLED: "1"
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+
+      - name: Build de la branche sur la vraie base (lecture seule)
+        run: npx next build
+
+      - name: Démarrer le site
+        run: |
+          npx next start -p 3300 > /tmp/site.log 2>&1 &
+          for i in $(seq 1 30); do curl -sf http://127.0.0.1:3300/ > /dev/null && break; sleep 2; done
+
+      - name: Audit adverse des chiffres
+        run: npx tsx scripts/audit/prod.ts --site http://127.0.0.1:3300
+
+      # Tant que le jeu de référence n'est pas annoté, on en imprime l'échantillon.
+      - name: Échantillon du jeu de référence (à annoter)
+        if: hashFiles('tests/reference/annotations.json') == ''
+        run: npx tsx scripts/audit/export-reference.ts

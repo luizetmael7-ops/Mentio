@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { BrandNav } from "@/components/brand/nav";
@@ -6,9 +7,11 @@ import { TierScale } from "@/components/brand/tier";
 import { CountUp } from "@/components/brand/count-up";
 import { Reveal } from "@/components/brand/reveal";
 import { RankingTable, type RankingRow } from "@/components/brand/ranking-table";
-import { modelName } from "@/lib/models";
+import { modelName, INDEX_CADENCE } from "@/lib/models";
 import { getEditions, formatEditionDate, brandSlug, brandScore } from "@/lib/index-edition";
 import type { VerticalInfo } from "@/lib/verticals";
+import { countryByCode } from "@/lib/index-catalog";
+import { AbsentNotice } from "@/components/brand/absent-notice";
 import { movementIsSignificant } from "@/lib/measurement";
 
 /**
@@ -18,28 +21,42 @@ import { movementIsSignificant } from "@/lib/measurement";
  * /barometre/<slug> sert les autres. Le rendu est strictement le même : deux
  * classements dessinés différemment se liraient comme deux méthodes.
  */
-export async function BarometreView({ vertical }: { vertical: VerticalInfo }) {
+export async function BarometreView({
+  vertical,
+}: {
+  vertical: VerticalInfo & { country?: string; requests?: number };
+}) {
   const editions = await getEditions(6, vertical.key);
   const latest = editions[0];
   const previous = editions[1];
+  const country = countryByCode(vertical.country ?? "FR");
 
   if (!latest) {
+    // Une catégorie de l'Index pas encore mesurée : c'est une page de file
+    // d'attente, pas un cul-de-sac. Chaque demande la fait avancer.
+    const requests = vertical.requests ?? 0;
     return (
       <div className="flex min-h-screen flex-col bg-[var(--porcelain)] text-[var(--ink)]">
         <BrandNav />
         <main className="mx-auto w-full max-w-3xl flex-1 px-5 pb-24 pt-32">
-          <p className="eyebrow">Le Baromètre Mentio</p>
-          <h1 className="mt-3 font-display text-4xl font-black uppercase tracking-tight">
-            Première édition dimanche
+          <p className="eyebrow">{`L'Index Mentio · ${country?.flag ?? ""} ${country?.name ?? ""}`}</p>
+          <h1 className="mt-3 font-display text-4xl font-black uppercase leading-[0.95] tracking-tight sm:text-5xl">
+            {vertical.label}
           </h1>
-          <p className="mt-4 text-[var(--ink-soft)]">
-            Chaque dimanche, nous posons aux IA les mêmes 50 questions d&apos;achat réelles et
-            publions les marques qu&apos;elles recommandent. Revenez dimanche — ou{" "}
-            <Link href="/score" className="underline">
-              mesurez votre marque dès maintenant
-            </Link>
-            .
+          <p className="mt-4 rounded-2xl border border-[var(--line)] bg-white px-5 py-4 text-[var(--ink-soft)]">
+            {`Cette catégorie est dans la file de mesure${requests > 0 ? ` (${requests} demande${requests > 1 ? "s" : ""})` : ""}. Ses questions sont écrites et figées ; la première édition paraît dès que le budget de mesure le permet — les catégories les plus demandées passent en premier.`}
           </p>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <Link
+              href={`/ajouter?categorie=${encodeURIComponent(vertical.label)}&pays=${vertical.country ?? "FR"}`}
+              className="inline-flex items-center gap-2 rounded-full bg-[var(--poppy)] px-5 py-2.5 font-semibold text-white"
+            >
+              Demander cette catégorie <ArrowRight aria-hidden className="size-4" />
+            </Link>
+            <Link href="/classements" className="inline-flex items-center rounded-full border border-[var(--ink)] px-5 py-2.5 font-semibold">
+              Voir l&apos;Index
+            </Link>
+          </div>
         </main>
         <BrandFooter />
       </div>
@@ -90,6 +107,11 @@ export async function BarometreView({ vertical }: { vertical: VerticalInfo }) {
   const fallers = [...movers].sort((a, b) => a.delta! - b.delta!).filter((r) => r.delta! < 0).slice(0, 3);
 
   const editionLabel = formatEditionDate(latest.date);
+  // Le nombre de questions de CETTE édition : 50 pour les Baromètres historiques,
+  // 10 pour une catégorie de l'Index. Jamais écrit en dur.
+  const questionCount = latest.answers?.length
+    ? new Set(latest.answers.map((a) => a.prompt)).size
+    : Math.round(latest.runs / Math.max(1, latest.models.length));
   const modelsLabel = latest.models.map((m) => modelName(m)).join(" + ");
 
   return (
@@ -98,9 +120,12 @@ export async function BarometreView({ vertical }: { vertical: VerticalInfo }) {
       <main className="flex-1">
         <section className="mx-auto max-w-5xl px-5 pb-12 pt-32">
           <div className="flex flex-wrap items-center gap-3">
-            <p className="eyebrow">Le Baromètre Mentio</p>
+            <Suspense fallback={null}>
+              <AbsentNotice runs={latest.runs} />
+            </Suspense>
+            <p className="eyebrow">{`L'Index Mentio · ${country?.flag ?? ""} ${country?.name ?? ""}`}</p>
             <span className="font-metric rounded-full bg-[var(--jade)]/10 px-2.5 py-0.5 text-[0.6rem] uppercase tracking-widest text-[var(--jade)]">
-              Relevé hebdomadaire
+              {INDEX_CADENCE.label}
             </span>
           </div>
           <h1 className="mt-3 max-w-3xl font-display text-4xl font-black uppercase leading-[0.95] tracking-tight sm:text-6xl">
@@ -109,7 +134,7 @@ export async function BarometreView({ vertical }: { vertical: VerticalInfo }) {
           {/* Phrase composée en une seule chaîne : ce transform JSX rogne les espaces
               aux deux bouts d'un texte multi-ligne, ce qui collait « Gemini » et « les ». */}
           <p className="mt-5 max-w-2xl text-[var(--ink-soft)]">
-            {`Chaque semaine, on pose à ${modelsLabel} les mêmes 50 questions d’achat — celles que ${vertical.audience} — et on compte les marques qui reviennent. Aucun avis, aucun sponsor : les réponses, mesurées. Édition en cours : ${vertical.scope}.`}
+            {`${INDEX_CADENCE.adverb[0].toUpperCase()}${INDEX_CADENCE.adverb.slice(1)}, on pose à ${modelsLabel} les mêmes ${questionCount} questions d’achat — celles que ${vertical.audience} — et on compte les marques qui reviennent. Aucun avis, aucun sponsor : les réponses, mesurées. Édition en cours : ${vertical.scope}.`}
           </p>
 
           {/* Chiffres clés — vraies valeurs dans le HTML, animation en supplément */}
@@ -155,7 +180,7 @@ export async function BarometreView({ vertical }: { vertical: VerticalInfo }) {
                               {row.name}
                             </Link>
                             <span
-                              className={`font-metric shrink-0 text-sm tabular-nums ${bloc.jade ? "text-[var(--jade)]" : "text-[var(--poppy)]"}`}
+                              className={`font-metric shrink-0 text-sm tabular-nums ${bloc.jade ? "text-[var(--jade)]" : "text-[var(--poppy-ink)]"}`}
                             >
                               {row.delta! > 0 ? `▲${row.delta}` : `▼${Math.abs(row.delta!)}`}
                             </span>
@@ -242,7 +267,7 @@ export async function BarometreView({ vertical }: { vertical: VerticalInfo }) {
                 </ul>
                 <p className="mt-6 text-sm text-white/60">
                   Être cité sur ces domaines est le geste le plus rentable en visibilité IA. Mentio
-                  suit les vôtres chaque semaine et vous dit lesquels viser.
+                  suit les vôtres à chaque relevé et vous dit lesquels viser.
                 </p>
               </div>
             </Reveal>
@@ -264,9 +289,8 @@ export async function BarometreView({ vertical }: { vertical: VerticalInfo }) {
             </p>
             <ul className="mt-4 space-y-2 text-sm leading-relaxed text-[var(--ink-soft)]">
               <li>
-                <strong className="text-[var(--ink)]">Les mêmes questions chaque semaine.</strong>{" "}
-                Une liste fixe de 50 questions d&apos;intention d&apos;achat réelles, pour que les
-                éditions soient comparables dans le temps.
+                <strong className="text-[var(--ink)]">Les mêmes questions à chaque édition.</strong>{" "}
+                {`Une liste fixe de ${questionCount} questions d'intention d'achat réelles, pour que les éditions soient comparables dans le temps.`}
               </li>
               <li>
                 <strong className="text-[var(--ink)]">

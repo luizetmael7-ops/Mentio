@@ -14,6 +14,7 @@ import "./lib/env";
 import { db } from "./lib/db";
 import { numFlag } from "./lib/env";
 import { quotaUsage } from "./lib/free-llm";
+import { shown } from "./lib/mask";
 
 type CountQuery = ReturnType<ReturnType<typeof db>["from"]>["select"] extends (...args: never[]) => infer R ? R : never;
 
@@ -148,7 +149,7 @@ async function main() {
     for (const r of rows.filter((x) => x.sendable).slice(0, 30)) {
       const b = brandOf(r);
       const source = String(r.source_url ?? "").replace(/^https?:\/\/(www\.)?/, "").slice(0, 40);
-      console.log(`  ${String(r.email).padEnd(38).slice(0, 38)} ${String(b?.name ?? "?").padEnd(20).slice(0, 20)} ${String(r.label).padEnd(14)} ${source}`);
+      console.log(`  ${shown(r.email).padEnd(38).slice(0, 38)} ${String(b?.name ?? "?").padEnd(20).slice(0, 20)} ${String(r.label).padEnd(14)} ${source}`);
     }
   }
 

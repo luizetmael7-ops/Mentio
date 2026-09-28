@@ -19,6 +19,7 @@
  * dans les emails. Le barème ne se dilue pas dans une mesure dégradée (§3).
  */
 import { db } from "./db";
+import { freeModels } from "@/lib/llm/free-models";
 
 export type FreeProvider = "openrouter" | "mistral" | "gemini_free";
 
@@ -81,11 +82,7 @@ export const FREE_MODELS: FreeModel[] = [
 ];
 
 /** Cascade OpenRouter : le gros modèle d'abord, les plus petits en repli. */
-const OPENROUTER_CASCADE = [
-  process.env.OPENROUTER_JUDGE_MODEL ?? "nvidia/nemotron-3-ultra-550b-a55b:free",
-  "nvidia/nemotron-3-super-120b-a12b:free",
-  "nvidia/nemotron-3-nano-30b-a3b:free",
-];
+const OPENROUTER_CASCADE = freeModels();
 
 // Garde-fou au chargement : un id sans `:free` est un modèle facturé. Mieux vaut
 // que le module refuse de démarrer qu'un cron qui dépense en silence.

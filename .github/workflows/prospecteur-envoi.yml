@@ -83,7 +83,15 @@ jobs:
       # `--limit` n'est pas passé : l'Expéditeur le ramène de lui-même au reste du
       # plafond du jour, donc cette étape ne peut pas dépasser la chauffe même si
       # elle tourne cinq fois par jour.
+      #
+      # DEPUIS LE 26 SEPTEMBRE 2026, CETTE ÉTAPE EST DÉSACTIVÉE PAR DÉFAUT.
+      # L'approbation automatique a laissé partir des emails affirmant quatre
+      # moteurs quand deux seulement avaient mesuré, et cinq questions inventées
+      # (bilan du 13 septembre). Le retour à la règle §8.1 est le défaut ; la
+      # variable de dépôt PROSPECT_AUTO_APPROVE=1 la réactive, en connaissance
+      # de cause, par une décision humaine explicite.
       - name: Approuver ce que le plafond du jour autorise
+        if: ${{ vars.PROSPECT_AUTO_APPROVE == '1' }}
         continue-on-error: true
         run: npx tsx scripts/prospection/expediteur.ts --approuver
 

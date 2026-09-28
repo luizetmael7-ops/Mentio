@@ -1,5 +1,5 @@
 import OpenAI from "openai";
-import type { CitedSource, GroundedAnswer, LlmProvider } from "../types";
+import type { AskOptions, CitedSource, GroundedAnswer, LlmProvider } from "../types";
 import { domainOf, estimateCostUsd } from "../pricing";
 import { isModelConfigured } from "@/lib/models";
 
@@ -17,10 +17,16 @@ export const openaiProvider: LlmProvider = {
 
   isConfigured: () => isModelConfigured("chatgpt"),
 
-  async ask(prompt: string): Promise<GroundedAnswer> {
+  async ask(prompt: string, opts: AskOptions = {}): Promise<GroundedAnswer> {
     const response = await client().responses.create({
       model: RUNNER_MODEL,
-      tools: [{ type: "web_search" }],
+      // La recherche web est localisée sur le marché mesuré : un acheteur
+      // américain et un acheteur français ne reçoivent pas les mêmes sources.
+      tools: [
+        opts.country
+          ? { type: "web_search", user_location: { type: "approximate", country: opts.country } }
+          : { type: "web_search" },
+      ],
       input: prompt,
     });
 

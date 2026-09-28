@@ -16,11 +16,23 @@ export interface GroundedAnswer {
   costUsd: number; // estimation — à réconcilier avec la facturation réelle (brief §11)
 }
 
+/**
+ * Le contexte de l'acheteur simulé. L'Index mesure des marchés dans plusieurs
+ * pays : une question posée « depuis » les États-Unis ne doit pas recevoir la
+ * réponse qu'on obtient depuis la France. Les providers qui savent localiser la
+ * recherche web s'en servent ; les autres l'ignorent (la langue de la question
+ * porte alors seule le marché).
+ */
+export interface AskOptions {
+  /** ISO 3166-1 alpha-2 du marché mesuré */
+  country?: string;
+}
+
 export interface LlmProvider {
   key: ModelKey;
   label: string;
   /** true si la clé API nécessaire est présente dans l'env */
   isConfigured(): boolean;
   /** Joue un prompt avec recherche web/grounding activée */
-  ask(prompt: string): Promise<GroundedAnswer>;
+  ask(prompt: string, opts?: AskOptions): Promise<GroundedAnswer>;
 }

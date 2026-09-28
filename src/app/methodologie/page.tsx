@@ -5,7 +5,18 @@ import { BrandFooter } from "@/components/brand/footer";
 import { TierTable } from "@/components/brand/tier";
 import { modelName } from "@/lib/models";
 import { CONTEST_GAP, CONTESTED_PASSES, MAX_CONTESTED_QUESTIONS } from "@/lib/measurement";
-import { getEditions, formatEditionDate, brandScore } from "@/lib/index-edition";
+import { getEditions, getRejectedEditions, formatEditionDate, brandScore } from "@/lib/index-edition";
+import { verticalLabel } from "@/lib/verticals";
+import reference from "../../../tests/reference/annotations.json";
+import referenceScore from "../../../tests/reference/score.json";
+
+/** Le jeu de référence, compté depuis le fichier annoté — jamais recopié. */
+const REFERENCE = {
+  answers: reference.items.length,
+  brands: reference.items.reduce((n, i) => n + i.expected.length, 0),
+  empty: reference.items.filter((i) => i.expected.length === 0).length,
+  validated: reference.validatedByFounder,
+};
 
 export const metadata: Metadata = {
   title: "Méthodologie du Baromètre Mentio — comment la mesure est faite",
@@ -27,6 +38,7 @@ export const revalidate = 3600;
  */
 export default async function MethodologiePage() {
   const editions = await getEditions(12);
+  const rejected = await getRejectedEditions();
   const latest = editions[0];
   const sampling = latest?.sampling;
 
@@ -88,7 +100,7 @@ export default async function MethodologiePage() {
               },
             ].map((step) => (
               <li key={step.n} className="rounded-2xl border border-[var(--line)] bg-white p-5">
-                <p className="font-metric text-xs uppercase tracking-wider text-[var(--poppy)]">
+                <p className="font-metric text-xs uppercase tracking-wider text-[var(--poppy-ink)]">
                   {step.n}
                 </p>
                 <p className="mt-2 font-display text-base font-extrabold uppercase tracking-wide">
@@ -208,6 +220,36 @@ export default async function MethodologiePage() {
           </ul>
         </section>
 
+        {/* 7. L'instrument, vérifié */}
+        <section className="mt-12">
+          <h2 className="font-display text-2xl font-extrabold uppercase tracking-wide">
+            7. L&apos;instrument, lui aussi, est vérifié
+          </h2>
+          <ul className="mt-4 space-y-3 text-sm leading-relaxed text-[var(--ink-soft)]">
+            <li>
+              <strong className="text-[var(--ink)]">Un audit indépendant à chaque changement.</strong>{" "}
+              Avant toute modification du code, chaque score publié est recalculé depuis les réponses
+              brutes par un autre programme que celui qui l&apos;a produit, et comparé à ce que le site
+              affiche. Un écart fait échouer la vérification, et la modification n&apos;est pas fusionnée.
+            </li>
+            <li>
+              <strong className="text-[var(--ink)]">Un jeu de référence.</strong>{" "}
+              {`${REFERENCE.answers} réponses réelles de ChatGPT et Gemini, dont les marques ont été relevées une à une, indépendamment du lecteur automatique : ${REFERENCE.brands} marques à trouver, et ${REFERENCE.empty} réponses pièges qui ne citent que des autorités de santé, des médias ou des ingrédients — le lecteur doit les rendre vides. Il est noté dessus avant chaque changement.`}
+            </li>
+            {REFERENCE.validated ? (
+              <li>
+                <strong className="text-[var(--ink)]">Sa note.</strong>{" "}
+                {`Évaluation du ${formatEditionDate(referenceScore.evaluated)} : précision ${Math.round(referenceScore.precision * 100)} %, rappel ${Math.round(referenceScore.recall * 100)} %, sur ${referenceScore.judged} réponses notées et ${referenceScore.expectedBrands} marques ; ${referenceScore.emptyCorrect} réponses pièges sur ${referenceScore.emptyTotal} rendues vides. Aucune institution, aucun média, aucun ingrédient pris pour une marque. Vingt réponses ne prouvent pas l'infaillibilité : le jeu s'agrandit à chaque édition, et la note est republiée ici.`}
+              </li>
+            ) : null}
+            <li>
+              <strong className="text-[var(--ink)]">Ce qu&apos;il a déjà trouvé.</strong> Une marque au
+              nom court pouvait être confondue avec une autre qui le contient (« RoC » dans « La
+              Roche-Posay ») : la règle de rapprochement des noms a été resserrée le 27 septembre 2026.
+            </li>
+          </ul>
+        </section>
+
         {/* L'édition en cours */}
         {latest && (
           <section className="mt-12 rounded-3xl bg-[var(--plum)] p-7 text-white sm:p-9">
@@ -271,6 +313,43 @@ export default async function MethodologiePage() {
             Version Markdown
           </a>
         </p>
+
+        {/* L'ERRATUM — les éditions écartées par le contrôle d'instrument.
+            On ne fait pas disparaître une édition en silence : on dit qu'elle
+            a été écartée, quand, et pourquoi. */}
+        <section id="erratum" className="mt-12 rounded-2xl border border-[var(--line)] bg-white p-6 sm:p-7">
+          <h2 className="font-display text-2xl font-extrabold uppercase tracking-wide">Erratum</h2>
+          <p className="mt-3 text-sm leading-relaxed text-[var(--ink-soft)]">
+            Une édition n&apos;est publiée que si chaque moteur annoncé a répondu sur au moins 80 %
+            des questions. Sinon le nombre de réponses change d&apos;une édition à l&apos;autre, tous
+            les scores bougent mécaniquement, et le classement afficherait des mouvements que
+            rien n&apos;a causés. Les éditions ci-dessous ont été mesurées, puis écartées par ce
+            contrôle : l&apos;édition précédente est restée la référence.
+          </p>
+          <p className="mt-4 rounded-xl bg-[var(--porcelain)]/70 px-4 py-3 text-sm leading-relaxed text-[var(--ink-soft)]">
+            <strong className="text-[var(--ink)]">Correction de méthode — 27 septembre 2026.</strong>{" "}
+            Un audit indépendant, qui recalcule chaque score depuis les réponses brutes, a
+            trouvé qu&apos;une marque nommée deux fois dans la même réponse y était comptée deux
+            fois. L&apos;écart est d&apos;au plus 0,2 citation sur les éditions publiées (La
+            Roche-Posay : 19,4 au lieu de 19,2 le 23 août ; Profound : 6,8 au lieu de 6,6 le 13
+            août). Aucun rang ni palier affiché n&apos;en est changé. Les éditions suivantes
+            comptent une réponse une seule fois, comme la méthode l&apos;a toujours dit.
+          </p>
+          {rejected.length > 0 ? (
+            <ul className="mt-5 space-y-3 text-sm">
+              {rejected.map((r) => (
+                <li key={`${r.vertical}-${r.date}`} className="rounded-xl bg-[var(--porcelain)]/70 px-4 py-3">
+                  <p className="font-semibold text-[var(--ink)]">
+                    {`${formatEditionDate(r.date)} — ${verticalLabel(r.vertical)}`}
+                  </p>
+                  <p className="mt-1 text-[var(--ink-soft)]">{r.issues.join(" ; ")}</p>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="mt-5 text-sm text-[var(--ink-soft)]">Aucune édition écartée à ce jour.</p>
+          )}
+        </section>
 
         {/* Une sortie. Cette page était un cul-de-sac : on y arrive pour vérifier la
             mesure — souvent avant de la revendre à un client — et il n'y avait rien

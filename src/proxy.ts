@@ -32,7 +32,8 @@ export async function proxy(request: NextRequest) {
     path.startsWith("/dashboard") ||
     path.startsWith("/onboarding") ||
     path.startsWith("/settings") ||
-    path.startsWith("/portefeuille");
+    path.startsWith("/portefeuille") ||
+    path.startsWith("/admin");
 
   if (!user && isProtected) {
     const url = request.nextUrl.clone();

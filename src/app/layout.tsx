@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://mentio.fr"),
   title: "Mentio — la perception, mesurée.",
   description:
-    "Mentio mesure la présence de votre marque dans les réponses de ChatGPT, Gemini, Claude et Perplexity — face à vos concurrents, modèle par modèle, semaine après semaine.",
+    "L'index public de ce que ChatGPT et Gemini recommandent quand on leur demande quoi acheter — catégorie par catégorie, pays par pays. Et ce qu'il faut corriger pour y entrer.",
   openGraph: {
     type: "website",
     locale: "fr_FR",

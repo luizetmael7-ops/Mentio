@@ -31,6 +31,7 @@ import { adressePostaleValide } from "./lib/postal";
 import { numFlag } from "./lib/env";
 import { askFree, freeModelById, activeFreeModels, QuotaExhausted, type FreeModel } from "./lib/free-llm";
 import { chooseCta, resolveArm } from "./lib/bandit";
+import { shown } from "./lib/mask";
 
 // 250 mots, pas 90. Le brief fixait 90 et cinq lignes ; la relecture des premiers
 // emails a tranché autrement — trop secs, « cavaliers et survolés ». À 30 envois par
@@ -449,7 +450,7 @@ async function main() {
       }
 
       stats.rediges += 1;
-      console.log(`  ${brand.name.padEnd(22).slice(0, 22)} ${String(angle.type).padEnd(20)} ${wordCount(body)} mots · ${contact.email}`);
+      console.log(`  ${brand.name.padEnd(22).slice(0, 22)} ${String(angle.type).padEnd(20)} ${wordCount(body)} mots · ${shown(contact.email)}`);
     }
 
     await close(true, stats);

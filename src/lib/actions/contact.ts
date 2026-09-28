@@ -1,13 +1,14 @@
 "use server";
 
 import { supabaseAdmin } from "@/lib/supabase/admin";
-import { resend, EMAIL_FROM, deliverableTo } from "@/lib/resend";
 import { CONTACT_KINDS } from "@/lib/contact-kinds";
+import { notifyFounder } from "@/lib/founder";
+import { fixturesEnabled } from "@/lib/fixtures";
 
 
 const VALID = new Set(CONTACT_KINDS.map((k) => k.value as string));
 
-/** L'adresse qui reçoit les messages. Les réclamations doivent arriver quelque part. */
+/** L'adresse publique, affichée quand l'enregistrement échoue. */
 const INBOX = process.env.CONTACT_INBOX ?? "hello@mentio.fr";
 
 /**
@@ -39,6 +40,10 @@ export async function sendContactMessage(
     return { ok: false, message: "Message trop long : 4000 caractères maximum." };
   }
 
+  if (fixturesEnabled()) {
+    return { ok: true, message: "Message reçu (démonstration)." };
+  }
+
   try {
     const { error } = await supabaseAdmin()
       .from("contact_messages")
@@ -52,19 +57,16 @@ export async function sendContactMessage(
     };
   }
 
-  // La notification est secondaire : le message est déjà sauvegardé.
-  try {
-    const label = CONTACT_KINDS.find((k) => k.value === kind)?.label ?? kind;
-    await resend().emails.send({
-      from: EMAIL_FROM,
-      to: deliverableTo(INBOX),
-      replyTo: email,
-      subject: `[Mentio] ${label}${brand ? ` — ${brand}` : ""}`,
-      text: `Motif : ${label}\nDe : ${email}\nMarque : ${brand ?? "—"}\n\n${message}`,
-    });
-  } catch (error) {
-    console.warn("Notification email non envoyée (message bien enregistré)", error);
-  }
+  // La notification est secondaire : le message est déjà sauvegardé. Elle part
+  // vers la boîte personnelle du fondateur (FOUNDER_EMAIL), pas vers une boîte de
+  // domaine que personne ne lit — c'est ainsi qu'une agence a attendu 22 jours.
+  const label = CONTACT_KINDS.find((k) => k.value === kind)?.label ?? kind;
+  await notifyFounder(
+    "contact",
+    `${label}${brand ? ` — ${brand}` : ""} (${email})`,
+    [`Motif : ${label}`, `De : ${email}`, `Marque : ${brand ?? "—"}`, "", message],
+    { replyTo: email }
+  );
 
   return {
     ok: true,

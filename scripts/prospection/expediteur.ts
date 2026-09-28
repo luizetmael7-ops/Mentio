@@ -34,6 +34,7 @@ import { flag, numFlag } from "./lib/env";
 import { checkBreakers, verdict } from "./lib/coupe-circuits";
 import { liveMode, sendOne, smtpConfigured, verifyMailbox } from "./lib/smtp";
 import { recordSend } from "./lib/bandit";
+import { shown } from "./lib/mask";
 
 /**
  * LA CIBLE — CLAUDE.md §1 : « L'acheteur : les agences SEO et growth françaises. Pas
@@ -190,7 +191,7 @@ async function approve(limit: number): Promise<number> {
 
     await db().from("prospect_messages").update({ scheduled_at: cursor.toISOString() }).eq("id", message.id);
     stats.approuves += 1;
-    console.log(`  ✓ ${String(brand?.name ?? "").padEnd(22).slice(0, 22)} ${String(contact.email).padEnd(32)} → ${cursor.toISOString().slice(0, 16).replace("T", " ")}`);
+    console.log(`  ✓ ${String(brand?.name ?? "").padEnd(22).slice(0, 22)} ${shown(contact.email).padEnd(32)} → ${cursor.toISOString().slice(0, 16).replace("T", " ")}`);
 
     cursor = new Date(cursor.getTime() + nextGapMinutes() * 60_000);
   }
@@ -306,13 +307,13 @@ async function main() {
       const timing = isBusinessTime(brand?.country ?? "FR");
       if (!timing.ok) {
         stats.hors_horaires += 1;
-        console.log(`  ⏸ ${String(brand?.name ?? "").padEnd(22).slice(0, 22)} ${contact.email} — ${timing.reason}`);
+        console.log(`  ⏸ ${String(brand?.name ?? "").padEnd(22).slice(0, 22)} ${shown(contact.email)} — ${timing.reason}`);
         continue;
       }
 
       if (!willSend) {
         stats.partiraient += 1;
-        console.log(`  ✉ ${String(brand?.name ?? "").padEnd(22).slice(0, 22)} ${String(contact.email).padEnd(32)} « ${String(message.subject).slice(0, 44)} »`);
+        console.log(`  ✉ ${String(brand?.name ?? "").padEnd(22).slice(0, 22)} ${shown(contact.email).padEnd(32)} « ${String(message.subject).slice(0, 44)} »`);
         continue;
       }
 
@@ -326,7 +327,7 @@ async function main() {
         // rédaction gonflerait le dénominateur avec des messages jamais partis.
         await recordSend((message.arm_id as string) ?? null);
         stats.envoyes += 1;
-        console.log(`  ✅ ${String(brand?.name ?? "").padEnd(22).slice(0, 22)} ${contact.email}`);
+        console.log(`  ✅ ${String(brand?.name ?? "").padEnd(22).slice(0, 22)} ${shown(contact.email)}`);
       } catch (error) {
         stats.echecs += 1;
         console.warn(`  ❌ ${String(brand?.name ?? "")} : ${(error as Error).message.slice(0, 90)}`);

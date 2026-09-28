@@ -2,6 +2,13 @@
 
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { captureServer } from "@/lib/posthog-server";
+import { notifyFounder } from "@/lib/founder";
+import { fixturesEnabled } from "@/lib/fixtures";
+import { brandSlug } from "@/lib/edition-format";
+import { buildReport } from "@/lib/report";
+import { shareUrl } from "@/lib/report-access";
+import { appUrl } from "@/lib/customer-email";
+import { claimReplyDraft, emailOrigin, originNote } from "@/lib/claim-reply";
 
 /**
  * « C'est ma marque » — revendication d'une page du Baromètre.
@@ -21,6 +28,10 @@ export async function claimBrand(
   if (!brandName) return { ok: false, message: "Marque manquante." };
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
     return { ok: false, message: "Cette adresse email ne semble pas valide." };
+  }
+
+  if (fixturesEnabled()) {
+    return { ok: true, message: `C'est noté (démonstration). ${brandName} est revendiquée par ${email}.` };
   }
 
   try {
@@ -43,6 +54,19 @@ export async function claimBrand(
       if (error) throw new Error(error.message);
     }
 
+    if (!existing) {
+      // Le signal le plus fort du Radar : quelqu'un de la marque se déclare.
+      await admin
+        .from("signals")
+        .insert({ kind: "revendication", subject: brandSlug(brandName) })
+        .then(() => undefined, () => undefined);
+      await notifyFounder(
+        "lead",
+        `« C'est ma marque » — ${brandName} (${email})`,
+        await founderBrief(brandName, email),
+        { replyTo: email }
+      );
+    }
     await captureServer("brand_claimed", email, { brand: brandName });
     return {
       ok: true,
@@ -54,5 +78,37 @@ export async function claimBrand(
       ok: false,
       message: "Enregistrement impossible pour le moment. Écrivez-moi à hello@mentio.fr.",
     };
+  }
+}
+
+/**
+ * L'alerte au fondateur, avec la réponse déjà rédigée : il répond à l'alerte
+ * (la réponse part vers la personne), colle, relit, envoie. Sans rapport ou
+ * sans clé de signature, l'alerte part quand même, sans brouillon.
+ */
+async function founderBrief(brandName: string, email: string): Promise<string[]> {
+  const lines = [
+    `${email} revendique ${brandName} depuis sa page de l'Index.`,
+    originNote(emailOrigin(email, brandName), brandName),
+  ];
+  try {
+    const slug = brandSlug(brandName);
+    const report = await buildReport(slug);
+    if (!report) throw new Error("rapport introuvable");
+    const draft = claimReplyDraft(report, shareUrl(appUrl(), { slug }));
+    return [
+      ...lines,
+      "",
+      "La page lui a promis un email personnel avec le détail complet. Il est prêt : réponds à ce message, colle, relis, envoie.",
+      "",
+      "────────",
+      `Objet : ${draft.subject}`,
+      "",
+      draft.body,
+      "────────",
+    ];
+  } catch (error) {
+    console.warn("Brouillon de revendication impossible", error);
+    return [...lines, "La page lui a promis un email personnel avec le détail complet : c'est à toi."];
   }
 }

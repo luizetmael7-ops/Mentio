@@ -19,6 +19,13 @@ export function ClaimBrand({ brandName, slug }: { brandName: string; slug: strin
           <Check aria-hidden className="size-5 text-[var(--jade)]" /> Revendication enregistrée
         </p>
         <p className="mt-3 text-[var(--ink-soft)]">{state.message}</p>
+        {/* Sans attendre l'email : ce qui est public se lit tout de suite. */}
+        <Link
+          href={`/rapport/${slug}`}
+          className="mt-4 inline-flex items-center gap-1.5 font-semibold text-[var(--ink)] underline decoration-[var(--line)] underline-offset-4"
+        >
+          {`En attendant, le rapport de ${brandName}`} <ArrowRight aria-hidden className="size-4" />
+        </Link>
       </div>
     );
   }
@@ -44,7 +51,7 @@ export function ClaimBrand({ brandName, slug }: { brandName: string; slug: strin
           type="email"
           required
           placeholder="vous@votremarque.fr"
-          className="h-11 min-w-0 flex-1 rounded-xl border border-[var(--line)] bg-[var(--porcelain)]/60 px-4 outline-none"
+          className="h-11 w-full min-w-0 shrink-0 rounded-xl sm:w-auto sm:flex-1 sm:shrink border border-[var(--line)] bg-[var(--porcelain)]/60 px-4 outline-none"
         />
         <button
           type="submit"
@@ -56,7 +63,7 @@ export function ClaimBrand({ brandName, slug }: { brandName: string; slug: strin
         </button>
       </form>
 
-      {state && !state.ok && <p className="mt-2 text-sm text-[var(--poppy)]">{state.message}</p>}
+      {state && !state.ok && <p className="mt-2 text-sm text-[var(--poppy-ink)]">{state.message}</p>}
 
       <p className="mt-3 text-[0.7rem] leading-relaxed text-[var(--ink-soft)]">
         Votre email sert uniquement à cet envoi. Aucune inscription, désinscription immédiate sur

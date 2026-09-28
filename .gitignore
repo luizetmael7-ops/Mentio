@@ -50,3 +50,7 @@ ops/emails-a-relire.csv
 content/agences.md
 content/outreach-agences.md
 content/outreach.csv
+
+# Tests de bout en bout
+test-results/
+playwright-report/

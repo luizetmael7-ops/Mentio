@@ -83,7 +83,7 @@ export const PLAN_LIMITS: Record<Plan, PlanLimits> = {
     promptsPerBrand: 50,
     competitors: 5,
     modelCadence: { chatgpt: "weekly", gemini: "weekly", claude: "weekly", perplexity: "weekly" },
-    cadenceLabel: "Les 4 IA chaque semaine — le même relevé que le Baromètre public",
+    cadenceLabel: "Les 4 IA chaque semaine — ChatGPT, Gemini, Claude et Perplexity",
     features: [
       "Score complet, modèle par modèle",
       "Les sites que les IA lisent pour répondre",
@@ -106,20 +106,21 @@ export const PLAN_LIMITS: Record<Plan, PlanLimits> = {
     // facteur limitant de tout le reste. Un prix d'entrée bas accélère précisément
     // ce qui manque.
     //
-    // 239 € reste le prix de référence — il a été affiché, il le redeviendra.
+    // Le prix barré à 239 € a été retiré le 27 septembre 2026 : sans un seul
+    // client, une « remise » n'en est pas une. Le compte agence est désormais
+    // décrit dans `offers.ts` (mesures prioritaires, marque blanche, widget).
     priceMonthlyEur: 149,
-    listPriceMonthlyEur: 239,
     brands: 10,
     extraBrandEur: 29,
     promptsPerBrand: 50,
     competitors: 5,
     modelCadence: { chatgpt: "weekly", gemini: "weekly", claude: "weekly", perplexity: "weekly" },
-    cadenceLabel: "Les 4 IA chaque semaine — le même relevé que le Baromètre public",
+    cadenceLabel: "Les 4 IA chaque semaine — ChatGPT, Gemini, Claude et Perplexity",
     features: [
+      "10 mesures prioritaires par mois",
       "Rapports en marque blanche, illimités",
-      "Votre logo et vos couleurs sur chaque rapport",
+      "Le widget : un scan de visibilité IA sur votre site, les leads chez vous",
       "10 marques suivies, puis 29 € par marque",
-      "Historique complet, semaine après semaine",
     ],
   },
   agencyplus: {
@@ -136,7 +137,7 @@ export const PLAN_LIMITS: Record<Plan, PlanLimits> = {
     promptsPerBrand: 50,
     competitors: 10,
     modelCadence: { chatgpt: "weekly", gemini: "weekly", claude: "weekly", perplexity: "weekly" },
-    cadenceLabel: "Les 4 IA chaque semaine — le même relevé que le Baromètre public",
+    cadenceLabel: "Les 4 IA chaque semaine — ChatGPT, Gemini, Claude et Perplexity",
     features: [
       "20 marques suivies, puis 24 € par marque",
       "Accès API pour vos propres outils",

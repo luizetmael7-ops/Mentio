@@ -6,6 +6,7 @@
 import OpenAI from "openai";
 import { zodResponseFormat } from "openai/helpers/zod";
 import { z } from "zod";
+import { freeModels, FREE_CALL_TIMEOUT_MS } from "@/lib/llm/free-models";
 
 const JUDGE_MODEL = process.env.OPENAI_JUDGE_MODEL ?? "gpt-5.4-mini";
 
@@ -85,17 +86,35 @@ function clean(extraction: Extraction): Extraction {
  * ChatGPT répond à vos clients ». Mesurer un modèle que personne n'utilise viderait
  * la promesse de son sens.
  */
-const OPENROUTER_MODELS = [
-  process.env.OPENROUTER_JUDGE_MODEL ?? "nvidia/nemotron-3-ultra-550b-a55b:free",
-  "nvidia/nemotron-3-super-120b-a12b:free",
-  "nvidia/nemotron-3-nano-30b-a3b:free",
-];
+/**
+ * Un modèle ouvert ne rend pas toujours la forme demandée : parfois la liste
+ * seule, parfois un objet indexé au lieu d'un tableau. On ramène ces deux
+ * variantes, sans ambiguïté, à la forme attendue.
+ *
+ * JAMAIS une réponse sans champ `brands` convertie en « aucune marque » : c'est
+ * ce qu'une première version faisait, et le juge rendait alors une liste vide
+ * en silence au lieu de passer au modèle suivant — 0 marque sur 11 pour une
+ * réponse qui en cite 11. L'évaluation sur le jeu de référence l'a attrapé en
+ * CI le 27 septembre 2026. Une forme inconnue doit ÉCHOUER : l'échec déclenche
+ * le repli, le silence fausse la mesure.
+ */
+export function normalizeExtraction(raw: unknown): unknown {
+  if (Array.isArray(raw)) return { brands: raw };
+  if (raw && typeof raw === "object") {
+    const brands = (raw as { brands?: unknown }).brands;
+    if (brands && typeof brands === "object" && !Array.isArray(brands)) {
+      return { ...raw, brands: Object.values(brands) };
+    }
+  }
+  return raw;
+}
 
 async function judgeWithOpenRouter(rawAnswer: string) {
   let lastError: unknown;
-  for (const model of OPENROUTER_MODELS) {
+  for (const model of freeModels()) {
     try {
       const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+        signal: AbortSignal.timeout(FREE_CALL_TIMEOUT_MS),
         method: "POST",
         headers: {
           Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
@@ -122,11 +141,14 @@ async function judgeWithOpenRouter(rawAnswer: string) {
       const content = json.choices?.[0]?.message?.content;
       if (!content) throw new Error(`${model} : réponse vide`);
 
-      // Un modèle ouvert entoure parfois le JSON de texte : on isole l'objet.
-      const start = content.indexOf("{");
-      const end = content.lastIndexOf("}");
+      // Un modèle ouvert entoure parfois le JSON de texte : on isole l'objet
+      // (ou le tableau, s'il n'a rendu que la liste).
+      const trimmed = content.trim();
+      const [open, close] = trimmed.startsWith("[") ? ["[", "]"] : ["{", "}"];
+      const start = content.indexOf(open);
+      const end = content.lastIndexOf(close);
       if (start === -1 || end === -1) throw new Error(`${model} : pas de JSON`);
-      const parsed = ExtractionSchema.parse(JSON.parse(content.slice(start, end + 1)));
+      const parsed = ExtractionSchema.parse(normalizeExtraction(JSON.parse(content.slice(start, end + 1))));
 
       // Palier gratuit : aucun token facturé.
       return { extraction: clean(parsed), costUsd: 0 };
@@ -239,9 +261,25 @@ export function normalizeBrandName(name: string): string {
     .replace(/[^a-z0-9]/g, "");
 }
 
+/**
+ * Deux noms désignent-ils la même marque ?
+ *
+ * Égalité après normalisation, ou le nom court PRÉFIXE du long (« Nuxe » et
+ * « NUXE Paris », « SVR » et « SVR Sun Secure »), ou le nom court contenu dans
+ * le long s'il fait au moins 6 caractères (« Roche-Posay » et « La Roche-Posay »).
+ *
+ * Jusqu'au 27 septembre 2026, n'importe quelle sous-chaîne suffisait : « RoC »
+ * était contenu dans « La Roche-Posay » (larocheposay), « Cien » dans
+ * « Science ». Le Mesureur pouvait donc attribuer les citations d'une marque à
+ * une autre. Trouvé par le jeu de référence (tests/reference).
+ */
+export const MIN_INNER_MATCH = 6;
+
 export function sameBrand(a: string, b: string): boolean {
   const na = normalizeBrandName(a);
   const nb = normalizeBrandName(b);
   if (!na || !nb) return false;
-  return na === nb || na.includes(nb) || nb.includes(na);
+  if (na === nb) return true;
+  const [short, long] = na.length <= nb.length ? [na, nb] : [nb, na];
+  return long.startsWith(short) || (short.length >= MIN_INNER_MATCH && long.includes(short));
 }

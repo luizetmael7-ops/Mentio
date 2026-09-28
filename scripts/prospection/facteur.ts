@@ -29,6 +29,7 @@ import { flag, numFlag } from "./lib/env";
 import { CONTACT_PATHS, HOME_PATH, MAX_URLS, discoverContactLinks, fetchPage, isAllowed, loadRobots } from "./lib/crawl";
 import { extractEmails, housePattern, keepOwnAddresses, type FoundEmail } from "./lib/emails";
 import { hasMx } from "./lib/mx";
+import { shown } from "./lib/mask";
 
 type CrawlStatus = "ok" | "no_contact" | "blocked" | "unreachable" | "robots_denied";
 
@@ -169,10 +170,10 @@ async function main() {
           { onConflict: "email", ignoreDuplicates: false }
         );
         if (error) {
-          console.warn(`     ⚠ ${email.email} : ${error.message.slice(0, 70)}`);
+          console.warn(`     ⚠ ${shown(email.email)} : ${error.message.slice(0, 70)}`);
           continue;
         }
-        kept.push(`${email.email}${label === "onsite_named" ? " ✦" : ""}${mx ? "" : " (sans MX)"}`);
+        kept.push(`${shown(email.email)}${label === "onsite_named" ? " ✦" : ""}${mx ? "" : " (sans MX)"}`);
       }
 
       if (status === "ok" && kept.length > 0) stats.avec_adresse += 1;

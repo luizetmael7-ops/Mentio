@@ -38,7 +38,7 @@ export function NewsletterForm({ source = "barometre" }: { source?: string }) {
               type="email"
               required
               placeholder="vous@votremarque.fr"
-              className="h-11 min-w-0 flex-1 rounded-xl border border-white/15 bg-white/10 px-4 text-white outline-none placeholder:text-white/40"
+              className="h-11 w-full min-w-0 shrink-0 rounded-xl sm:w-auto sm:flex-1 sm:shrink border border-white/15 bg-white/10 px-4 text-white outline-none placeholder:text-white/40"
             />
             <button
               type="submit"

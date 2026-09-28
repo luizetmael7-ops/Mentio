@@ -7,7 +7,7 @@ import { BrandFooter } from "@/components/brand/footer";
 import { ReadingSwatch } from "@/components/brand/reading-swatch";
 import { TierScale } from "@/components/brand/tier";
 import { tierOf } from "@/lib/spectrum";
-import { activeModels, modelsSentenceEn, modelName } from "@/lib/models";
+import { indexModels, modelsSentenceEn, modelName } from "@/lib/models";
 import { Reveal } from "@/components/brand/reveal";
 import { PLAN_LIMITS, checkoutHref, type Plan } from "@/lib/plans";
 import { buildReport } from "@/lib/report";
@@ -16,7 +16,7 @@ import { getLatestEdition, brandSlug, citationCount } from "@/lib/index-edition"
 export const metadata: Metadata = {
   title: "Mentio — do the AIs recommend you?",
   description:
-    "Weekly measurement of whether ChatGPT, Gemini, Claude and Perplexity name your brand when customers ask what to buy — and what to fix.",
+    "The public index of what ChatGPT and Gemini recommend when people ask what to buy — category by category, country by country. And what to fix to get in.",
   alternates: {
     canonical: "/en",
     languages: { "fr-FR": "/", en: "/en", "x-default": "/" },
@@ -44,7 +44,7 @@ export default async function LandingPageEn({
 }) {
   const { error } = await searchParams;
   const edition = await getLatestEdition();
-  const models = activeModels();
+  const models = indexModels();
   const leader = edition?.brands[0];
   const editionDate = edition
     ? new Date(edition.date).toLocaleDateString("en-GB", {
@@ -116,7 +116,7 @@ export default async function LandingPageEn({
               <span className="text-[var(--spectrum-ash)]">We measure. You fix.</span>
             </h1>
             <p className="mt-6 max-w-lg text-lg leading-relaxed text-[var(--ink-soft)]">
-              {`Every week we ask ${modelsSentenceEn(models)} what your customers ask them. We count who gets named, and tell you what to fix. French market.`}
+              {`The public index of what ${modelsSentenceEn(models)} recommend when people ask what to buy — category by category, country by country. We count who gets named, and tell you what to fix.`}
             </p>
 
             <form
@@ -144,7 +144,7 @@ export default async function LandingPageEn({
                   required
                   minLength={3}
                   placeholder="Your industry"
-                  className="h-11 min-w-0 flex-1 rounded-xl bg-[var(--porcelain)] px-4 text-sm text-[var(--ink)] outline-none placeholder:text-[var(--ink-soft)]/70"
+                  className="h-11 w-full min-w-0 shrink-0 rounded-xl sm:w-auto sm:flex-1 sm:shrink bg-[var(--porcelain)] px-4 text-sm text-[var(--ink)] outline-none placeholder:text-[var(--ink-soft)]/70"
                 />
                 <button
                   type="submit"
@@ -155,7 +155,7 @@ export default async function LandingPageEn({
               </div>
             </form>
             {error === "limite-scans" && (
-              <p className="mt-2 text-sm text-[var(--poppy)]">
+              <p className="mt-2 text-sm text-[var(--poppy-ink)]">
                 3 scans/day limit reached — come back tomorrow or create a free account.
               </p>
             )}
@@ -165,7 +165,7 @@ export default async function LandingPageEn({
           </div>
 
           <ReadingSwatch
-            title="The weekly reading"
+            title="A reading"
             caption="Sample — one swatch per AI, your score out of 100"
             readings={models.map((model, i) => ({
               model: model.name,
@@ -209,8 +209,8 @@ export default async function LandingPageEn({
             {[
               {
                 n: "01",
-                t: "50 buying questions, weekly",
-                d: "What customers type, not keywords. The same list every week, so two readings compare.",
+                t: "The same buying questions, every month",
+                d: "What customers type, not keywords. The same list at every edition, so two readings compare.",
               },
               {
                 n: "02",
@@ -225,7 +225,7 @@ export default async function LandingPageEn({
             ].map((step, i) => (
               <Reveal key={step.n} style={{ "--reveal-index": i } as React.CSSProperties}>
                 <li className="h-full rounded-2xl border border-[var(--line)] bg-white p-6">
-                  <p className="font-metric text-xs text-[var(--poppy)]">{step.n}</p>
+                  <p className="font-metric text-xs text-[var(--poppy-ink)]">{step.n}</p>
                   <h3 className="mt-3 font-display text-base font-extrabold uppercase tracking-wide">
                     {step.t}
                   </h3>
@@ -342,7 +342,7 @@ export default async function LandingPageEn({
                     The AIs read these pages, not yours
                   </h2>
                   <p className="mt-4 max-w-2xl text-white/70">
-                    {`The sites the models actually opened to answer, on the ${editionDate} edition. Measuring never moves a score; getting cited on these pages does. Mentio tracks yours weekly and names the ones to target.`}
+                    {`The sites the models actually opened to answer, on the ${editionDate} edition. Measuring never moves a score; getting cited on these pages does. Mentio tracks yours and names the ones to target.`}
                   </p>
                   <ul className="mt-7 grid gap-2 sm:grid-cols-2">
                     {edition.sources.slice(0, 8).map((source, i) => (
@@ -495,7 +495,7 @@ export default async function LandingPageEn({
               <p className="eyebrow">Why the number holds</p>
               <ul className="mt-5 space-y-2.5 text-sm text-[var(--ink-soft)]">
                 {[
-                  "The same 50 questions every week, so two editions compare.",
+                  "The same questions at every edition, so two editions compare.",
                   "Official APIs with web search on — never scraped from consumer apps.",
                   "No rank movement published below the noise threshold.",
                   "No paid placement, ever. Right of reply for every ranked brand.",

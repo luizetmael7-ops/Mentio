@@ -4,7 +4,7 @@ import { supabaseAdmin } from "@/lib/supabase/admin";
  * COUPE-CIRCUIT BUDGÉTAIRE — conçu pour ne jamais couper un client payant.
  *
  * Le raisonnement : un client payant qui consomme des appels LLM est rentable
- * (marge ~55-80 % selon le palier). Le couper serait absurde, et c'est justement
+ * (la marge réelle se calcule dans `plan-economics.ts`). Le couper serait absurde, et c'est justement
  * la crainte légitime quand les clients affluent. Ce garde-fou ne surveille donc
  * QUE les usages qui ne rapportent rien :
  *
@@ -20,7 +20,7 @@ import { supabaseAdmin } from "@/lib/supabase/admin";
 export type SpendBucket = "public_scan" | "free_plan" | "index" | "paid";
 
 /** Plafond quotidien en dollars par usage. `Infinity` = jamais coupé. */
-function dailyCapUsd(bucket: SpendBucket): number {
+export function dailyCapUsd(bucket: SpendBucket): number {
   if (bucket === "paid") return Infinity;
   const fromEnv = Number(process.env[`SPEND_CAP_${bucket.toUpperCase()}`]);
   if (Number.isFinite(fromEnv) && fromEnv > 0) return fromEnv;
@@ -46,38 +46,54 @@ function monthStart(): string {
  */
 export function monthlyCapUsd(): number {
   const fromEnv = Number(process.env.SPEND_CAP_MONTHLY);
-  return Number.isFinite(fromEnv) && fromEnv > 0 ? fromEnv : 15;
+  // 8 $ par défaut, depuis septembre 2026 : c'est ce que tient le crédit
+  // prépayé du fondateur (10 $ OpenAI + le crédit Gemini) sans le vider en un
+  // mois. Relever via SPEND_CAP_MONTHLY quand un client paie la mesure.
+  return Number.isFinite(fromEnv) && fromEnv > 0 ? fromEnv : 8;
 }
 
 /** Dépense du mois sur les usages sans revenu (les payants sont exclus). */
 export async function spentThisMonthUsd(): Promise<number> {
   try {
-    const { data } = await supabaseAdmin()
+    const { data, error } = await supabaseAdmin()
       .from("llm_spend")
       .select("cost_usd, bucket")
       .gte("day", monthStart());
+    if (error) throw new Error(error.message);
     return (data ?? [])
       .filter((r) => r.bucket !== "paid")
       .reduce((sum, r) => sum + Number(r.cost_usd ?? 0), 0);
   } catch {
-    return 0;
+    return NaN;
   }
 }
 
 /** Dépense déjà engagée aujourd'hui sur cet usage. */
 export async function spentTodayUsd(bucket: SpendBucket): Promise<number> {
   try {
-    const { data } = await supabaseAdmin()
+    const { data, error } = await supabaseAdmin()
       .from("llm_spend")
       .select("cost_usd")
       .eq("day", today())
       .eq("bucket", bucket);
+    if (error) throw new Error(error.message);
     return (data ?? []).reduce((sum, row) => sum + Number(row.cost_usd ?? 0), 0);
   } catch {
-    // En cas de panne de lecture, on ne bloque pas : un faux positif coûterait
-    // un scan raté à un prospect, ce qui est plus cher qu'un appel de trop.
-    return 0;
+    return NaN;
   }
+}
+
+/**
+ * Que faire quand le compteur est illisible ?
+ *
+ * Avant septembre 2026, la réponse était « 0 $ dépensé » pour tout le monde :
+ * une panne de lecture ouvrait le plafond. Pour un scan public, c'est le bon
+ * choix — il est déjà borné à 3 par jour et par visiteur, et un faux refus coûte
+ * un prospect. Pour l'Index et les comptes gratuits, qui enchaînent des dizaines
+ * d'appels, c'est l'inverse : on refuse tant qu'on ne sait pas compter.
+ */
+function failOpen(bucket: SpendBucket): boolean {
+  return bucket === "public_scan";
 }
 
 export interface GuardResult {
@@ -97,8 +113,18 @@ export async function guard(bucket: SpendBucket): Promise<GuardResult> {
   }
 
   // Le plafond mensuel prime : atteint, plus rien de gratuit ne tourne.
-  const monthly = await spentThisMonthUsd();
+  const rawMonthly = await spentThisMonthUsd();
   const monthlyCap = monthlyCapUsd();
+  if (Number.isNaN(rawMonthly) && !failOpen(bucket)) {
+    return {
+      allowed: false,
+      bucket,
+      spentUsd: 0,
+      capUsd: monthlyCap,
+      reason: "Compteur de dépense illisible : dépense refusée par prudence.",
+    };
+  }
+  const monthly = Number.isNaN(rawMonthly) ? 0 : rawMonthly;
   if (monthly >= monthlyCap) {
     return {
       allowed: false,
@@ -109,7 +135,17 @@ export async function guard(bucket: SpendBucket): Promise<GuardResult> {
     };
   }
 
-  const spentUsd = await spentTodayUsd(bucket);
+  const rawToday = await spentTodayUsd(bucket);
+  if (Number.isNaN(rawToday) && !failOpen(bucket)) {
+    return {
+      allowed: false,
+      bucket,
+      spentUsd: 0,
+      capUsd,
+      reason: "Compteur de dépense illisible : dépense refusée par prudence.",
+    };
+  }
+  const spentUsd = Number.isNaN(rawToday) ? 0 : rawToday;
   if (spentUsd < capUsd) return { allowed: true, bucket, spentUsd, capUsd };
 
   return {
@@ -143,8 +179,22 @@ export async function spendSummary(): Promise<
   return Promise.all(
     buckets.map(async (bucket) => ({
       bucket,
-      spentUsd: await spentTodayUsd(bucket),
+      spentUsd: (await spentTodayUsd(bucket)) || 0,
       capUsd: dailyCapUsd(bucket),
     }))
   );
+}
+
+/**
+ * Le compteur d'une mesure COMMANDÉE (mesure prioritaire, suivi, crédit agence).
+ *
+ * En production (clé Stripe `sk_live_`), une commande a été payée : sa mesure
+ * est rentable et ne se coupe jamais (`paid`). Tant que Stripe est en mode test,
+ * un « paiement » ne rapporte rien : la mesure est comptée dans le budget de
+ * l'Index, sous le même plafond mensuel que tout le reste. Un paiement de test
+ * ne peut donc pas engager une dépense que le fondateur n'a pas validée
+ * (constitution §7).
+ */
+export function orderBucket(): SpendBucket {
+  return process.env.STRIPE_SECRET_KEY?.startsWith("sk_live_") ? "paid" : "index";
 }

@@ -9,7 +9,7 @@ const COPY = {
   fr: {
     nav: "Navigation principale",
     scan: "Scan gratuit",
-    index: "Le Baromètre",
+    index: "L'Index",
     agencies: "Agences",
     pricing: "Tarifs",
     login: "Connexion",
@@ -46,8 +46,8 @@ export function BrandNav({ locale = "fr" }: { locale?: "fr" | "en" }) {
             {t.scan}
           </Link>
           <Link
-            href="/barometre"
-            className="hidden rounded-full px-3 py-1.5 font-medium text-[var(--ink-soft)] transition-colors hover:text-[var(--ink)] sm:block"
+            href="/classements"
+            className="rounded-full px-3 py-1.5 font-medium text-[var(--ink-soft)] transition-colors hover:text-[var(--ink)]"
           >
             {t.index}
           </Link>
@@ -62,7 +62,7 @@ export function BrandNav({ locale = "fr" }: { locale?: "fr" | "en" }) {
           </Link>
           <Link
             href="/pricing"
-            className="rounded-full px-3 py-1.5 font-medium text-[var(--ink-soft)] transition-colors hover:text-[var(--ink)]"
+            className="hidden rounded-full px-3 py-1.5 font-medium text-[var(--ink-soft)] transition-colors hover:text-[var(--ink)] sm:block"
           >
             {t.pricing}
           </Link>

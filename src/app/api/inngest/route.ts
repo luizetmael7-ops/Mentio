@@ -11,8 +11,33 @@ import { publicScan } from "@/inngest/functions/public-scan";
 import { weeklyDigest } from "@/inngest/functions/digest";
 import { weeklyIndex } from "@/inngest/functions/weekly-index";
 import { econome } from "@/inngest/functions/econome";
+import { planificateur } from "@/inngest/functions/planificateur";
+import { cartographeRequest, cartographePrepare } from "@/inngest/functions/cartographe";
+import { vigie, secretaire } from "@/inngest/functions/vigie";
+import { livreur } from "@/inngest/functions/livreur";
+import { suiviEnvoi } from "@/inngest/functions/suivi";
 
 export const { GET, POST, PUT } = serve({
   client: inngest,
-  functions: [dailyRunner, brandRunner, promptRunner, runJudge, brandScorer, brandReinforcer, publicScan, weeklyDigest, weeklyIndex, econome],
+  functions: [
+    dailyRunner,
+    brandRunner,
+    promptRunner,
+    runJudge,
+    brandScorer,
+    brandReinforcer,
+    publicScan,
+    weeklyDigest,
+    econome,
+    // L'Index mondial et ses agents
+    weeklyIndex,
+    planificateur,
+    cartographeRequest,
+    cartographePrepare,
+    vigie,
+    secretaire,
+    // La caisse : livrer ce qui a été payé
+    livreur,
+    suiviEnvoi,
+  ],
 });

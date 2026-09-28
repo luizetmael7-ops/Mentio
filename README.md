@@ -3,8 +3,8 @@
 **Mentio mesure si les assistants d'IA citent une marque quand un consommateur
 demande quoi acheter — et dit quoi corriger pour y entrer.**
 
-→ [mentio.fr](https://mentio.fr) · [le Baromètre](https://mentio.fr/barometre) ·
-[la méthodologie](https://mentio.fr/methodologie)
+→ [mentio.fr](https://mentio.fr) · [l'Index](https://mentio.fr/classements) ·
+[le Baromètre](https://mentio.fr/barometre) · [la méthodologie](https://mentio.fr/methodologie)
 
 ---
 
@@ -16,9 +16,17 @@ mesure ça en France.
 
 ## Ce que fait Mentio
 
-Chaque semaine, les mêmes 50 questions d'achat sont posées à ChatGPT, Gemini,
-Claude et Perplexity via leurs APIs officielles, recherche web activée. Les marques
-citées sont relevées, comptées, classées. Le résultat est public.
+**L'Index Mentio** est l'index public de ce que les IA recommandent, catégorie par
+catégorie, pays par pays. Pour chaque catégorie — une intention d'achat étroite,
+« crème solaire », « logiciel CRM » — les mêmes questions d'achat sont posées chaque
+mois à ChatGPT et Gemini via leurs APIs officielles, recherche web activée depuis le
+pays mesuré. Les marques citées sont relevées, comptées, classées. Le résultat est
+public, et n'importe qui peut [ajouter une marque](https://mentio.fr/ajouter).
+
+Six agents font tourner l'Index sans intervention : le Cartographe écrit les
+questions, le Planificateur choisit ce qui est mesuré dans le budget, le Mesureur
+mesure et refuse de publier si un moteur s'est tu, la Vigie et le Secrétaire
+préviennent le fondateur, l'Économe surveille la dépense.
 
 ### Le barème
 
@@ -54,6 +62,7 @@ lui-même illisible.
 - [`/llms.txt`](https://mentio.fr/llms.txt) — orientation
 - [`/llms-full.txt`](https://mentio.fr/llms-full.txt) — tout en un fichier
 - [`/barometre.md`](https://mentio.fr/barometre.md) — le classement en Markdown
+- [`/api/v1/index`](https://mentio.fr/api/v1/index) — tout l'Index en JSON, sans clé
 - [`/api/v1/barometre`](https://mentio.fr/api/v1/barometre) — API publique, sans clé
 
 Réutilisation libre avec attribution : « Baromètre Mentio, mentio.fr ».
@@ -82,6 +91,9 @@ La méthode entière, limites comprises, est sur
 npm install
 cp .env.example .env.local   # puis renseigner les clés
 npm run dev
+
+# Sans accès à Supabase : le site tourne sur les données de l'étude de juillet
+MENTIO_FIXTURES=1 NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1 NEXT_PUBLIC_SUPABASE_ANON_KEY=x npm run dev
 ```
 
 `CLAUDE.md` est la constitution du projet : produit, ICP, barème, invariants
